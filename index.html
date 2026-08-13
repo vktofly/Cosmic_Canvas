@@ -15,21 +15,21 @@
     <div id="canvas-container"></div>
 
     <!-- Header Overlay -->
-    <header class="glass-header">
+    <header class="glass-header" role="banner">
       <div class="brand">
-        <span class="icon">🌌</span>
+        <span class="icon" aria-hidden="true">🌌</span>
         <div>
           <h1>Cosmic Canvas</h1>
           <p class="subtitle">Interactive 3D Astrophysics Studio & General Relativity Engine</p>
         </div>
       </div>
-      <div class="stats-badge" style="display: flex; gap: 8px; align-items: center;">
-        <button id="btn-tour" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #ec4899; color: #f472b6;">🎙️ AI Tour</button>
-        <button id="btn-audio" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px;">🔈 Cosmic Audio</button>
-        <button id="btn-vr" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #8b5cf6; color: #a78bfa;">🥽 Gyro/VR</button>
-        <button id="btn-split" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #10b981; color: #34d399;">🪟 Infall View</button>
-        <button id="btn-pilot" class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #f59e0b; color: #fbbf24;">🚀 Pilot Ship</button>
-        <span id="fps-counter">60 FPS</span>
+      <div class="stats-badge" role="toolbar" aria-label="Observatory view and audio modes" style="display: flex; gap: 8px; align-items: center;">
+        <button id="btn-tour" class="btn btn-secondary" aria-label="Start AI Voice-Guided Planetarium Tour" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #ec4899; color: #f472b6;">🎙️ AI Tour</button>
+        <button id="btn-audio" class="btn btn-secondary" aria-label="Toggle Spacetime Ambient Audio and Redshift Sonar" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px;">🔈 Cosmic Audio</button>
+        <button id="btn-vr" class="btn btn-secondary" aria-label="Toggle Gyroscope Device Orientation Spatial Mode" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #8b5cf6; color: #a78bfa;">🥽 Gyro/VR</button>
+        <button id="btn-split" class="btn btn-secondary" aria-label="Toggle Dual-View Split Screen Infall Perspective" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #10b981; color: #34d399;">🪟 Infall View</button>
+        <button id="btn-pilot" class="btn btn-secondary" aria-label="Toggle First-Person Relativistic Spacecraft Flight Mode" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px; border-color: #f59e0b; color: #fbbf24;">🚀 Pilot Ship</button>
+        <span id="fps-counter" aria-live="polite" aria-label="Rendering framerate">60 FPS</span>
       </div>
     </header>
 
