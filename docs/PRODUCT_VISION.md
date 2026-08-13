@@ -25,6 +25,8 @@ Astrophysics concepts (curved spacetime, relativistic Doppler beaming, photon sp
 
 ---
 
+
+
 ## 3. Recommended North Star Vision
 
 > **"Give everyone a personal interactive observatory to simulate and understand relativistic astrophysics in real time."**

@@ -1,3 +1,6 @@
+onLanguage:markdown
+
+
 # Technology Stack Blueprint: Cosmic Canvas
 
 ## Project Metadata
