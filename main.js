@@ -21,10 +21,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const infoTitle = document.getElementById('info-title');
   const infoDesc = document.getElementById('info-desc');
 
+  const clockInfinity = document.getElementById('clock-infinity');
+  const clockProbe = document.getElementById('clock-probe');
+  const dilationFactor = document.getElementById('dilation-factor');
+
   engine.onFpsUpdate = (fps) => {
     if (fpsCounter) {
       fpsCounter.textContent = `${fps} FPS`;
     }
+  };
+
+  engine.onTimeDilationUpdate = ({ coordinateTime, probeTime, dilationRatio }) => {
+    if (clockInfinity) clockInfinity.textContent = `${coordinateTime.toFixed(1)}s`;
+    if (clockProbe) clockProbe.textContent = `${probeTime.toFixed(1)}s`;
+    if (dilationFactor) dilationFactor.textContent = `${(dilationRatio * 100).toFixed(1)}%`;
   };
 
   // Event Listeners

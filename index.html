@@ -82,6 +82,23 @@
       <h3 id="info-title">Event Horizon & Doppler Beaming</h3>
       <p id="info-desc">Light passing near the Schwarzschild radius bends sharply due to warped spacetime. The approaching side of the accretion disk shines brighter due to relativistic Doppler beaming.</p>
     </div>
+
+    <!-- Relativistic Time Dilation HUD -->
+    <div class="glass-panel time-dilation-hud" style="position: absolute; top: 85px; right: 24px; z-index: 10; padding: 14px 18px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; font-family: var(--font-body); min-width: 220px;">
+      <h4 style="margin: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-cyan);">Relativistic Clocks (10x)</h4>
+      <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+        <span style="color: var(--text-muted);">🌐 Observer (r = ∞):</span>
+        <span id="clock-infinity" style="font-family: monospace; font-weight: 700; color: #38bdf8;">00.0s</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+        <span style="color: var(--text-muted);">🚀 Probe (r = 1.8 Rs):</span>
+        <span id="clock-probe" style="font-family: monospace; font-weight: 700; color: #f59e0b;">00.0s</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 4px;">
+        <span style="color: var(--text-muted);">Clock Rate (dτ/dt):</span>
+        <span id="dilation-factor" style="color: #4ade80; font-weight: 600;">56.4%</span>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="/main.js"></script>

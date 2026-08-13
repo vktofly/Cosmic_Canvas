@@ -51,6 +51,12 @@ export class CosmicEngine {
     this.isRecording = false;
     this.recordTheta = 0;
     this.photonRays = [];
+
+    // Time Dilation State
+    this.coordinateTime = 0;
+    this.probeTime = 0;
+    this.probeRadius = 2.2; // Probe position in Schwarzschild radii units
+    this.onTimeDilationUpdate = null;
   }
 
   createBlackHole() {
@@ -290,7 +296,23 @@ export class CosmicEngine {
     }
 
     const delta = this.clock.getDelta();
-    if (this.accretionDisk && this.diskPositions) {
+    // Update General Relativistic Time Dilation
+    this.coordinateTime += delta;
+    const rs = 1.5 * this.params.mass;
+    const rProbe = this.probeRadius * this.params.mass;
+    // dtau = dt * sqrt(1 - rs / r)
+    const dilationRatio = Math.sqrt(Math.max(0.01, 1.0 - (rs / rProbe)));
+    this.probeTime += delta * dilationRatio;
+
+    if (this.onTimeDilationUpdate) {
+      this.onTimeDilationUpdate({
+        coordinateTime: this.coordinateTime,
+        probeTime: this.probeTime,
+        dilationRatio: dilationRatio
+      });
+    }
+
+    if (this.accretionDisk) {
       // Keplerian Velocity: omega = v / r = sqrt(G*M/r^3) -> omega proportional to M^0.5 * r^(-1.5)
       const baseSpeed = 1.8 * Math.sqrt(this.params.mass) * this.params.spin;
 
