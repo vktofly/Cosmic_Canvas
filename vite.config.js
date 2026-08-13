@@ -11,17 +11,7 @@ export default defineConfig({
         explore: resolve(__dirname, 'explore.html'),
         about: resolve(__dirname, 'about.html'),
         privacy: resolve(__dirname, 'privacy.html'),
-      },
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/three')) {
-            return 'three-vendor';
-          }
-        }
       }
-    },
-    chunkSizeWarningLimit: 800,
-    target: 'esnext',
-    minify: 'esbuild'
+    }
   }
 });
