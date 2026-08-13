@@ -478,39 +478,40 @@ export class CosmicEngine {
       startPos = this.camera.position.clone().add(dir.clone().multiplyScalar(4));
       velocity = dir.multiplyScalar(16);
     } else {
-      startPos = new THREE.Vector3(-10, (Math.random() - 0.5) * 2, 8);
-      velocity = new THREE.Vector3(12, 0, -4).normalize().multiplyScalar(15);
+      startPos = new THREE.Vector3(-12, (Math.random() - 0.5) * 2, 8);
+      velocity = new THREE.Vector3(10, 0, -5).normalize().multiplyScalar(15);
     }
 
-    const points = [startPos.clone()];
-    let currentPos = startPos.clone();
-    let currentVel = velocity.clone();
-    const dt = 0.03;
-
-    for (let step = 0; step < 120; step++) {
-      const r = currentPos.length();
-      if (r < 1.5 * this.params.mass) break; // Trapped inside horizon
-
-      // Relativistic acceleration towards origin
-      const accelMag = (2.5 * this.params.mass * this.params.lensing) / (r * r * r);
-      const accel = currentPos.clone().negate().multiplyScalar(accelMag);
-
-      currentVel.add(accel.multiplyScalar(dt));
-      currentPos.add(currentVel.clone().multiplyScalar(dt));
-      points.push(currentPos.clone());
+    // Dynamic traveling photon projectile with trailing tail
+    const maxTail = 25;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(maxTail * 3);
+    for (let i = 0; i < maxTail * 3; i += 3) {
+      positions[i] = startPos.x;
+      positions[i + 1] = startPos.y;
+      positions[i + 2] = startPos.z;
     }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineBasicMaterial({
       color: screenPos ? 0x38bdf8 : 0xf59e0b,
       linewidth: 3,
       transparent: true,
-      opacity: 0.9
+      opacity: 1.0,
+      blending: THREE.AdditiveBlending
     });
 
     const line = new THREE.Line(geometry, material);
     this.scene.add(line);
-    this.photonRays.push({ mesh: line, createdAt: performance.now() });
+
+    this.photonRays.push({
+      mesh: line,
+      pos: startPos.clone(),
+      vel: velocity.clone(),
+      history: [startPos.clone()],
+      createdAt: performance.now(),
+      absorbed: false
+    });
   }
 
   spawnStar() {
@@ -626,7 +627,50 @@ export class CosmicEngine {
       }
     }
 
-    // Animate and Spaghettify Stellar Debris (Tidal Disruption Event)
+    // Animate Traveling Photon Laser Beams (Spacetime Geodesics & Horizon Capture)
+    const dtPhoton = 0.025;
+    for (let i = this.photonRays.length - 1; i >= 0; i--) {
+      const ray = this.photonRays[i];
+      const age = (now - ray.createdAt) / 1000;
+
+      if (age > 4.0 || ray.absorbed) {
+        this.scene.remove(ray.mesh);
+        ray.mesh.geometry.dispose();
+        ray.mesh.material.dispose();
+        this.photonRays.splice(i, 1);
+        continue;
+      }
+
+      const r = ray.pos.length();
+      if (r < 1.45 * this.params.mass) {
+        // Photon crossed the event horizon: swallowed and vanishes
+        ray.absorbed = true;
+        continue;
+      }
+
+      // Relativistic geodesic acceleration: a = - (2.8 * M * lensing) / r^3 * pos
+      const accelMag = (2.8 * this.params.mass * this.params.lensing) / (r * r * r);
+      const accel = ray.pos.clone().negate().multiplyScalar(accelMag);
+
+      ray.vel.add(accel.multiplyScalar(dtPhoton));
+      ray.pos.add(ray.vel.clone().multiplyScalar(dtPhoton));
+
+      ray.history.push(ray.pos.clone());
+      if (ray.history.length > 25) {
+        ray.history.shift();
+      }
+
+      // Update line buffer with traveling tail
+      const posAttr = ray.mesh.geometry.attributes.position;
+      const arr = posAttr.array;
+      for (let h = 0; h < 25; h++) {
+        const p = ray.history[Math.min(h, ray.history.length - 1)];
+        arr[h * 3] = p.x;
+        arr[h * 3 + 1] = p.y;
+        arr[h * 3 + 2] = p.z;
+      }
+      posAttr.needsUpdate = true;
+    }
     for (let i = this.stellarDebris.length - 1; i >= 0; i--) {
       const debris = this.stellarDebris[i];
       const age = (now - debris.createdAt) / 1000;
