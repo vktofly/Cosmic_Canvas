@@ -46,6 +46,7 @@ export class CosmicEngine {
     this.lastFpsTime = performance.now();
     this.fps = 60;
     this.onFpsUpdate = null;
+    this.photonRays = [];
   }
 
   createBlackHole() {
@@ -169,9 +170,6 @@ export class CosmicEngine {
     if (this.accretionDisk) {
       this.accretionDisk.rotation.x = THREE.MathUtils.degToRad(this.params.tilt);
     }
-  }
-
-    this.photonRays = [];
   }
 
   launchPhoton() {
