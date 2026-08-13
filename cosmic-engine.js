@@ -526,18 +526,50 @@ export class CosmicEngine {
   }
 
   createStarfield() {
-    const starsCount = 5000;
+    const starsCount = 12000;
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(starsCount * 3);
+    const colors = new Float32Array(starsCount * 3);
 
     for (let i = 0; i < starsCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 300;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 300;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 300;
+      // Deep spherical cosmic sphere distribution
+      const u = Math.random();
+      const v = Math.random();
+      const theta = u * 2.0 * Math.PI;
+      const phi = Math.acos(2.0 * v - 1.0);
+      const r = 120.0 + Math.random() * 200.0;
+
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = r * Math.cos(phi);
+
+      // Multi-spectral stellar stellar classes: O/B (Cyan/Blue), A/F (White), G/K (Amber/Yellow), M (Ruby)
+      const starType = Math.random();
+      const col = new THREE.Color();
+      if (starType > 0.85) {
+        col.setRGB(0.4, 0.75, 1.0); // O/B blue-white giants
+      } else if (starType > 0.6) {
+        col.setRGB(1.0, 0.82, 0.45); // G/K solar golden
+      } else if (starType > 0.5) {
+        col.setRGB(1.0, 0.4, 0.5); // Red giants
+      } else {
+        col.setRGB(0.9, 0.95, 1.0); // Pure white main sequence
+      }
+
+      colors[i * 3] = col.r;
+      colors[i * 3 + 1] = col.g;
+      colors[i * 3 + 2] = col.b;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    const material = new THREE.PointsMaterial({ color: 0xffffff, size: 0.6, transparent: true, opacity: 0.6 });
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const material = new THREE.PointsMaterial({
+      size: 0.85,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending
+    });
     this.starfield = new THREE.Points(geometry, material);
     this.scene.add(this.starfield);
   }
