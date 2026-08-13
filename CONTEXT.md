@@ -12,3 +12,10 @@
 - **Doppler Beaming**: Asymmetric brightening of the accretion disk caused by relativistic movement toward the observer.
 - **Shifting Vector**: Real-time parameter inputs (Mass, Spin, Tilt Angle, Camera Distance) that mutate the simulation geometry.
 
+## Bounded Context Entities
+
+- **CosmicEngine**: Core WebGL orchestrator managing scene lifecycle, render loop, and uniform propagation.
+- **SimulationParameters**: Reactive value object containing `mass`, `spin`, `lensing`, and `tilt`.
+- **AccretionDiskGeometry**: BufferGeometry instance storing particle positions and Doppler HSL color attributes.
+
+
