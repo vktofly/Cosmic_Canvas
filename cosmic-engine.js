@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 export class CosmicEngine {
   constructor(containerId) {
@@ -35,10 +38,25 @@ export class CosmicEngine {
     this.camera.position.set(0, 4, 12);
     this.camera.lookAt(0, 0, 0);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.1;
     this.container.appendChild(this.renderer.domElement);
+
+    // High-Performance Downsampled Cinematic Bloom Pipeline
+    this.composer = new EffectComposer(this.renderer);
+    const renderPass = new RenderPass(this.scene, this.camera);
+    this.composer.addPass(renderPass);
+
+    this.bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth / 2, window.innerHeight / 2), // Half-res for maximum 60 FPS performance
+      1.15, // Bloom intensity
+      0.35, // Radius
+      0.82  // High threshold so only hot plasma / photon rings glow
+    );
+    this.composer.addPass(this.bloomPass);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
@@ -746,6 +764,9 @@ export class CosmicEngine {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
+      if (this.composer) {
+        this.composer.setSize(window.innerWidth, window.innerHeight);
+      }
     });
 
     window.addEventListener('keydown', (e) => {
@@ -1083,10 +1104,9 @@ export class CosmicEngine {
       this.renderer.render(this.scene, this.infallCamera);
 
       this.renderer.setScissorTest(false);
+    } else if (this.composer) {
+      this.composer.render();
     } else {
-      this.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
-      this.camera.aspect = window.innerWidth / window.innerHeight;
-      this.camera.updateProjectionMatrix();
       this.renderer.render(this.scene, this.camera);
     }
   }
