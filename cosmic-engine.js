@@ -57,6 +57,70 @@ export class CosmicEngine {
     this.probeTime = 0;
     this.probeRadius = 2.2; // Probe position in Schwarzschild radii units
     this.onTimeDilationUpdate = null;
+
+    // Web Audio Synthesizer
+    this.audioCtx = null;
+    this.droneOsc = null;
+    this.gainNode = null;
+    this.isAudioEnabled = false;
+  }
+
+  initAudio() {
+    if (this.audioCtx) return;
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    this.audioCtx = new AudioContext();
+
+    this.gainNode = this.audioCtx.createGain();
+    this.gainNode.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+    this.gainNode.connect(this.audioCtx.destination);
+
+    // Deep Sub-Bass Spacetime Drone
+    this.droneOsc = this.audioCtx.createOscillator();
+    this.droneOsc.type = 'sine';
+    this.droneOsc.frequency.setValueAtTime(55 * this.params.spin, this.audioCtx.currentTime);
+    this.droneOsc.connect(this.gainNode);
+    this.droneOsc.start();
+  }
+
+  toggleAudio() {
+    if (!this.audioCtx) {
+      this.initAudio();
+      this.isAudioEnabled = true;
+      return true;
+    }
+    if (this.audioCtx.state === 'suspended') {
+      this.audioCtx.resume();
+      this.isAudioEnabled = true;
+      return true;
+    } else if (this.audioCtx.state === 'running') {
+      this.audioCtx.suspend();
+      this.isAudioEnabled = false;
+      return false;
+    }
+  }
+
+  playPhotonSound() {
+    if (!this.audioCtx || this.audioCtx.state !== 'running') return;
+    const osc = this.audioCtx.createOscillator();
+    const gain = this.audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(880, this.audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(110, this.audioCtx.currentTime + 0.35);
+
+    gain.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.35);
+
+    osc.connect(gain);
+    gain.connect(this.audioCtx.destination);
+    osc.start();
+    osc.stop(this.audioCtx.currentTime + 0.35);
+  }
+
+  updateAudioParams() {
+    if (this.droneOsc && this.audioCtx && this.audioCtx.state === 'running') {
+      const baseFreq = 40.0 * Math.max(0.5, this.params.spin) / Math.max(0.5, this.params.mass);
+      this.droneOsc.frequency.setTargetAtTime(baseFreq, this.audioCtx.currentTime, 0.1);
+    }
   }
 
   createBlackHole() {
@@ -222,9 +286,12 @@ export class CosmicEngine {
     if (this.accretionDisk) {
       this.accretionDisk.rotation.x = THREE.MathUtils.degToRad(this.params.tilt);
     }
+
+    this.updateAudioParams();
   }
 
   launchPhoton() {
+    this.playPhotonSound();
     const startPos = new THREE.Vector3(-10, (Math.random() - 0.5) * 2, 8);
     const velocity = new THREE.Vector3(12, 0, -4).normalize().multiplyScalar(15);
 

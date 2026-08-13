@@ -37,6 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dilationFactor) dilationFactor.textContent = `${(dilationRatio * 100).toFixed(1)}%`;
   };
 
+  const btnAudio = document.getElementById('btn-audio');
+
+  if (btnAudio) {
+    btnAudio.addEventListener('click', () => {
+      const isRunning = engine.toggleAudio();
+      if (isRunning) {
+        btnAudio.textContent = '🔊 Cosmic Audio: ON';
+        btnAudio.style.background = 'rgba(56, 189, 248, 0.3)';
+        btnAudio.style.borderColor = '#38bdf8';
+      } else {
+        btnAudio.textContent = '🔈 Cosmic Audio: MUTED';
+        btnAudio.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnAudio.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      }
+    });
+  }
+
   // Event Listeners
   if (modeSelect) {
     modeSelect.addEventListener('change', (e) => {
