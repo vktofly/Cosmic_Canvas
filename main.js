@@ -91,6 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const utterance = new SpeechSynthesisUtterance(step.text);
     utterance.rate = 1.0;
     utterance.pitch = 0.95;
+
+    // Display subtitle banner
+    const subtitleBanner = document.getElementById('voice-subtitle-banner');
+    const subtitleText = document.getElementById('subtitle-text');
+    if (subtitleBanner && subtitleText) {
+      subtitleBanner.style.display = 'block';
+      subtitleText.textContent = `🎙️ [AI Narrator]: "${step.text}"`;
+    }
+
     utterance.onend = () => {
       if (isTourActive) {
         tourIndex = (tourIndex + 1) % tourSteps.length;
@@ -101,9 +110,107 @@ document.addEventListener('DOMContentLoaded', () => {
             speakNarration(nextStep);
           }
         }, 1500);
+      } else if (subtitleBanner) {
+        setTimeout(() => { subtitleBanner.style.display = 'none'; }, 3000);
       }
     };
     window.speechSynthesis.speak(utterance);
+  }
+
+  // Bidirectional Voice Q&A Intent Parser (Web Speech Recognition)
+  const btnVoiceQa = document.getElementById('btn-voice-qa');
+  const subtitleBanner = document.getElementById('voice-subtitle-banner');
+  const subtitleText = document.getElementById('subtitle-text');
+  let recognition = null;
+  let isListening = false;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+      isListening = true;
+      if (btnVoiceQa) {
+        btnVoiceQa.textContent = '🔴 Listening...';
+        btnVoiceQa.style.background = 'rgba(239, 68, 68, 0.3)';
+        btnVoiceQa.style.borderColor = '#ef4444';
+      }
+      if (subtitleBanner && subtitleText) {
+        subtitleBanner.style.display = 'block';
+        subtitleText.textContent = '🎤 Listening... Ask e.g. "Show Gargantua", "Spawn a star", "What is Doppler beaming?", "Fly the ship"';
+      }
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.toLowerCase();
+      if (subtitleText) subtitleText.textContent = `🗣️ You asked: "${transcript}"`;
+
+      // Intent Matching
+      if (transcript.includes('gargantua')) {
+        const btnG = document.getElementById('btn-gargantua');
+        if (btnG) btnG.click();
+        speakNarration({ text: 'Switching to Gargantua. An extreme Kerr rotating black hole spinning near the theoretical maximum limit.' });
+      } else if (transcript.includes('star') || transcript.includes('spaghett')) {
+        engine.spawnStar();
+        speakNarration({ text: 'Spawning an approaching star undergoing tidal disruption into the singularity.' });
+      } else if (transcript.includes('wormhole')) {
+        if (modeSelect) modeSelect.value = 'wormhole';
+        engine.updateParams({ mode: 'wormhole' });
+        speakNarration({ text: 'Opening an Einstein-Rosen wormhole bridge connecting to an alternate galaxy.' });
+      } else if (transcript.includes('fly') || transcript.includes('pilot') || transcript.includes('ship')) {
+        const isPilot = engine.togglePilotMode();
+        speakNarration({ text: isPilot ? 'Flight cockpit mode active. Use W, A, S, D and Space to pilot your spacecraft.' : 'Disengaging flight cockpit mode.' });
+      } else if (transcript.includes('doppler') || transcript.includes('bright')) {
+        speakNarration({ text: 'Relativistic Doppler beaming causes matter moving towards the observer to appear blueshifted and dramatically brighter.' });
+      } else if (transcript.includes('binary') || transcript.includes('wave')) {
+        if (modeSelect) modeSelect.value = 'binary';
+        engine.updateParams({ mode: 'binary' });
+        speakNarration({ text: 'Simulating a binary black hole inspiral emitting quadrupolar gravitational wave strain ripples.' });
+      } else if (transcript.includes('ton') || transcript.includes('scale')) {
+        const scaleSelectEl = document.getElementById('scale-select');
+        if (scaleSelectEl) scaleSelectEl.value = 'ton618';
+        engine.setScale('ton618');
+        speakNarration({ text: 'Framing TON 618 ultramassive black hole, sixty-six billion times the mass of our Sun.' });
+      } else {
+        speakNarration({ text: `I heard: ${transcript}. You can ask about Doppler beaming, Gargantua, scale models, or spawning stars.` });
+      }
+    };
+
+    recognition.onend = () => {
+      isListening = false;
+      if (btnVoiceQa) {
+        btnVoiceQa.textContent = '🎤 Ask Voice';
+        btnVoiceQa.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnVoiceQa.style.borderColor = '#38bdf8';
+      }
+    };
+
+    recognition.onerror = (err) => {
+      isListening = false;
+      if (btnVoiceQa) {
+        btnVoiceQa.textContent = '🎤 Ask Voice';
+        btnVoiceQa.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnVoiceQa.style.borderColor = '#38bdf8';
+      }
+      if (subtitleText) subtitleText.textContent = `⚠️ Voice recognition error: ${err.error}`;
+    };
+  }
+
+  if (btnVoiceQa) {
+    btnVoiceQa.addEventListener('click', () => {
+      if (!recognition) {
+        alert('Web Speech Recognition is not supported in this browser. Try Chrome or Edge.');
+        return;
+      }
+      if (isListening) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    });
   }
 
   if (btnTour) {
@@ -124,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
         }
+        if (subtitleBanner) subtitleBanner.style.display = 'none';
       }
     });
   }
