@@ -126,6 +126,23 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.updateParams({ mass: 1.0, spin: 1.0, lensing: 1.0, tilt: 25 });
   });
 
+  const btnCygnus = document.getElementById('btn-cygnus');
+  if (btnCygnus) {
+    btnCygnus.addEventListener('click', () => {
+      massSlider.value = 0.8;
+      spinSlider.value = 2.8; // High spin stellar mass
+      lensingSlider.value = 0.9;
+      tiltSlider.value = 60;
+
+      massVal.textContent = '0.8';
+      spinVal.textContent = '2.8';
+      lensingVal.textContent = '0.9';
+      tiltVal.textContent = '60';
+
+      engine.updateParams({ mass: 0.8, spin: 2.8, lensing: 0.9, tilt: 60 });
+    });
+  }
+
   const btnSagittarius = document.getElementById('btn-sagittarius');
   if (btnSagittarius) {
     btnSagittarius.addEventListener('click', () => {
