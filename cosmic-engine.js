@@ -898,6 +898,8 @@ export class CosmicEngine {
         probeTime: this.probeTime,
         dilationRatio: dilationRatio
       });
+    }
+
     // Multi-Body Spacetime Gravity Sandbox N-Body Physics Solver
     for (let i = 0; i < this.multiBodies.length; i++) {
       const b1 = this.multiBodies[i];
