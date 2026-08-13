@@ -46,6 +46,8 @@ export class CosmicEngine {
     this.lastFpsTime = performance.now();
     this.fps = 60;
     this.onFpsUpdate = null;
+    this.isRecording = false;
+    this.recordTheta = 0;
     this.photonRays = [];
   }
 
@@ -284,7 +286,14 @@ export class CosmicEngine {
       this.accretionDisk.geometry.attributes.color.needsUpdate = true;
     }
 
-    if (this.controls) {
+    if (this.isRecording) {
+      this.recordTheta += delta * (Math.PI * 2 / 5.0); // 360 degrees in 5 seconds
+      const radius = 12.0;
+      this.camera.position.x = radius * Math.sin(this.recordTheta);
+      this.camera.position.z = radius * Math.cos(this.recordTheta);
+      this.camera.position.y = 4.0 + Math.sin(this.recordTheta * 2) * 1.5;
+      this.camera.lookAt(0, 0, 0);
+    } else if (this.controls) {
       this.controls.update();
     }
 

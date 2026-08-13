@@ -83,4 +83,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     engine.updateParams({ mass: 2.8, spin: 2.5, lensing: 2.2, tilt: 45 });
   });
+
+  const btnRecord = document.getElementById('btn-record');
+
+  btnRecord.addEventListener('click', () => {
+    if (engine.isRecording) return;
+
+    btnRecord.textContent = '⏺ Recording 5s Orbit...';
+    btnRecord.style.opacity = '0.7';
+    engine.isRecording = true;
+    engine.recordTheta = 0;
+
+    const canvas = engine.renderer.domElement;
+    const stream = canvas.captureStream(60);
+    const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+    const chunks = [];
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cosmic-canvas-orbit-${Date.now()}.webm`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      engine.isRecording = false;
+      btnRecord.textContent = '🎬 Record 5s Orbit (WebM)';
+      btnRecord.style.opacity = '1.0';
+    };
+
+    mediaRecorder.start();
+
+    setTimeout(() => {
+      mediaRecorder.stop();
+    }, 5000);
+  });
 });
