@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Canvas Academy — Interactive Astrophysics & General Relativity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      overflow-y: auto !important;
+      height: auto !important;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 20%, #0f172a 0%, #030712 100%);
+      user-select: text;
+    }
+    .academy-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 100px 24px 60px 24px;
+    }
+    .academy-hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .academy-hero h1 {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+      text-wrap: balance;
+    }
+    .academy-hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    .chapter-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .chapter-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    .chapter-number {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+    }
+    .chapter-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    .chapter-card p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <!-- Global Navigation Header -->
+  <header class="glass-header" role="banner" style="position: fixed; top: 16px; left: 16px; right: 16px; z-index: 100;">
+    <div class="brand">
+      <span class="icon" aria-hidden="true">🌌</span>
+      <div>
+        <a href="/" style="text-decoration: none;"><h1 style="font-size: 1.3rem; margin: 0;">Cosmic Canvas</h1></a>
+        <p class="subtitle">Interactive Astrophysics Academy</p>
+      </div>
+    </div>
+    <nav style="display: flex; gap: 8px; align-items: center;" aria-label="Main Navigation">
+      <a href="/" class="nav-link">🚀 3D Studio</a>
+      <a href="/learn.html" class="nav-link active">📚 Academy</a>
+      <a href="/" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">Launch Engine</a>
+    </nav>
+  </header>
+
+  <main class="academy-container">
+    <section class="academy-hero">
+      <h1>The Interactive Astrophysics Academy</h1>
+      <p>Master the fundamental physics of General Relativity, Kerr black hole horizons, and gravitational waves with visual models you can test in real time.</p>
+    </section>
+
+    <div class="chapter-grid">
+      <!-- Chapter 1 -->
+      <article class="glass-panel chapter-card">
+        <div>
+          <span class="chapter-number">Chapter 01</span>
+          <h3>Anatomy of a Black Hole</h3>
+          <p>Explore the Schwarzschild radius \(R_s = \frac{2GM}{c^2}\), the photon sphere at \(1.5 R_s\), and how Kerr spin drags the fabric of space into an ergosphere.</p>
+        </div>
+        <a href="/?mode=blackhole" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Launch Chapter 1 →</a>
+      </article>
+
+      <!-- Chapter 2 -->
+      <article class="glass-panel chapter-card">
+        <div>
+          <span class="chapter-number">Chapter 02</span>
+          <h3>Gravitational Lensing & Einstein Rings</h3>
+          <p>Understand how intense mass curvature deflects light paths. Observe the relativistic Einstein Ring and distorted background skybox galaxy field.</p>
+        </div>
+        <a href="/?mode=wormhole" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Launch Chapter 2 →</a>
+      </article>
+
+      <!-- Chapter 3 -->
+      <article class="glass-panel chapter-card">
+        <div>
+          <span class="chapter-number">Chapter 03</span>
+          <h3>Tidal Disruption Events (TDE)</h3>
+          <p>Learn how stellar bodies crossing the Roche limit undergo extreme differential gravitational acceleration, tearing into a spaghettified accretion filament.</p>
+        </div>
+        <a href="/" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Launch Chapter 3 →</a>
+      </article>
+
+      <!-- Chapter 4 -->
+      <article class="glass-panel chapter-card">
+        <div>
+          <span class="chapter-number">Chapter 04</span>
+          <h3>Binary Mergers & Gravitational Waves</h3>
+          <p>Investigate orbital energy loss through gravitational radiation as two black holes coalesce, producing quadrupolar spacetime strain ripples and acoustic chirps.</p>
+        </div>
+        <a href="/?mode=binary" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Launch Chapter 4 →</a>
+      </article>
+    </div>
+  </main>
+</body>
+</html>
