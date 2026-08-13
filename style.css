@@ -1,19 +1,23 @@
 :root {
   --bg-color: #030712;
-  --panel-bg: rgba(15, 23, 42, 0.65);
-  --panel-border: rgba(255, 255, 255, 0.12);
+  --panel-bg: rgba(15, 23, 42, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.14);
   --accent-cyan: #38bdf8;
   --accent-amber: #fbbf24;
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
-  --font-heading: 'Space Grotesk', sans-serif;
-  --font-body: 'Outfit', sans-serif;
+  --accent-pink: #ec4899;
+  --accent-purple: #a855f7;
+  --accent-emerald: #10b981;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
@@ -23,6 +27,7 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
+  user-select: none;
 }
 
 #app {
@@ -40,26 +45,28 @@ body {
   z-index: 1;
 }
 
-/* Glassmorphism components */
+/* Glassmorphism Observatory Components */
 .glass-header, .glass-panel {
   background: var(--panel-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   z-index: 10;
 }
 
 .glass-header {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  right: 20px;
-  padding: 14px 24px;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  padding: 12px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .brand {
