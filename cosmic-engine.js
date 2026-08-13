@@ -456,39 +456,42 @@ export class CosmicEngine {
     const colors = new Float32Array(starCount * 3);
     const velocities = [];
 
-    const origin = new THREE.Vector3(-12, (Math.random() - 0.5) * 1.5, 9);
-    // Aim directly toward the event horizon with low impact parameter for direct accretion
-    const target = new THREE.Vector3(0.5, 0, -0.5);
-    const baseVel = target.clone().sub(origin).normalize().multiplyScalar(7.5);
+    // Spawn in front of the active camera view
+    const camDir = new THREE.Vector3();
+    this.camera.getWorldDirection(camDir);
+    const origin = this.camera.position.clone().add(camDir.clone().multiplyScalar(6.0)).add(new THREE.Vector3(-4, 2, 0));
+    const target = new THREE.Vector3(0, 0, 0);
+    const baseVel = target.clone().sub(origin).normalize().multiplyScalar(5.5);
 
     for (let i = 0; i < starCount; i++) {
       const offset = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.6,
-        (Math.random() - 0.5) * 0.6,
-        (Math.random() - 0.5) * 0.6
+        (Math.random() - 0.5) * 1.2,
+        (Math.random() - 0.5) * 1.2,
+        (Math.random() - 0.5) * 1.2
       );
       const pos = origin.clone().add(offset);
       positions[i * 3] = pos.x;
       positions[i * 3 + 1] = pos.y;
       positions[i * 3 + 2] = pos.z;
 
-      velocities.push(baseVel.clone().add(offset.clone().multiplyScalar(0.2)));
+      velocities.push(baseVel.clone().add(offset.clone().multiplyScalar(0.3)));
 
-      // Glowing golden-white stellar core
+      // Glowing ultra-bright golden stellar core
       colors[i * 3] = 1.0;
-      colors[i * 3 + 1] = 0.85 + Math.random() * 0.15;
-      colors[i * 3 + 2] = 0.4 + Math.random() * 0.4;
+      colors[i * 3 + 1] = 0.8 + Math.random() * 0.2;
+      colors[i * 3 + 2] = 0.2 + Math.random() * 0.3;
     }
 
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
-      size: 0.15,
+      size: 0.45, // High visibility
       vertexColors: true,
       transparent: true,
       opacity: 1.0,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
 
     const points = new THREE.Points(geometry, material);
