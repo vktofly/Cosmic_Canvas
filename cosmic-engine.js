@@ -456,21 +456,23 @@ export class CosmicEngine {
     const colors = new Float32Array(starCount * 3);
     const velocities = [];
 
-    const origin = new THREE.Vector3(-14, (Math.random() - 0.5) * 3, 10);
-    const baseVel = new THREE.Vector3(10, 0, -6).normalize().multiplyScalar(9);
+    const origin = new THREE.Vector3(-12, (Math.random() - 0.5) * 1.5, 9);
+    // Aim directly toward the event horizon with low impact parameter for direct accretion
+    const target = new THREE.Vector3(0.5, 0, -0.5);
+    const baseVel = target.clone().sub(origin).normalize().multiplyScalar(7.5);
 
     for (let i = 0; i < starCount; i++) {
       const offset = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.8,
-        (Math.random() - 0.5) * 0.8,
-        (Math.random() - 0.5) * 0.8
+        (Math.random() - 0.5) * 0.6,
+        (Math.random() - 0.5) * 0.6,
+        (Math.random() - 0.5) * 0.6
       );
       const pos = origin.clone().add(offset);
       positions[i * 3] = pos.x;
       positions[i * 3 + 1] = pos.y;
       positions[i * 3 + 2] = pos.z;
 
-      velocities.push(baseVel.clone().add(offset.clone().multiplyScalar(0.5)));
+      velocities.push(baseVel.clone().add(offset.clone().multiplyScalar(0.2)));
 
       // Glowing golden-white stellar core
       colors[i * 3] = 1.0;
@@ -576,9 +578,9 @@ export class CosmicEngine {
         const pz = positions[p * 3 + 2];
         const r = Math.sqrt(px * px + py * py + pz * pz);
 
-        if (r > 1.2 * this.params.mass) {
-          // Gravitational acceleration towards center: a = G*M / r^2
-          const accelMag = (35.0 * this.params.mass) / (r * r);
+        if (r > 1.3 * this.params.mass) {
+          // Strong General Relativistic gravity acceleration: a = G*M / r^2.2
+          const accelMag = (55.0 * this.params.mass) / Math.pow(r, 2.2);
           const vel = debris.velocities[p];
           vel.x += (-px / r) * accelMag * 0.016;
           vel.y += (-py / r) * accelMag * 0.016;
@@ -589,10 +591,11 @@ export class CosmicEngine {
           positions[p * 3 + 1] += vel.y * 0.016;
           positions[p * 3 + 2] += vel.z * 0.016;
         } else {
-          // Fall through event horizon
+          // Captured inside event horizon: vanish into singularity
           positions[p * 3] = 0;
           positions[p * 3 + 1] = 0;
           positions[p * 3 + 2] = 0;
+          debris.velocities[p].set(0, 0, 0);
         }
       }
       posAttr.needsUpdate = true;
