@@ -206,12 +206,46 @@
       <p>Explore high-fidelity general relativistic configurations rendered with photorealistic accretion disks, gravitational lensing, and 60 FPS video export.</p>
     </section>
 
-    <!-- 10x Feature 1: Category Pill Filter -->
-    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 36px; flex-wrap: wrap;" role="tablist">
-      <button class="filter-pill active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid var(--accent-pink); background: rgba(236, 72, 153, 0.2); color: #ffffff; transition: all 0.2s ease;">All Presets (4)</button>
-      <button class="filter-pill" data-filter="supermassive" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(15, 23, 42, 0.6); color: var(--text-muted); transition: all 0.2s ease;">Supermassive</button>
-      <button class="filter-pill" data-filter="stellar" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(15, 23, 42, 0.6); color: var(--text-muted); transition: all 0.2s ease;">Stellar Mass</button>
-      <button class="filter-pill" data-filter="extremal" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(15, 23, 42, 0.6); color: var(--text-muted); transition: all 0.2s ease;">Extreme Spin (a* > 0.9)</button>
+    <!-- 10x Feature 1: Category Pill Filter + Custom Preset Creator Trigger -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 36px; flex-wrap: wrap; gap: 16px;">
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;" role="tablist">
+        <button class="filter-pill active" data-filter="all" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid var(--accent-pink); background: rgba(236, 72, 153, 0.2); color: #ffffff; transition: all 0.2s ease;">All Presets (4)</button>
+        <button class="filter-pill" data-filter="supermassive" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(15, 23, 42, 0.6); color: var(--text-muted); transition: all 0.2s ease;">Supermassive</button>
+        <button class="filter-pill" data-filter="stellar" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(15, 23, 42, 0.6); color: var(--text-muted); transition: all 0.2s ease;">Stellar Mass</button>
+        <button class="filter-pill" data-filter="extremal" style="padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(15, 23, 42, 0.6); color: var(--text-muted); transition: all 0.2s ease;">Extreme Spin (a* > 0.9)</button>
+      </div>
+      <button id="btn-open-creator" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.85rem; background: linear-gradient(135deg, var(--accent-pink), #a855f7); border: none;">✨ Author Custom Preset</button>
+    </div>
+
+    <!-- Custom Preset Creator Modal -->
+    <div id="creator-modal" style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(20px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+      <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 24px; padding: 36px; max-width: 500px; width: 100%; box-shadow: 0 30px 70px rgba(0,0,0,0.8);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h2 style="font-family: var(--font-heading); font-size: 1.5rem; color: #ffffff; margin: 0;">✨ Custom Spacetime Author</h2>
+          <button id="btn-close-modal" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 24px;">Configure custom spacetime physics and generate an instant shareable simulation link.</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+          <div>
+            <label style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Mass (M☉): <span id="m-val" style="color: var(--accent-cyan);">1.5</span></label>
+            <input type="range" id="m-input" min="0.5" max="3.0" step="0.1" value="1.5" style="width: 100%;">
+          </div>
+          <div>
+            <label style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Spin a* (c): <span id="s-val" style="color: var(--accent-pink);">1.8</span></label>
+            <input type="range" id="s-input" min="0.1" max="3.0" step="0.1" value="1.8" style="width: 100%;">
+          </div>
+          <div>
+            <label style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Disk Inclination: <span id="t-val" style="color: var(--accent-amber);">45°</span></label>
+            <input type="range" id="t-input" min="0" max="90" step="5" value="45" style="width: 100%;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button id="btn-launch-custom" class="btn btn-primary" style="flex: 1; text-align: center; text-decoration: none;">🚀 Launch Simulation</button>
+          <button id="btn-copy-url" class="btn btn-secondary" style="padding: 10px 16px;">🔗 Copy Share Link</button>
+        </div>
+      </div>
     </div>
 
     <div class="gallery-grid">
@@ -460,6 +494,46 @@
         setTimeout(() => { e.target.textContent = originalText; }, 1200);
       });
     });
+
+    // Custom Preset Creator Controller
+    const modal = document.getElementById('creator-modal');
+    const btnOpenModal = document.getElementById('btn-open-creator');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+
+    const mInput = document.getElementById('m-input');
+    const sInput = document.getElementById('s-input');
+    const tInput = document.getElementById('t-input');
+    const mVal = document.getElementById('m-val');
+    const sVal = document.getElementById('s-val');
+    const tVal = document.getElementById('t-val');
+
+    const btnLaunchCustom = document.getElementById('btn-launch-custom');
+    const btnCopyUrl = document.getElementById('btn-copy-url');
+
+    if (btnOpenModal && modal) {
+      btnOpenModal.addEventListener('click', () => { modal.style.display = 'flex'; });
+      btnCloseModal.addEventListener('click', () => { modal.style.display = 'none'; });
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+      mInput.addEventListener('input', () => { mVal.textContent = parseFloat(mInput.value).toFixed(1); });
+      sInput.addEventListener('input', () => { sVal.textContent = parseFloat(sInput.value).toFixed(1); });
+      tInput.addEventListener('input', () => { tVal.textContent = `${tInput.value}°`; });
+
+      const getCustomUrl = () => {
+        return `${window.location.origin}/?mass=${mInput.value}&spin=${sInput.value}&tilt=${tInput.value}`;
+      };
+
+      btnLaunchCustom.addEventListener('click', () => {
+        window.location.href = getCustomUrl();
+      });
+
+      btnCopyUrl.addEventListener('click', () => {
+        navigator.clipboard.writeText(getCustomUrl()).then(() => {
+          btnCopyUrl.textContent = '✓ Link Copied!';
+          setTimeout(() => { btnCopyUrl.textContent = '🔗 Copy Share Link'; }, 2000);
+        });
+      });
+    }
 
     // 10x Feature 3: 1-Click Code Embed Copier with Toast
     document.querySelectorAll('.btn-embed').forEach((btn) => {
