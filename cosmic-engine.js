@@ -302,6 +302,25 @@ export class CosmicEngine {
   createScaleComparisonObjects() {
     this.scaleGroup = new THREE.Group();
 
+    // 0. Neutron Star / Pulsar (Ultra-compact 20km with bipolar magnetic jets)
+    const neutronGeo = new THREE.SphereGeometry(0.04, 16, 16);
+    const neutronMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9 });
+    const neutronMesh = new THREE.Mesh(neutronGeo, neutronMat);
+    neutronMesh.position.set(2.0, 0, 0);
+
+    // Pulsar Jet Cone
+    const jetGeo = new THREE.CylinderGeometry(0.01, 0.25, 2.5, 16);
+    const jetMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending });
+    const jetMesh = new THREE.Mesh(jetGeo, jetMat);
+    jetMesh.position.set(2.0, 0, 0);
+
+    const neutronGroup = new THREE.Group();
+    neutronGroup.add(neutronMesh);
+    neutronGroup.add(jetMesh);
+    neutronGroup.visible = false;
+    this.scaleGroup.add(neutronGroup);
+    this.scaleMeshes['neutron'] = neutronGroup;
+
     // 1. Earth Scale Mesh (Tiny blue sphere next to black hole)
     const earthGeo = new THREE.SphereGeometry(0.08, 16, 16);
     const earthMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
@@ -351,6 +370,23 @@ export class CosmicEngine {
     this.scaleGroup.add(ssGroup);
     this.scaleMeshes['solarsystem'] = ssGroup;
 
+    // 4. TON 618 Ultramassive Black Hole Horizon (Gigantic 18.0 unit sphere swallowing entire scene)
+    const tonGeo = new THREE.SphereGeometry(14.0, 64, 64);
+    const tonMat = new THREE.MeshBasicMaterial({ color: 0x030712, wireframe: true, transparent: true, opacity: 0.4 });
+    const tonMesh = new THREE.Mesh(tonGeo, tonMat);
+    
+    const tonGlowGeo = new THREE.RingGeometry(13.9, 14.2, 96);
+    const tonGlowMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, side: THREE.DoubleSide, transparent: true, opacity: 0.85 });
+    const tonRing = new THREE.Mesh(tonGlowGeo, tonGlowMat);
+    tonRing.rotation.x = Math.PI / 2;
+
+    const tonGroup = new THREE.Group();
+    tonGroup.add(tonMesh);
+    tonGroup.add(tonRing);
+    tonGroup.visible = false;
+    this.scaleGroup.add(tonGroup);
+    this.scaleMeshes['ton618'] = tonGroup;
+
     this.scene.add(this.scaleGroup);
   }
 
@@ -359,6 +395,16 @@ export class CosmicEngine {
     Object.keys(this.scaleMeshes).forEach((key) => {
       this.scaleMeshes[key].visible = (key === scaleName);
     });
+
+    // Auto-frame camera based on scale ladder
+    if (scaleName === 'ton618') {
+      this.camera.position.set(0, 18, 36);
+      this.controls.maxDistance = 60.0;
+    } else if (scaleName === 'neutron') {
+      this.camera.position.set(0, 2, 6);
+    } else {
+      this.controls.maxDistance = 30.0;
+    }
   }
 
   createAccretionDisk() {
