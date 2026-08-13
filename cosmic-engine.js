@@ -359,10 +359,21 @@ export class CosmicEngine {
     this.updateAudioParams();
   }
 
-  launchPhoton() {
+  launchPhoton(screenPos = null) {
     this.playPhotonSound();
-    const startPos = new THREE.Vector3(-10, (Math.random() - 0.5) * 2, 8);
-    const velocity = new THREE.Vector3(12, 0, -4).normalize().multiplyScalar(15);
+    
+    let startPos, velocity;
+    if (screenPos) {
+      // Unproject screen NDC into 3D world space
+      const vector = new THREE.Vector3(screenPos.x, screenPos.y, 0.5);
+      vector.unproject(this.camera);
+      const dir = vector.sub(this.camera.position).normalize();
+      startPos = this.camera.position.clone().add(dir.clone().multiplyScalar(4));
+      velocity = dir.multiplyScalar(16);
+    } else {
+      startPos = new THREE.Vector3(-10, (Math.random() - 0.5) * 2, 8);
+      velocity = new THREE.Vector3(12, 0, -4).normalize().multiplyScalar(15);
+    }
 
     const points = [startPos.clone()];
     let currentPos = startPos.clone();
@@ -384,7 +395,7 @@ export class CosmicEngine {
 
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineBasicMaterial({
-      color: 0xf59e0b,
+      color: screenPos ? 0x38bdf8 : 0xf59e0b,
       linewidth: 3,
       transparent: true,
       opacity: 0.9

@@ -70,13 +70,18 @@
         <input type="range" id="tilt-slider" min="0" max="90" step="1" value="25" />
       </div>
 
-      <div class="preset-buttons">
+      <div class="preset-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
         <button id="btn-reset" class="btn btn-secondary">Reset View</button>
+        <button id="btn-sagittarius" class="btn btn-secondary" style="border-color: #a855f7; color: #c084fc;">Sagittarius A*</button>
+        <button id="btn-gargantua" class="btn btn-secondary" style="border-color: #38bdf8; color: #38bdf8;">Gargantua</button>
         <button id="btn-supermassive" class="btn btn-primary">Supermassive</button>
-        <button id="btn-photon" class="btn btn-primary" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">Fire Photon</button>
       </div>
 
-      <button id="btn-record" class="btn btn-primary" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); margin-top: 4px;">🎬 Record 5s Orbit (WebM)</button>
+      <div style="display: flex; gap: 6px; margin-top: 6px;">
+        <button id="btn-photon" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #ef4444);">🔥 Fire Photon</button>
+        <button id="btn-record" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #ec4899, #8b5cf6);">🎬 Record 5s</button>
+      </div>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0; text-align: center;">💡 Tip: Click & drag anywhere on canvas to fire laser!</p>
     </aside>
 
     <!-- Information Card -->

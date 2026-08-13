@@ -110,10 +110,70 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.updateParams({ mass: 1.0, spin: 1.0, lensing: 1.0, tilt: 25 });
   });
 
+  const btnSagittarius = document.getElementById('btn-sagittarius');
+  if (btnSagittarius) {
+    btnSagittarius.addEventListener('click', () => {
+      massSlider.value = 2.4;
+      spinSlider.value = 0.9;
+      lensingSlider.value = 1.8;
+      tiltSlider.value = 15;
+
+      massVal.textContent = '2.4';
+      spinVal.textContent = '0.9';
+      lensingVal.textContent = '1.8';
+      tiltVal.textContent = '15';
+
+      engine.updateParams({ mass: 2.4, spin: 0.9, lensing: 1.8, tilt: 15 });
+    });
+  }
+
+  const btnGargantua = document.getElementById('btn-gargantua');
+  if (btnGargantua) {
+    btnGargantua.addEventListener('click', () => {
+      massSlider.value = 3.0;
+      spinSlider.value = 2.9; // Extreme Kerr Spin (a* ~ 0.99)
+      lensingSlider.value = 2.4;
+      tiltSlider.value = 85; // Edge-on accretion disk
+
+      massVal.textContent = '3.0';
+      spinVal.textContent = '2.9';
+      lensingVal.textContent = '2.4';
+      tiltVal.textContent = '85';
+
+      engine.updateParams({ mass: 3.0, spin: 2.9, lensing: 2.4, tilt: 85 });
+    });
+  }
+
   const btnPhoton = document.getElementById('btn-photon');
 
   btnPhoton.addEventListener('click', () => {
     engine.launchPhoton();
+  });
+
+  // Drag-to-Aim Continuous Photon Laser Cannon
+  let isPointerDown = false;
+  let lastLaserTime = 0;
+  const canvasEl = engine.renderer.domElement;
+
+  canvasEl.addEventListener('pointerdown', (e) => {
+    if (e.target !== canvasEl) return;
+    isPointerDown = true;
+  });
+
+  window.addEventListener('pointerup', () => {
+    isPointerDown = false;
+  });
+
+  canvasEl.addEventListener('pointermove', (e) => {
+    if (!isPointerDown) return;
+    const now = performance.now();
+    if (now - lastLaserTime > 120) { // Limit to 8 lasers/sec
+      lastLaserTime = now;
+      const rect = canvasEl.getBoundingClientRect();
+      const ndcX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const ndcY = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      engine.launchPhoton({ x: ndcX, y: ndcY });
+    }
   });
 
   btnSupermassive.addEventListener('click', () => {
