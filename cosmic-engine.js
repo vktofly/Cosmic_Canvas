@@ -71,13 +71,13 @@ export class CosmicEngine {
     this.audioCtx = new AudioContext();
 
     this.gainNode = this.audioCtx.createGain();
-    this.gainNode.gain.setValueAtTime(0.05, this.audioCtx.currentTime);
+    this.gainNode.gain.setValueAtTime(0.25, this.audioCtx.currentTime); // Audible volume
     this.gainNode.connect(this.audioCtx.destination);
 
-    // Deep Sub-Bass Spacetime Drone
+    // Deep Sub-Bass Spacetime Drone (Dual rich harmonics)
     this.droneOsc = this.audioCtx.createOscillator();
-    this.droneOsc.type = 'sine';
-    this.droneOsc.frequency.setValueAtTime(55 * this.params.spin, this.audioCtx.currentTime);
+    this.droneOsc.type = 'triangle'; // Richer audible waveform
+    this.droneOsc.frequency.setValueAtTime(110 * this.params.spin, this.audioCtx.currentTime);
     this.droneOsc.connect(this.gainNode);
     this.droneOsc.start();
   }
@@ -85,6 +85,9 @@ export class CosmicEngine {
   toggleAudio() {
     if (!this.audioCtx) {
       this.initAudio();
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
       this.isAudioEnabled = true;
       return true;
     }
@@ -92,7 +95,7 @@ export class CosmicEngine {
       this.audioCtx.resume();
       this.isAudioEnabled = true;
       return true;
-    } else if (this.audioCtx.state === 'running') {
+    } else {
       this.audioCtx.suspend();
       this.isAudioEnabled = false;
       return false;
