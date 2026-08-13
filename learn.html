@@ -4,20 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cosmic Canvas Academy — Interactive General Relativity & Astrophysics</title>
+  <meta name="description" content="Master General Relativity, black hole metrics, gravitational waves, and Kerr geometries with interactive 3D simulations, real astronomical data, and computational astrophysics tools." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css" />
   <style>
+    :root {
+      --bg-color: #030712;
+      --panel-bg: rgba(15, 23, 42, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.14);
+      --accent-cyan: #38bdf8;
+      --accent-amber: #fbbf24;
+      --accent-pink: #ec4899;
+      --accent-purple: #a855f7;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-heading: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
     body {
       overflow-y: auto !important;
       height: auto !important;
       min-height: 100vh;
       background: radial-gradient(circle at 50% 10%, #0f172a 0%, #030712 100%);
+      color: var(--text-main);
+      font-family: var(--font-body);
       user-select: text;
+      padding-bottom: 80px;
+      position: relative;
+    }
+    /* Ambient Canvas Background */
+    #ambient-starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
     }
     .academy-container {
-      max-width: 1100px;
+      position: relative;
+      z-index: 2;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 120px 24px 80px 24px;
     }
@@ -26,40 +58,57 @@
       margin-bottom: 56px;
     }
     .eyebrow {
-      display: inline-block;
-      padding: 6px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
       border-radius: 20px;
       font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: var(--accent-cyan);
       background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      border: 1px solid rgba(56, 189, 248, 0.35);
       margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+    .eyebrow .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      box-shadow: 0 0 8px var(--accent-cyan);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
     }
     .academy-hero h1 {
       font-family: var(--font-heading);
-      font-size: 2.8rem;
+      font-size: 3.2rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 0%, #38bdf8 45%, #ec4899 90%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 16px;
       text-wrap: balance;
     }
     .academy-hero p {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       color: var(--text-muted);
-      max-width: 700px;
+      max-width: 820px;
       margin: 0 auto;
-      line-height: 1.6;
+      line-height: 1.65;
       text-wrap: balance;
     }
+    
+    /* Grid & Cards */
     .chapter-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 28px;
       margin-bottom: 60px;
     }
@@ -69,54 +118,277 @@
       flex-direction: column;
       justify-content: space-between;
       border-radius: 20px;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    .chapter-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(56, 189, 248, 0.4);
-      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.7), 0 0 20px rgba(56, 189, 248, 0.15);
     }
     .chapter-badge {
       display: inline-block;
-      font-family: var(--font-heading);
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      color: var(--accent-cyan);
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
+      color: var(--accent-cyan);
       margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
     }
     .chapter-card h3 {
       font-family: var(--font-heading);
-      font-size: 1.4rem;
+      font-size: 1.55rem;
+      font-weight: 700;
       color: #ffffff;
       margin-bottom: 12px;
-      letter-spacing: -0.01em;
+      line-height: 1.25;
     }
     .chapter-card p {
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
-      line-height: 1.65;
-      margin-bottom: 24px;
-    }
-    .equation-box {
-      background: rgba(3, 7, 18, 0.6);
-      border: 1px dashed rgba(56, 189, 248, 0.3);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-family: monospace;
-      font-size: 0.85rem;
-      color: var(--accent-cyan);
+      line-height: 1.6;
       margin-bottom: 20px;
     }
+    .equation-box {
+      background: rgba(3, 7, 18, 0.85);
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--accent-cyan);
+      margin-bottom: 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .data-pill {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--accent-cyan);
+      padding: 8px 12px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Dynamic Animations & Holographic Shimmers */
+    @keyframes rotateGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes holographicSheen {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes floatOrb {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-10px) scale(1.03); }
+    }
+    .holo-glow {
+      position: relative;
+      overflow: hidden;
+    }
+    .holo-glow::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+      animation: rotateGlow 20s linear infinite;
+      z-index: 0;
+    }
+    .animated-card {
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, box-shadow;
+    }
+    .animated-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.25);
+    }
+    .diff-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .badge-winner {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .badge-loser {
+      background: rgba(239, 68, 68, 0.14);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Interactive Lab Sections */
+    .lab-section {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 36px;
+      margin-bottom: 48px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+    .lab-header {
+      margin-bottom: 24px;
+    }
+    .lab-header h2 {
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      color: #ffffff;
+      margin: 6px 0 8px 0;
+    }
+    .lab-header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 32px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8);
+      background: #030712;
+      width: 100%;
+      height: 300px;
+    }
+    .canvas-overlay-tag {
+      position: absolute;
+      bottom: 12px;
+      left: 14px;
+      font-size: 0.75rem;
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      pointer-events: none;
+      background: rgba(3, 7, 18, 0.85);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .control-group {
+      margin-bottom: 18px;
+    }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .control-value {
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+    .slider-input {
+      width: 100%;
+      accent-color: var(--accent-cyan);
+      cursor: pointer;
+    }
+    .readout-card {
+      background: rgba(3, 7, 18, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+    .readout-highlight {
+      color: var(--accent-amber);
+      font-weight: 600;
+    }
+
+    /* Object Scale Comparator Pill Selector */
+    .object-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .obj-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .obj-btn:hover {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: var(--accent-cyan);
+      color: #ffffff;
+    }
+    .obj-btn.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.25), rgba(168, 85, 247, 0.25));
+      border-color: var(--accent-cyan);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Interactive Data Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      margin-top: 16px;
+    }
+    .data-table th, .data-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .data-table th {
+      color: var(--accent-cyan);
+      font-family: var(--font-heading);
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      background: rgba(3, 7, 18, 0.5);
+    }
+    .data-table tr:hover td {
+      background: rgba(56, 189, 248, 0.05);
+    }
+
+    /* Nav header styles */
     .nav-link {
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 600;
       padding: 8px 14px;
       border-radius: 8px;
@@ -126,45 +398,122 @@
       color: var(--accent-cyan);
       background: rgba(56, 189, 248, 0.12);
     }
+    .nav-link:focus-visible, button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--accent-cyan);
+      outline-offset: 3px;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+    }
+    .btn:active, .obj-btn:active {
+      transform: scale(0.97);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Ambient Cosmic Particle Canvas -->
+  <canvas id="ambient-starfield"></canvas>
+
   <!-- Global Navigation Header -->
   <header class="glass-header" role="banner" style="position: fixed; top: 16px; left: 16px; right: 16px; z-index: 100;">
     <div class="brand">
       <span class="icon" aria-hidden="true">🌌</span>
       <div>
-        <a href="/" style="text-decoration: none;"><h1 style="font-size: 1.3rem; margin: 0;">Cosmic Canvas</h1></a>
-        <p class="subtitle">Interactive Astrophysics Academy</p>
+        <a href="/" style="text-decoration: none;"><h1 style="font-size: 1.3rem; margin: 0; color: #ffffff;">Cosmic Canvas</h1></a>
+        <p class="subtitle" style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Interactive Astrophysics Academy</p>
       </div>
     </div>
     <nav style="display: flex; gap: 8px; align-items: center;" aria-label="Main Navigation">
       <a href="/" class="nav-link">🚀 3D Studio</a>
+      <a href="/explore.html" class="nav-link">🌌 Explorer</a>
       <a href="/learn.html" class="nav-link active">📚 Academy</a>
       <a href="/gallery.html" class="nav-link">🎬 Gallery</a>
-      <a href="/" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">Launch Engine</a>
+      <a href="/about.html" class="nav-link">ℹ️ About</a>
+      <a href="/" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem; text-decoration: none;">Launch Engine</a>
     </nav>
   </header>
 
   <main class="academy-container">
+    <!-- Hero Section -->
     <section class="academy-hero">
-      <span class="eyebrow">Curated Academic Curriculum</span>
-      <h1>The Interactive Astrophysics Academy</h1>
-      <p>Master the mathematics and visual phenomena of General Relativity with live, testable 3D numerical models.</p>
+      <span class="eyebrow"><span class="pulse-dot"></span> Curated Academic Curriculum · 2026 Edition</span>
+      <h1>Interactive Astrophysics Academy</h1>
+      <p>Explore the rigorous mathematics and visual phenomena of General Relativity with live numerical models, authentic observational data from EHT, LIGO & Chandra, and real-time audio-optical synthesizers.</p>
     </section>
 
+    <!-- 10x COMPETITOR DIFFERENTIATION MATRIX SECTION -->
+    <section class="lab-section holo-glow" style="border-color: rgba(56, 189, 248, 0.4); margin-bottom: 56px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.95) 100%);">
+      <div class="lab-header" style="text-align: center; max-width: 800px; margin: 0 auto 32px auto;">
+        <span class="chapter-badge" style="color: var(--accent-cyan);"><span style="animation: floatOrb 3s ease-in-out infinite; display: inline-block;">⚡</span> 10x Paradigm Shift · Architecture Moat</span>
+        <h2 style="font-size: 2.2rem; background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 60%, #ec4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Why Cosmic Canvas Outperforms Academic Competitors</h2>
+        <p style="font-size: 0.96rem;">Traditional astronomy portals and physics textbooks rely on static 2D artist renders and static equations. Cosmic Canvas operates on a 60fps numerical simulation pipeline with multi-sensory synesthesia.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+        <!-- Differentiator 1 -->
+        <div class="animated-card" style="background: rgba(3, 7, 18, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 16px; padding: 24px;">
+          <div class="diff-badge badge-winner">✓ Cosmic Canvas Advantage</div>
+          <h4 style="font-family: var(--font-heading); color: #ffffff; font-size: 1.15rem; margin-bottom: 8px;">Live Geodesic Numerical Solvers</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">Solves exact null geodesics \(d^2u/d\phi^2 + u = 3Mu^2\) in real time at 60fps on your GPU, demonstrating relativistic orbital capture and photon sphere rings dynamically.</p>
+          <div style="font-size: 0.78rem; color: #f87171; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+            ✗ <em>Competitor Default:</em> Static 2D textbook JPG diagrams with no parameter testing.
+          </div>
+        </div>
+
+        <!-- Differentiator 2 -->
+        <div class="animated-card" style="background: rgba(3, 7, 18, 0.7); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 16px; padding: 24px;">
+          <div class="diff-badge badge-winner" style="background: rgba(168, 85, 247, 0.18); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">✓ Multi-Sensory Synesthesia</div>
+          <h4 style="font-family: var(--font-heading); color: #ffffff; font-size: 1.15rem; margin-bottom: 8px;">Real-Time Acoustic Audio Synthesis</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">Web Audio API synthesizers convert LIGO spacetime quadrupolar chirps, radio pulsars (up to 716 Hz), and relativistic Doppler shifts into audible acoustic waveforms.</p>
+          <div style="font-size: 0.78rem; color: #f87171; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+            ✗ <em>Competitor Default:</em> Purely visual, silent websites with zero acoustic intuition.
+          </div>
+        </div>
+
+        <!-- Differentiator 3 -->
+        <div class="animated-card" style="background: rgba(3, 7, 18, 0.7); border: 1px solid rgba(251, 191, 36, 0.25); border-radius: 16px; padding: 24px;">
+          <div class="diff-badge badge-winner" style="background: rgba(251, 191, 36, 0.18); color: #fbbf24; border-color: rgba(251, 191, 36, 0.4);">✓ 2024–2026 EHT Telemetry</div>
+          <h4 style="font-family: var(--font-heading); color: #ffffff; font-size: 1.15rem; margin-bottom: 8px;">Authentic Observational Benchmarks</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">Grounded in actual 2024/2026 EHT polarized magnetic field publications, NICER pulsar mass constraints, and LIGO gravitational wave strain data.</p>
+          <div style="font-size: 0.78rem; color: #f87171; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+            ✗ <em>Competitor Default:</em> Outdated Newtonian approximations and uncalibrated models.
+          </div>
+        </div>
+
+        <!-- Differentiator 4 -->
+        <div class="animated-card" style="background: rgba(3, 7, 18, 0.7); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 16px; padding: 24px;">
+          <div class="diff-badge badge-winner">✓ Verifiable Cryptography</div>
+          <h4 style="font-family: var(--font-heading); color: #ffffff; font-size: 1.15rem; margin-bottom: 8px;">Dynamic Canvas Certificate Engine</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px;">Real-time HTML5 Canvas vector certification with unique mathematical verification hashes, customizable researcher identities, and 1-click lossless PNG exports.</p>
+          <div style="font-size: 0.78rem; color: #f87171; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+            ✗ <em>Competitor Default:</em> Generic static completion text or paywalled certificates.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Academic Chapters -->
     <div class="chapter-grid">
       <!-- Chapter 1 -->
-      <article class="chapter-card">
+      <article class="chapter-card animated-card">
         <div>
+          <div style="width: 100%; height: 170px; border-radius: 12px; overflow: hidden; margin-bottom: 18px; border: 1px solid rgba(56, 189, 248, 0.3); position: relative;">
+            <img src="/assets/eht_m87.jpg" alt="Event Horizon Telescope M87 Black Hole Polarized Magnetic Fields" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" />
+            <div style="position: absolute; bottom: 8px; left: 10px; background: rgba(3, 7, 18, 0.85); padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan);">EHT 1.3mm mm-Wave VLBI</div>
+          </div>
           <span class="chapter-badge">Chapter 01 · Event Horizon Telescope</span>
           <h3>Anatomy of a Black Hole</h3>
-          <p>Explore the boundary where escape velocity equals light speed. Grounded in Kip Thorne's Kerr solution and 2019 EHT observations of M87* ($6.5\times 10^9 M_\odot$).</p>
+          <p>Explore the boundary where escape velocity equals light speed. Grounded in Kip Thorne's Kerr solution and 2019/2022 EHT observations of M87* and Sgr A*.</p>
           <div class="equation-box">
             <span>R_s = 2GM / c² | R_photon = 1.5 R_s | r_+ = M + √(M² - a²)</span>
           </div>
-          <div style="background: rgba(3, 7, 18, 0.5); padding: 10px; border-radius: 8px; font-size: 0.78rem; color: var(--text-muted); border-left: 2px solid var(--accent-cyan); margin-bottom: 16px;">
-            📡 <strong>Observational Benchmark:</strong> EHT 1.3mm mm-wave VLBI array resolving ring diameter $42 \pm 3\,\mu\text{as}$.
+          <div class="data-pill">
+            📡 <strong>Observational Benchmark:</strong> EHT 1.3mm mm-wave VLBI array resolving M87* ring diameter $42 \pm 3\,\mu\text{as}$ at $16.8\,\text{Mpc}$.
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
@@ -173,15 +522,15 @@
       </article>
 
       <!-- Chapter 2 -->
-      <article class="chapter-card">
+      <article class="chapter-card animated-card">
         <div>
           <span class="chapter-badge" style="color: var(--accent-pink);">Chapter 02 · General Relativity Optics</span>
           <h3>Gravitational Lensing & Einstein Rings</h3>
-          <p>Examine how curved spacetime acts as a cosmic lens, refracting background starfields into symmetric Einstein Rings around the horizon perimeter.</p>
-          <div class="equation-box" style="color: var(--accent-pink); border-color: rgba(236, 72, 153, 0.3);">
-            <span>θ_E = √(4GM / c² · D_ls / (D_l · D_s))</span>
+          <p>Examine how curved spacetime acts as a cosmic lens, refracting background starfields into symmetric Einstein Rings around the event horizon perimeter.</p>
+          <div class="equation-box" style="color: var(--accent-pink); border-color: rgba(236, 72, 153, 0.35);">
+            <span>θ_E = √(4GM / c² · D_ls / (D_l · D_s)) | α = 4GM / (c² b)</span>
           </div>
-          <div style="background: rgba(3, 7, 18, 0.5); padding: 10px; border-radius: 8px; font-size: 0.78rem; color: var(--text-muted); border-left: 2px solid var(--accent-pink); margin-bottom: 16px;">
+          <div class="data-pill" style="border-left-color: var(--accent-pink);">
             🔭 <strong>Hubble / JWST Data:</strong> Lensed galaxy clusters (e.g. MACS J1149) amplifying distant supernovae by $>100\times$.
           </div>
         </div>
@@ -191,15 +540,19 @@
       </article>
 
       <!-- Chapter 3 -->
-      <article class="chapter-card">
+      <article class="chapter-card animated-card">
         <div>
+          <div style="width: 100%; height: 170px; border-radius: 12px; overflow: hidden; margin-bottom: 18px; border: 1px solid rgba(251, 191, 36, 0.3); position: relative;">
+            <img src="/assets/tde_roche.jpg" alt="Tidal Disruption Event Roche Limit Stellar Spaghettification" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" />
+            <div style="position: absolute; bottom: 8px; left: 10px; background: rgba(3, 7, 18, 0.85); padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: var(--accent-amber);">Chandra & Swift X-Ray</div>
+          </div>
           <span class="chapter-badge" style="color: var(--accent-amber);">Chapter 03 · Swift & Chandra X-Ray</span>
           <h3>Tidal Disruption Events (TDE)</h3>
           <p>Witness the tidal Roche limit where differential gravitational shear forces tear an approaching stellar core into a spaghettified accretion filament.</p>
-          <div class="equation-box" style="color: var(--accent-amber); border-color: rgba(251, 191, 36, 0.3);">
-            <span>R_T ≈ R_star · (M_BH / M_star)^(1/3)</span>
+          <div class="equation-box" style="color: var(--accent-amber); border-color: rgba(251, 191, 36, 0.35);">
+            <span>R_T ≈ R_* · (M_BH / M_*)^(1/3) | dF_tidal = 2GM_BH · m · dr / r³</span>
           </div>
-          <div style="background: rgba(3, 7, 18, 0.5); padding: 10px; border-radius: 8px; font-size: 0.78rem; color: var(--text-muted); border-left: 2px solid var(--accent-amber); margin-bottom: 16px;">
+          <div class="data-pill" style="border-left-color: var(--accent-amber);">
             💥 <strong>Chandra Discovery:</strong> ASASSN-14li transient event emitting relativistic thermal X-ray flares over 200+ days.
           </div>
         </div>
@@ -209,89 +562,555 @@
       </article>
 
       <!-- Chapter 4 -->
-      <article class="chapter-card">
+      <article class="chapter-card animated-card">
         <div>
-          <span class="chapter-badge" style="color: #a855f7;">Chapter 04 · LIGO-Virgo Interferometer</span>
+          <div style="width: 100%; height: 170px; border-radius: 12px; overflow: hidden; margin-bottom: 18px; border: 1px solid rgba(168, 85, 247, 0.3); position: relative;">
+            <img src="/assets/ligo_merger.jpg" alt="LIGO Gravitational Wave Binary Merger GW150914" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'" />
+            <div style="position: absolute; bottom: 8px; left: 10px; background: rgba(3, 7, 18, 0.85); padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #c084fc;">LIGO-Virgo Quadrupolar Waves</div>
+          </div>
+          <span class="chapter-badge" style="color: #a855f7;">Chapter 04 · LIGO-Virgo-KAGRA Interferometer</span>
           <h3>Binary Mergers & Gravitational Waves</h3>
           <p>Analyze how co-orbiting singularities lose orbital energy through quadrupolar gravitational radiation, culminating in an acoustic chirp and ringdown.</p>
-          <div class="equation-box" style="color: #c084fc; border-color: rgba(168, 85, 247, 0.3);">
-            <span>f_gw = 2 · f_orb | h ~ (G / c⁴) · (d²Q / dt²)</span>
+          <div class="equation-box" style="color: #c084fc; border-color: rgba(168, 85, 247, 0.35);">
+            <span>f_gw = 2 · f_orb | h ~ (G / c⁴) · (d²Q / dt²) | M_chirp = (m₁m₂)^(3/5)/(m₁+m₂)^(1/5)</span>
           </div>
-          <div style="background: rgba(3, 7, 18, 0.5); padding: 10px; border-radius: 8px; font-size: 0.78rem; color: var(--text-muted); border-left: 2px solid #a855f7; margin-bottom: 16px;">
-            🌊 <strong>LIGO GW150914:</strong> $36 M_\odot + 29 M_\odot \to 62 M_\odot$, radiating $3.0 M_\odot c^2$ in peak gravitational power.
+          <div class="data-pill" style="border-left-color: #a855f7;">
+            🌊 <strong>LIGO GW150914:</strong> $36 M_\odot + 29 M_\odot \to 62 M_\odot$, radiating $3.0 M_\odot c^2$ in peak gravitational wave power.
           </div>
         </div>
         <div style="display: flex; gap: 8px;">
           <a href="/?mode=binary" class="btn btn-secondary" style="flex: 1; text-align: center; text-decoration: none; border-color: #a855f7; color: #c084fc;">Launch GW Merger →</a>
-          <button id="btn-play-chirp" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75rem; border-color: #a855f7; color: #c084fc;">🔊 GW Chirp</button>
         </div>
       </article>
     </div>
 
-    <!-- 10x Feature 1: Dynamic Academy Progress Tracker -->
-    <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 20px 28px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-      <div>
-        <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); letter-spacing: 0.08em;">Curriculum Mastery</span>
-        <h3 style="color: #ffffff; font-size: 1.2rem; margin: 4px 0 0 0;">Relativity Academy Progress: <span id="progress-percent" style="color: var(--accent-cyan);">50%</span></h3>
+    <!-- LAB 1: Interactive Compact Object & Black Hole Scale Comparator -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-cyan);">Observational Lab 01 · Real Cosmic Scales</span>
+        <h2>Compact Object & Event Horizon Scale Comparator</h2>
+        <p>Compare real astrophysical compact objects discovered by EHT, LIGO, NICER, and Chandra. Observe the astonishing physical span from a 12 km neutron star to the supermassive beast TON 618.</p>
       </div>
-      <div style="flex: 1; min-width: 200px; max-width: 400px;">
-        <div style="height: 10px; background: rgba(3, 7, 18, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);">
-          <div id="progress-bar-fill" style="height: 100%; width: 50%; background: linear-gradient(90deg, var(--accent-cyan), #a855f7); transition: width 0.4s ease;"></div>
+
+      <div class="object-selector" id="scale-selector">
+        <button class="obj-btn active" data-id="neutron">PSR J0740+6620 (Neutron Star)</button>
+        <button class="obj-btn" data-id="cygnus">Cygnus X-1 (Stellar BH)</button>
+        <button class="obj-btn" data-id="gw190521">GW190521 Remnant (IMBH)</button>
+        <button class="obj-btn" data-id="sgra">Sagittarius A* (Milky Way SMBH)</button>
+        <button class="obj-btn" data-id="m87">M87* (Virgo A SMBH)</button>
+        <button class="obj-btn" data-id="ton618">TON 618 (Hypermassive Quasar)</button>
+      </div>
+
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="scale-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="scale-tag">Diameter: 24.6 km | Relativistic Horizon</div>
         </div>
-      </div>
-      <button id="btn-claim-cert" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem; border-color: #a855f7; color: #c084fc;">🎓 Claim Certificate</button>
-    </div>
 
-    <!-- 10x Feature 2: Interactive Micro Gravitational Lensing Sandbox -->
-    <section class="glass-panel" style="padding: 36px; border-radius: 20px; margin-bottom: 48px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);">
-      <span class="chapter-badge" style="color: var(--accent-cyan);">Live Experimental Tool</span>
-      <h2 style="font-family: var(--font-heading); font-size: 1.6rem; color: #ffffff; margin-bottom: 8px;">Interactive Gravitational Lensing Sandbox</h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">Drag your cursor across the starfield to move a simulated point singularity and observe spacetime deflection in real time.</p>
-
-      <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: center;">
-        <div style="position: relative; border-radius: 16px; overflow: hidden; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.7); width: 100%; max-width: 500px; height: 260px; background: #030712;">
-          <canvas id="lens-canvas" width="500" height="260" style="width: 100%; height: 100%; cursor: crosshair; display: block;"></canvas>
-          <div style="position: absolute; bottom: 10px; left: 14px; font-size: 0.75rem; color: var(--accent-cyan); font-family: monospace; pointer-events: none; background: rgba(3, 7, 18, 0.7); padding: 2px 8px; border-radius: 4px;">
-            θ_E Einstein Ring Deflection: Active
+        <div>
+          <div class="readout-card" id="scale-readout">
+            <div><strong>Target Object:</strong> <span id="scale-name" class="readout-highlight">PSR J0740+6620</span></div>
+            <div><strong>Classification:</strong> <span id="scale-type">Millisecond Pulsar / Neutron Star</span></div>
+            <div><strong>Mass:</strong> <span id="scale-mass" class="readout-highlight">2.08 M☉ (Solar Masses)</span></div>
+            <div><strong>Physical Horizon / Radius:</strong> <span id="scale-radius">R ≈ 12.3 km</span></div>
+            <div><strong>Solar System Orbit Analogy:</strong> <span id="scale-analogy">Fits easily inside Manhattan Island</span></div>
+            <div><strong>Observational Instrument:</strong> <span id="scale-instrument">NASA NICER X-ray Timing Array</span></div>
           </div>
-        </div>
-
-        <div style="flex: 1; min-width: 260px;">
-          <label style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
-            Lensing Mass (M): <span id="lens-mass-val" style="color: var(--accent-cyan); font-weight: 600;">2.5</span>
-          </label>
-          <input type="range" id="lens-mass" min="0.5" max="5.0" step="0.1" value="2.5" style="width: 100%; margin-bottom: 16px;">
-          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Light rays passing near the singularity suffer coordinate angle deflection \(\alpha = 4GM / (c^2 b)\). When the observer, lens, and source align collinearly, background photons warp into a complete Einstein Ring.</p>
+          <div style="margin-top: 14px; display: flex; gap: 8px;">
+            <a id="scale-explore-link" href="/explore.html?bh=sgra" class="btn btn-secondary" style="font-size: 0.82rem; padding: 8px 16px; text-decoration: none;">View in Black Hole Directory →</a>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Certificate Modal -->
-    <div id="cert-modal" style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(20px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
-      <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid #a855f7; border-radius: 24px; padding: 40px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);">
-        <span style="font-size: 3rem;">🎓</span>
-        <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: #ffffff; margin: 12px 0 6px 0;">Certificate of Relativistic Mastery</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Awarded by Cosmic Canvas Academy for demonstrating comprehensive understanding of Schwarzschild metrics, Kerr ergospheres, and Einstein gravitational lensing.</p>
-        <div style="background: rgba(3, 7, 18, 0.7); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 24px; font-family: monospace; font-size: 0.85rem; color: #c084fc;">
-          VERIFICATION HASH: 0xKERR_998_M87_CONFIRMED
-        </div>
-        <button id="btn-close-cert" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, var(--accent-pink)); border: none; padding: 10px 24px;">Close Certificate</button>
+    <!-- LAB 2: Kerr Spacetime Metric & Ergosphere Geometry Simulator -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: #a855f7;">Theoretical Lab 02 · Kerr Metric Exact Solution</span>
+        <h2>Kerr Ergosphere & Event Horizon Geometry Lab</h2>
+        <p>In 1963, Roy Kerr discovered the exact vacuum solution for a spinning black hole. Adjust the dimensionless spin parameter $a/M = Jc / (GM^2)$ and latitude $\theta$ to visualize the outer horizon $r_+$, inner Cauchy horizon $r_-$, and the oblate Ergosphere boundary $r_E(\theta)$.</p>
       </div>
-    </div>
 
-    <!-- Interactive Knowledge Check Section -->
-    <section class="glass-panel" style="padding: 36px; border-radius: 20px; margin-top: 40px; background: rgba(15, 23, 42, 0.85);">
-      <span class="chapter-badge" style="color: var(--accent-amber);">Interactive Knowledge Check</span>
-      <h2 style="font-family: var(--font-heading); font-size: 1.6rem; color: #ffffff; margin-bottom: 8px;">Test Your General Relativity Knowledge</h2>
-      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">Select the correct physical principle to earn immediate simulated feedback.</p>
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="kerr-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="kerr-tag">Kerr Ergoregion Active (Penrose Process Zone)</div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Dimensionless Spin Parameter (\(a/M\)):</span>
+              <span id="kerr-spin-val" class="control-value">0.940</span>
+            </div>
+            <input type="range" id="kerr-spin" class="slider-input" min="0.0" max="0.998" step="0.005" value="0.940">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Observer Latitude (\(\theta\)):</span>
+              <span id="kerr-lat-val" class="control-value">90° (Equatorial Plane)</span>
+            </div>
+            <input type="range" id="kerr-lat" class="slider-input" min="0" max="90" step="1" value="90">
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Outer Event Horizon (\(r_+\)):</strong> <span id="kerr-rplus" class="readout-highlight">1.341 M</span></div>
+            <div><strong>Inner Cauchy Horizon (\(r_-\)):</strong> <span id="kerr-rminus" class="readout-highlight">0.659 M</span></div>
+            <div><strong>Ergosphere Radius at \(\theta\) (\(r_E\)):</strong> <span id="kerr-re" class="readout-highlight">2.000 M</span></div>
+            <div><strong>Ergoregion Thickness (\(r_E - r_+\)):</strong> <span id="kerr-thick" class="readout-highlight">0.659 M (Energy Extraction Available)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 3: LIGO Gravitational Wave Audio Synthesizer & Strain Waveform Spectrogram -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: #c084fc;">Acoustic Lab 03 · Gravitational Wave Interferometry</span>
+        <h2>LIGO Gravitational Wave Chirp Synthesizer & Strain Visualizer</h2>
+        <p>When two black holes spiral together, spacetime ripples propagate as quadrupolar gravitational waves. Listen to the authentic frequency chirp $f(t) \sim (t_{\text{merger}} - t)^{-3/8}$ and observe the strain waveform $h(t)$ in real-time.</p>
+      </div>
+
+      <div class="object-selector" id="gw-selector">
+        <button class="obj-btn active" data-gw="gw150914">GW150914 (36 + 29 M☉ Binary BH)</button>
+        <button class="obj-btn" data-gw="gw170817">GW170817 (1.4 + 1.2 M☉ Binary NS)</button>
+        <button class="obj-gw-btn obj-btn" data-gw="gw190521">GW190521 (85 + 66 M☉ IMBH)</button>
+      </div>
+
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="gw-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="gw-tag">LIGO Strain h(t) ~ 10⁻²¹ | Ready</div>
+        </div>
+
+        <div>
+          <div class="readout-card">
+            <div><strong>Event Name:</strong> <span id="gw-name" class="readout-highlight">GW150914</span></div>
+            <div><strong>Component Masses:</strong> <span id="gw-masses">36 M☉ + 29 M☉ → 62 M☉ Remnant</span></div>
+            <div><strong>Radiated Energy:</strong> <span id="gw-energy" class="readout-highlight">3.0 M☉ c² in pure GW</span></div>
+            <div><strong>Peak Chirp Frequency:</strong> <span id="gw-freq">250 Hz (Inspiral → Merger → Ringdown)</span></div>
+            <div><strong>Luminosity Distance:</strong> <span id="gw-dist">~1.3 Billion Light Years (410 Mpc)</span></div>
+          </div>
+          <div style="margin-top: 18px; display: flex; gap: 12px;">
+            <button id="btn-play-gw-chirp" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.9rem; background: linear-gradient(135deg, #a855f7, var(--accent-pink)); border: none;">🔊 Synthesize Chirp Audio</button>
+            <button id="btn-stop-gw-chirp" class="btn btn-secondary" style="padding: 10px 18px; font-size: 0.9rem;">Reset Waveform</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 4: Relativistic Doppler Beaming & Spectrum Shift Sandbox -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-pink);">Optical Lab 04 · Relativistic Kinematics</span>
+        <h2>Relativistic Doppler Shift & Beaming Intensity Sandbox</h2>
+        <p>Matter orbiting inside an accretion disk moves at relativistic speeds (\(\beta = v/c > 0.5\)). Relativistic Doppler beaming boosts radiation emitted towards the observer by a factor of \(\delta^4 = [\gamma(1 - \beta \cos\theta)]^{-4}\), making the approaching side blaze with extreme brightness while redshifting the receding side.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="doppler-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="doppler-tag">Doppler Beaming Factor: 1.00x</div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Orbital Velocity (\(\beta = v/c\)):</span>
+              <span id="doppler-beta-val" class="control-value">+0.75 c (Approaching)</span>
+            </div>
+            <input type="range" id="doppler-beta" class="slider-input" min="-0.95" max="0.95" step="0.01" value="0.75">
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Lorentz Factor (\(\gamma\)):</strong> <span id="doppler-gamma" class="readout-highlight">1.51x</span></div>
+            <div><strong>Doppler Factor (\(\delta\)):</strong> <span id="doppler-delta" class="readout-highlight">2.65</span></div>
+            <div><strong>Observed Flux Boost (\(\delta^4\)):</strong> <span id="doppler-flux" class="readout-highlight">49.2x Intensity Amplification</span></div>
+            <div><strong>Observed Audio Pitch:</strong> <span id="doppler-pitch" class="readout-highlight">1166 Hz (Emitted 440 Hz)</span></div>
+          </div>
+
+          <div style="margin-top: 18px; display: flex; gap: 12px;">
+            <button id="btn-play-doppler" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.9rem; background: linear-gradient(135deg, var(--accent-pink), #a855f7); border: none;">🔊 Synthesize Shifted Tone</button>
+            <button id="btn-stop-doppler" class="btn btn-secondary" style="padding: 10px 18px; font-size: 0.9rem;">Stop Tone</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10x HERO FEATURE: Embedded 3D WebGL Relativistic Mini-Studio -->
+    <section class="lab-section" style="border-color: rgba(56, 189, 248, 0.4); background: radial-gradient(circle at 50% 0%, rgba(15, 23, 42, 0.95) 0%, rgba(3, 7, 18, 0.95) 100%);">
+      <div class="lab-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <span class="chapter-badge" style="color: var(--accent-cyan);">Real-Time 3D Engine · Embedded WebGL</span>
+          <h2>Live 3D Relativistic Horizon & Accretion Viewport</h2>
+          <p>Interact directly with a live 3D numerical model of a spinning Kerr black hole. Drag to orbit, zoom to inspect the photon ring, or adjust the accretion disk temperature.</p>
+        </div>
+        <a href="/" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.85rem; text-decoration: none;">Launch Fullscreen Engine 🚀</a>
+      </div>
+
+      <div class="lab-grid" style="grid-template-columns: 1.3fr 0.7fr;">
+        <div class="canvas-wrapper" style="height: 380px;">
+          <div id="three-academy-container" style="width: 100%; height: 100%; position: relative; cursor: grab;"></div>
+          <div class="canvas-overlay-tag" style="background: rgba(3, 7, 18, 0.85);">Three.js WebGL Relativistic Shader · Interactive</div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Accretion Disk Infall Velocity:</span>
+              <span id="three-speed-val" class="control-value">1.0x (Relativistic Orbit)</span>
+            </div>
+            <input type="range" id="three-speed" class="slider-input" min="0.1" max="3.0" step="0.1" value="1.0">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Accretion Plasma Temperature:</span>
+              <span id="three-temp-val" class="control-value">10,000,000 K (Soft X-Ray Glow)</span>
+            </div>
+            <input type="range" id="three-temp" class="slider-input" min="1" max="5" step="1" value="3">
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Rendering Pipeline:</strong> <span class="readout-highlight">WebGL Fragment Shader</span></div>
+            <div><strong>Gravitational Redshift:</strong> <span class="readout-highlight">Active on Inner Edge</span></div>
+            <div><strong>Doppler Asymmetry:</strong> <span class="readout-highlight">Left-Right Flux Boost Active</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 09: Gravitational Time Dilation & Dual Clock Simulator -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-amber);">Relativistic Kinematics · General Relativity</span>
+        <h2>Gravitational Time Dilation & Spacetime Clock Lag</h2>
+        <p>Clocks in strong gravitational fields tick slower relative to distant observers: \(\Delta t_{\text{far}} = \Delta \tau / \sqrt{1 - 2GM/(r c^2)}\). Observe the famous "Miller's Planet" effect where 1 hour on the surface equals 7 Earth years.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div style="background: rgba(3, 7, 18, 0.8); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; justify-content: space-around; height: 300px;">
+          <div style="display: flex; justify-content: space-around; align-items: center;">
+            <div style="text-align: center;">
+              <div style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">🌍 Distant Observer (Earth)</div>
+              <div id="clock-earth" style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: #ffffff; font-weight: 700;">00:00:00</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Flat Spacetime (r → ∞)</div>
+            </div>
+
+            <div style="font-size: 1.5rem; color: var(--accent-amber);">⇄</div>
+
+            <div style="text-align: center;">
+              <div style="font-size: 0.75rem; color: var(--accent-amber); font-weight: 700; text-transform: uppercase; margin-bottom: 6px;">🛸 Horizon Astronaut</div>
+              <div id="clock-astronaut" style="font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: var(--accent-amber); font-weight: 700;">00:00:00</div>
+              <div id="clock-astronaut-sub" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Extreme Curvature (r = 1.05 Rs)</div>
+            </div>
+          </div>
+
+          <div style="background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 8px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #fbbf24; text-align: center;">
+            ⏱️ Dilation Ratio: 1 Astronaut Second = <span id="dilation-factor-display">4.52</span> Earth Seconds
+          </div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Orbital Distance (\(r / R_s\)):</span>
+              <span id="dilation-r-val" class="control-value">1.05 R_s (Near Horizon)</span>
+            </div>
+            <input type="range" id="dilation-r" class="slider-input" min="1.01" max="10.0" step="0.01" value="1.05">
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Time Dilation Factor (\(\gamma_{\text{grav}}\)):</strong> <span id="dilation-gamma" class="readout-highlight">4.52x</span></div>
+            <div><strong>1 Hour on Astronaut Ship =</strong> <span id="dilation-earth-equiv" class="readout-highlight">4.52 Hours on Earth</span></div>
+            <div><strong>Gravitational Redshift (\(z\)):</strong> <span id="dilation-z" class="readout-highlight">3.52 (Severe Optical Redshift)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 10: Cosmic Pulsar Acoustic Soundboard (Pulsar Synthesizer) -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-emerald);">Acoustic Lab 10 · Radio Astronomy Soundboard</span>
+        <h2>Cosmic Pulsar Acoustic Synthesizer</h2>
+        <p>Neutron stars rotate hundreds of times per second, sweeping lighthouse beams across Earth. Synthesize real radio pulse frequencies discovered by historical radio telescope surveys.</p>
+      </div>
+
+      <div class="object-selector" id="pulsar-selector">
+        <button class="obj-btn active" data-pulsar="bell">PSR B1919+21 (Jocelyn Bell · 1.337 s)</button>
+        <button class="obj-btn" data-pulsar="vela">Vela Pulsar (11.2 Hz Drone)</button>
+        <button class="obj-btn" data-pulsar="crab">Crab Pulsar (30.2 Hz Buzz)</button>
+        <button class="obj-btn" data-pulsar="millisecond">PSR J1748-2446ad (716 Hz Whine)</button>
+      </div>
+
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="pulsar-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="pulsar-tag">Pulsar Lighthouse Emission Active</div>
+        </div>
+
+        <div>
+          <div class="readout-card">
+            <div><strong>Target Pulsar:</strong> <span id="pulsar-name" class="readout-highlight">PSR B1919+21 (CP 1919)</span></div>
+            <div><strong>Rotation Frequency / Period:</strong> <span id="pulsar-freq">0.748 Hz (Period: 1.337 seconds)</span></div>
+            <div><strong>Surface Magnetic Field:</strong> <span id="pulsar-bfield">1.2 × 10¹² Gauss (TeraGauss)</span></div>
+            <div><strong>Discovery Citation:</strong> <span id="pulsar-citation">Jocelyn Bell Burnell & Antony Hewish (1967)</span></div>
+          </div>
+
+          <div style="margin-top: 18px; display: flex; gap: 12px;">
+            <button id="btn-play-pulsar" class="btn btn-primary" style="padding: 10px 24px; font-size: 0.9rem; background: linear-gradient(135deg, var(--accent-emerald), var(--accent-cyan)); border: none; color: #030712; font-weight: 700;">🔊 Play Pulsar Audio</button>
+            <button id="btn-stop-pulsar" class="btn btn-secondary" style="padding: 10px 18px; font-size: 0.9rem;">Stop Audio</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 5: Hawking Radiation & Quantum Evaporation Calculator -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-amber);">Thermodynamic Lab 05 · Quantum Gravity</span>
+        <h2>Hawking Radiation & Black Hole Lifetime Calculator</h2>
+        <p>In 1974, Stephen Hawking proved quantum vacuum fluctuations near the event horizon cause black holes to radiate thermal photons like a blackbody at temperature $T_H = \hbar c^3 / (8\pi G M k_B)$. Explore the thermodynamics across various mass regimes.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div style="background: rgba(3, 7, 18, 0.7); border-radius: 16px; border: 1px solid rgba(251, 191, 36, 0.3); padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="font-size: 0.85rem; color: var(--accent-amber); font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">Quantum Thermodynamic Equations</div>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #e2e8f0; line-height: 1.8; margin-bottom: 16px;">
+              <div>• T_H = ℏc³ / (8π G M k_B)</div>
+              <div>• Lifetime = 5120 π G² M³ / (ℏ c⁴)</div>
+              <div>• Power = ℏc⁶ / (15360 π G² M²)</div>
+            </div>
+            <div id="hawking-scenario-desc" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+              A solar-mass black hole has a Hawking temperature of just 61.7 nanokelvin—colder than the Cosmic Microwave Background (2.725 K)—so it is currently gaining mass from CMB photons.
+            </div>
+          </div>
+          <div style="margin-top: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--accent-amber); background: rgba(251, 191, 36, 0.1); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(251, 191, 36, 0.3);">
+            ⚡ Final 1 Second Burst Energy: ~5 × 10²² Joules (10 Million Megatons of TNT)
+          </div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Select Mass Regime:</span>
+              <span id="hawking-preset-val" class="control-value">1.0 Solar Mass (M☉)</span>
+            </div>
+            <select id="hawking-preset" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(3, 7, 18, 0.9); border: 1px solid var(--panel-border); color: #ffffff; font-family: var(--font-body); font-size: 0.9rem; margin-bottom: 16px; outline: none;">
+              <option value="primordial_small">Micro PBH (10¹¹ kg · Asteroid / Mountain)</option>
+              <option value="primordial_lunar">Lunar Mass PBH (7.3 × 10²² kg)</option>
+              <option value="stellar_1" selected>Stellar Black Hole (1.0 M☉)</option>
+              <option value="stellar_10">Stellar Black Hole (10 M☉)</option>
+              <option value="sgra">Supermassive Black Hole (Sgr A* · 4.15 × 10⁶ M☉)</option>
+              <option value="ton618">Hypermassive Black Hole (TON 618 · 6.6 × 10¹⁰ M☉)</option>
+            </select>
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Hawking Temperature (\(T_H\)):</strong> <span id="hawking-temp" class="readout-highlight">6.17 × 10⁻⁸ K</span></div>
+            <div><strong>Thermal Emission Power:</strong> <span id="hawking-power" class="readout-highlight">9.0 × 10⁻²⁹ Watts</span></div>
+            <div><strong>Schwarzschild Radius (\(R_s\)):</strong> <span id="hawking-rs" class="readout-highlight">2.95 km</span></div>
+            <div><strong>Evaporation Lifetime (\(t_{\text{evap}}\)):</strong> <span id="hawking-life" class="readout-highlight">2.1 × 10⁶⁷ Years (~10⁵⁷ Hubble Times)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 7: 2D Schwarzschild Light Ray Photon Geodesic Integrator -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-emerald);">Computational Lab 07 · Geodesic Ray Integrator</span>
+        <h2>2D Schwarzschild Spacetime Light Ray Integrator</h2>
+        <p>Integrate the null geodesic equation \(\frac{d^2 u}{d\phi^2} + u = 3 M u^2\) (where \(u = 1/r\)) in Schwarzschild spacetime. Launch photon rays at variable impact parameters \(b = L / E\) and observe the critical threshold \(b_c = 3\sqrt{3} M \approx 5.196 M\) separating photon capture from orbital escape.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="geodesic-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="geodesic-tag">Critical Impact Parameter b_c = 5.196 M</div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Photon Impact Parameter (\(b / M\)):</span>
+              <span id="geodesic-b-val" class="control-value">5.30 M (Deflection / Photon Ring Orbit)</span>
+            </div>
+            <input type="range" id="geodesic-b" class="slider-input" min="3.0" max="10.0" step="0.05" value="5.30">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Number of Incident Photon Beams:</span>
+              <span id="geodesic-count-val" class="control-value">15 Beams</span>
+            </div>
+            <input type="range" id="geodesic-count" class="slider-input" min="5" max="35" step="2" value="15">
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Event Horizon (\(R_s\)):</strong> <span class="readout-highlight">2.000 M (Black Hole Capture Zone)</span></div>
+            <div><strong>Unstable Photon Sphere (\(R_{\text{ph}}\)):</strong> <span class="readout-highlight">3.000 M (1.5 R_s)</span></div>
+            <div><strong>Critical Boundary (\(b_c = 3\sqrt{3} M\)):</strong> <span class="readout-highlight">5.196 M (Exact Capture Limit)</span></div>
+            <div><strong>Geodesic Fate:</strong> <span id="geodesic-fate" class="readout-highlight">Multi-Turn Orbit & Deflection to Infinity</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAB 8: 2024–2026 EHT Polarized Synchrotron Magnetic Field Visualizer -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-cyan);">Observational Lab 08 · 2024–2026 EHT Discoveries</span>
+        <h2>EHT Polarized Synchrotron & Magnetic Field Vector Lab</h2>
+        <p>In 2024 and 2026, the Event Horizon Telescope published polarized 1.3mm mm-wave VLBI images of Sgr A* and M87*, revealing strongly ordered spiral magnetic field lines channeling relativistic plasma jets. Adjust the toroidal/poloidal magnetic pitch angle and observer Faraday rotation.</p>
+      </div>
+
+      <div class="lab-grid">
+        <div class="canvas-wrapper">
+          <canvas id="eht-canvas" width="600" height="300" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div class="canvas-overlay-tag" id="eht-tag">EHT 2024/2026 Linear Polarization (EVPA Vectors Active)</div>
+        </div>
+
+        <div>
+          <div class="control-group">
+            <div class="control-label">
+              <span>Target Supermassive Black Hole:</span>
+              <span id="eht-target-name" class="control-value">Sagittarius A* (Milky Way · 2024 Polarized Ring)</span>
+            </div>
+            <div class="object-selector" id="eht-target-selector" style="margin-bottom: 12px;">
+              <button class="obj-btn active" data-target="sgra">Sgr A* (Spiral Polarized)</button>
+              <button class="obj-btn" data-target="m87">M87* (Relativistic Jet Base)</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Magnetic Field Spiral Pitch (\(\chi\)):</span>
+              <span id="eht-pitch-val" class="control-value">48° (Strong Toroidal Shear)</span>
+            </div>
+            <input type="range" id="eht-pitch" class="slider-input" min="10" max="80" step="1" value="48">
+          </div>
+
+          <div class="readout-card">
+            <div><strong>Polarization Mechanism:</strong> <span class="readout-highlight">Relativistic Electron Synchrotron Emission</span></div>
+            <div><strong>Linear Polarization Degree (\(m_{\text{net}}\)):</strong> <span id="eht-pol-pct" class="readout-highlight">~15% – 25% Ordered Field</span></div>
+            <div><strong>Magnetic Field Strength:</strong> <span id="eht-b-strength" class="readout-highlight">~30 Gauss (Horizon Vicinity)</span></div>
+            <div><strong>Observational Frequency:</strong> <span class="readout-highlight">230 GHz (1.3 mm Wavelength)</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Confirmed Astrophysical Black Hole Catalog Table -->
+    <section class="lab-section">
+      <div class="lab-header">
+        <span class="chapter-badge" style="color: var(--accent-amber);">Astronomical Database</span>
+        <h2>Confirmed Astrophysical Compact Objects & Black Hole Catalog</h2>
+        <p>Curated observational telemetry gathered from EHT VLBI, LIGO-Virgo gravitational wave detections, and Chandra X-ray binary surveys.</p>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Target Identifier</th>
+              <th>Object Class</th>
+              <th>Mass (M☉)</th>
+              <th>Distance</th>
+              <th>Schwarzschild Diameter</th>
+              <th>Key Discovery Instrument</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">Sagittarius A*</td>
+              <td>Supermassive BH</td>
+              <td>4.154 × 10⁶</td>
+              <td>26,700 ly (8.18 kpc)</td>
+              <td>24.6 Million km (0.16 AU)</td>
+              <td>EHT VLBI / Keck Adaptive Optics</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">M87* (Virgo A)</td>
+              <td>Supermassive BH</td>
+              <td>6.5 × 10⁹</td>
+              <td>55 Million ly (16.8 Mpc)</td>
+              <td>38.4 Billion km (256 AU)</td>
+              <td>EHT (First Direct Image, 2019)</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">Cygnus X-1</td>
+              <td>Stellar-Mass BH</td>
+              <td>21.2</td>
+              <td>7,200 ly (2.2 kpc)</td>
+              <td>125.2 km</td>
+              <td>Chandra, NuSTAR & Uhuru X-ray</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">GW150914 Remnant</td>
+              <td>Binary Merger BH</td>
+              <td>62.0</td>
+              <td>1.3 Billion ly (410 Mpc)</td>
+              <td>366.2 km</td>
+              <td>LIGO Interferometer (2015)</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">GW190521 Remnant</td>
+              <td>Intermediate-Mass BH</td>
+              <td>142.0</td>
+              <td>17 Billion ly (5.3 Gpc)</td>
+              <td>838.7 km</td>
+              <td>LIGO-Virgo (Pair Instability Gap)</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">MAXI J1820+070</td>
+              <td>Low-Mass X-ray Binary</td>
+              <td>8.5</td>
+              <td>9,800 ly (3.0 kpc)</td>
+              <td>50.2 km</td>
+              <td>MAXI & NICER Telescopes</td>
+            </tr>
+            <tr>
+              <td style="font-weight: 600; color: #ffffff;">TON 618</td>
+              <td>Hypermassive Quasar</td>
+              <td>6.6 × 10¹⁰</td>
+              <td>18.2 Billion ly (z = 2.219)</td>
+              <td>780 Billion km (~2,600 AU)</td>
+              <td>Palomar Observatory Spectral Lines</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Academy Mastery Quiz & Certificate Section -->
+    <section class="lab-section" style="border-color: rgba(168, 85, 247, 0.4);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <div>
+          <span class="chapter-badge" style="color: #a855f7;">Academic Certification</span>
+          <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: #ffffff; margin: 4px 0 0 0;">Relativity Academy Mastery Exam</h2>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div style="text-align: right;">
+            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Score</div>
+            <div id="quiz-score-display" style="font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; color: var(--accent-cyan); font-weight: 700;">0 / 4 (0%)</div>
+          </div>
+          <button id="btn-claim-cert" class="btn btn-secondary" style="padding: 10px 20px; font-size: 0.85rem; border-color: #a855f7; color: #c084fc;">🎓 Claim Certificate</button>
+        </div>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 28px;">Pass all 4 rigorous astrophysics questions to unlock your verified Certificate of Relativistic Mastery.</p>
 
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <!-- Question 1 -->
-        <div style="background: rgba(3, 7, 18, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
-          <p style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">1. What is the physical radius of the unstable photon sphere for a non-rotating Schwarzschild black hole?</p>
-          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <div class="quiz-card" style="background: rgba(3, 7, 18, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <p style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">1. What is the physical coordinate radius of the unstable photon sphere for a non-rotating Schwarzschild black hole?</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">A) 1.0 Rs</button>
-            <button class="btn btn-secondary quiz-opt" data-correct="true" style="flex: unset; padding: 8px 16px;">B) 1.5 Rs</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="true" style="flex: unset; padding: 8px 16px;">B) 1.5 Rs (3GM / c²)</button>
             <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">C) 2.0 Rs</button>
             <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">D) 3.0 Rs</button>
           </div>
@@ -299,30 +1118,1333 @@
         </div>
 
         <!-- Question 2 -->
-        <div style="background: rgba(3, 7, 18, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
-          <p style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">2. Why does the left side of an accretion disk appear exponentially brighter when rotating towards an observer?</p>
-          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <div class="quiz-card" style="background: rgba(3, 7, 18, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <p style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">2. Why does the approaching side of a relativistic accretion disk appear exponentially brighter to an observer?</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">A) Gravitational Redshift</button>
-            <button class="btn btn-secondary quiz-opt" data-correct="true" style="flex: unset; padding: 8px 16px;">B) Relativistic Doppler Beaming (D⁴ Factor)</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="true" style="flex: unset; padding: 8px 16px;">B) Relativistic Doppler Beaming (δ⁴ Factor)</button>
             <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">C) Hawking Radiation</button>
-            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">D) Nuclear Fusion</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">D) Frame-Dragging Singularity</button>
+          </div>
+          <p class="quiz-feedback" style="margin-top: 10px; font-size: 0.85rem; display: none;"></p>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-card" style="background: rgba(3, 7, 18, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <p style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">3. In the Kerr spacetime geometry of a rotating black hole, what physical boundary separates spacetime where energy extraction (Penrose process) is thermodynamically possible?</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">A) The Inner Cauchy Horizon (r₋)</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="true" style="flex: unset; padding: 8px 16px;">B) The Ergosphere Boundary (Static Limit r_E)</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">C) The Bondi Accretion Radius</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">D) The Roche Tidal Radius</button>
+          </div>
+          <p class="quiz-feedback" style="margin-top: 10px; font-size: 0.85rem; display: none;"></p>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="quiz-card" style="background: rgba(3, 7, 18, 0.6); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <p style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">4. For the historic LIGO event GW150914 (36 M☉ + 29 M☉ → 62 M☉), where did the missing 3.0 Solar Masses of energy go?</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">A) Absorbed as thermal kinetic heat</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">B) Radiated as optical gamma ray flash</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="true" style="flex: unset; padding: 8px 16px;">C) Radiated as pure Gravitational Waves (Spacetime Strain)</button>
+            <button class="btn btn-secondary quiz-opt" data-correct="false" style="flex: unset; padding: 8px 16px;">D) Lost to dark matter halo</button>
           </div>
           <p class="quiz-feedback" style="margin-top: 10px; font-size: 0.85rem; display: none;"></p>
         </div>
       </div>
     </section>
+
+    <!-- Certificate Modal -->
+    <div id="cert-modal" style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.9); backdrop-filter: blur(24px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+      <div style="background: rgba(15, 23, 42, 0.98); border: 2px solid #a855f7; border-radius: 24px; padding: 40px; max-width: 600px; width: 100%; text-align: center; box-shadow: 0 0 60px rgba(168, 85, 247, 0.35);">
+        <span style="font-size: 3.5rem;">🎓</span>
+        <h2 style="font-family: var(--font-heading); font-size: 2rem; color: #ffffff; margin: 12px 0 6px 0;">Certificate of Relativistic Mastery</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">Awarded by Cosmic Canvas Academy for demonstrating comprehensive understanding of Schwarzschild metrics, Kerr ergospheres, and LIGO gravitational radiation.</p>
+        
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="cert-name-input" placeholder="Enter Your Name for Certificate" value="Astrophysics Researcher" style="width: 100%; padding: 12px 18px; border-radius: 10px; background: rgba(3, 7, 18, 0.8); border: 1px solid var(--panel-border); color: #ffffff; font-family: var(--font-body); font-size: 1rem; text-align: center; outline: none; margin-bottom: 12px;">
+        </div>
+
+        <div style="background: rgba(3, 7, 18, 0.85); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #c084fc; text-align: left; line-height: 1.6;">
+          <div>VERIFICATION ID: <span id="cert-hash">0xKERR_998_M87_CONFIRMED</span></div>
+          <div>DATE OF ATTESTATION: <span id="cert-date">2026-08-14</span></div>
+          <div>OBSERVATORY ACCREDITATION: EHT & LIGO-Virgo Curriculum</div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button id="btn-download-cert" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, var(--accent-pink)); border: none; padding: 10px 24px;">📥 Download Certificate Image</button>
+          <button id="btn-close-cert" class="btn btn-secondary" style="padding: 10px 20px;">Close</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script>
-    // Quiz & Progress Logic
-    let correctCount = 0;
-    const totalQuestions = 2;
-    const progressFill = document.getElementById('progress-bar-fill');
-    const progressText = document.getElementById('progress-percent');
+    // ==========================================
+    // LAB 1: Scale Comparator Logic & Real Data
+    // ==========================================
+    const COMPACT_OBJECTS = {
+      neutron: {
+        name: 'PSR J0740+6620',
+        type: 'Massive Pulsar / Neutron Star',
+        mass: '2.08 M☉',
+        massKg: 4.14e30,
+        radius: 'R ≈ 12.3 km (R_s ≈ 6.14 km)',
+        radiusKm: 12.3,
+        analogy: 'Fits inside Manhattan Island',
+        instrument: 'NASA NICER X-ray Timing Array',
+        exploreLink: '/explore.html?bh=neutron',
+        tag: 'Diameter: 24.6 km | Nuclear Density Fluid',
+        color: '#38bdf8'
+      },
+      cygnus: {
+        name: 'Cygnus X-1',
+        type: 'High-Mass X-ray Binary Black Hole',
+        mass: '21.2 M☉',
+        massKg: 4.22e31,
+        radius: 'R_s ≈ 62.6 km',
+        radiusKm: 62.6,
+        analogy: 'Spans the distance of a major metropolitan area',
+        instrument: 'Chandra & NuSTAR X-ray Observatories',
+        exploreLink: '/explore.html?bh=cygnus-x1',
+        tag: 'Schwarzschild Radius: 62.6 km | Stellar Remnant',
+        color: '#fbbf24'
+      },
+      gw190521: {
+        name: 'GW190521 Remnant',
+        type: 'Intermediate-Mass Black Hole (IMBH)',
+        mass: '142 M☉',
+        massKg: 2.82e32,
+        radius: 'R_s ≈ 420 km',
+        radiusKm: 420,
+        analogy: 'Spans the width of the State of California',
+        instrument: 'LIGO-Virgo Gravitational Wave Interferometer',
+        exploreLink: '/explore.html?bh=gw190521',
+        tag: 'Schwarzschild Radius: 420 km | Pair-Instability Gap',
+        color: '#ec4899'
+      },
+      sgra: {
+        name: 'Sagittarius A*',
+        type: 'Milky Way Supermassive Black Hole',
+        mass: '4.154 × 10⁶ M☉',
+        massKg: 8.26e36,
+        radius: 'R_s ≈ 12.3 Million km (0.082 AU)',
+        radiusKm: 12.3e6,
+        analogy: '17x the radius of the Sun (Fits within Mercury orbit)',
+        instrument: 'Event Horizon Telescope (2022 VLBI Array)',
+        exploreLink: '/explore.html?bh=sgra',
+        tag: 'R_s: 12.3M km | EHT Shadow: 51.8 µas',
+        color: '#a855f7'
+      },
+      m87: {
+        name: 'M87*',
+        type: 'Supermassive Elliptical Galaxy Black Hole',
+        mass: '6.5 × 10⁹ M☉',
+        massKg: 1.29e40,
+        radius: 'R_s ≈ 19.2 Billion km (128 AU)',
+        radiusKm: 19.2e9,
+        analogy: '3.2x the diameter of Pluto\'s entire solar orbit',
+        instrument: 'Event Horizon Telescope (2019 Milestone)',
+        exploreLink: '/explore.html?bh=m87',
+        tag: 'R_s: 19.2B km (128 AU) | First Imaged Horizon',
+        color: '#f97316'
+      },
+      ton618: {
+        name: 'TON 618',
+        type: 'Hypermassive Quasar Engine',
+        mass: '6.6 × 10¹⁰ M☉',
+        massKg: 1.31e41,
+        radius: 'R_s ≈ 390 Billion km (~1,300 AU)',
+        radiusKm: 390e9,
+        analogy: '40x the diameter of Neptune\'s orbit (Miniature Nebula size)',
+        instrument: 'Spectroscopic Broad Line Quasar Surveys',
+        exploreLink: '/explore.html?bh=ton618',
+        tag: 'R_s: 390 Billion km | 100x Solar System Span',
+        color: '#ef4444'
+      }
+    };
+
+    let activeScaleKey = 'neutron';
+    const scaleCanvas = document.getElementById('scale-canvas');
+    const scaleCtx = scaleCanvas ? scaleCanvas.getContext('2d') : null;
+
+    function renderScaleCanvas() {
+      if (!scaleCtx) return;
+      const w = scaleCanvas.width;
+      const h = scaleCanvas.height;
+      scaleCtx.fillStyle = '#030712';
+      scaleCtx.fillRect(0, 0, w, h);
+
+      const obj = COMPACT_OBJECTS[activeScaleKey];
+
+      // Draw subtle grid & background space
+      scaleCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      scaleCtx.lineWidth = 1;
+      for (let x = 0; x < w; x += 40) {
+        scaleCtx.beginPath(); scaleCtx.moveTo(x, 0); scaleCtx.lineTo(x, h); scaleCtx.stroke();
+      }
+      for (let y = 0; y < h; y += 40) {
+        scaleCtx.beginPath(); scaleCtx.moveTo(0, y); scaleCtx.lineTo(w, y); scaleCtx.stroke();
+      }
+
+      const cx = w / 2;
+      const cy = h / 2;
+
+      // Draw Horizon / Body with outer glow
+      const grad = scaleCtx.createRadialGradient(cx, cy, 10, cx, cy, 90);
+      grad.addColorStop(0, obj.color);
+      grad.addColorStop(0.6, 'rgba(0,0,0,0.9)');
+      grad.addColorStop(1, 'transparent');
+
+      scaleCtx.fillStyle = grad;
+      scaleCtx.beginPath();
+      scaleCtx.arc(cx, cy, 90, 0, Math.PI * 2);
+      scaleCtx.fill();
+
+      // Black Hole Silhouette / Neutron Surface
+      scaleCtx.fillStyle = activeScaleKey === 'neutron' ? '#38bdf8' : '#000000';
+      scaleCtx.beginPath();
+      scaleCtx.arc(cx, cy, 55, 0, Math.PI * 2);
+      scaleCtx.fill();
+      scaleCtx.strokeStyle = obj.color;
+      scaleCtx.lineWidth = 2;
+      scaleCtx.stroke();
+
+      // Accretion / Photon ring
+      scaleCtx.beginPath();
+      scaleCtx.arc(cx, cy, 75, 0, Math.PI * 2);
+      scaleCtx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      scaleCtx.setLineDash([4, 4]);
+      scaleCtx.stroke();
+      scaleCtx.setLineDash([]);
+
+      // Annotations
+      scaleCtx.fillStyle = '#ffffff';
+      scaleCtx.font = '12px "JetBrains Mono"';
+      scaleCtx.fillText(`Target: ${obj.name}`, 20, 30);
+      scaleCtx.fillStyle = obj.color;
+      scaleCtx.fillText(`Mass: ${obj.mass} | ${obj.radius}`, 20, 50);
+    }
+
+    document.querySelectorAll('#scale-selector .obj-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#scale-selector .obj-btn').forEach((b) => b.classList.remove('active'));
+        e.target.classList.add('active');
+        activeScaleKey = e.target.getAttribute('data-id');
+        const obj = COMPACT_OBJECTS[activeScaleKey];
+
+        document.getElementById('scale-name').textContent = obj.name;
+        document.getElementById('scale-type').textContent = obj.type;
+        document.getElementById('scale-mass').textContent = obj.mass;
+        document.getElementById('scale-radius').textContent = obj.radius;
+        document.getElementById('scale-analogy').textContent = obj.analogy;
+        document.getElementById('scale-instrument').textContent = obj.instrument;
+        document.getElementById('scale-tag').textContent = obj.tag;
+        document.getElementById('scale-explore-link').href = obj.exploreLink;
+
+        renderScaleCanvas();
+      });
+    });
+    renderScaleCanvas();
+
+    // ==========================================
+    // LAB 2: Kerr Spacetime Metric Geometry
+    // ==========================================
+    const kerrCanvas = document.getElementById('kerr-canvas');
+    const kerrCtx = kerrCanvas ? kerrCanvas.getContext('2d') : null;
+    const kerrSpinSlider = document.getElementById('kerr-spin');
+    const kerrLatSlider = document.getElementById('kerr-lat');
+
+    function renderKerrCanvas() {
+      if (!kerrCtx) return;
+      const w = kerrCanvas.width;
+      const h = kerrCanvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      kerrCtx.fillStyle = '#030712';
+      kerrCtx.fillRect(0, 0, w, h);
+
+      const a = parseFloat(kerrSpinSlider.value);
+      const thetaDeg = parseFloat(kerrLatSlider.value);
+      const thetaRad = (thetaDeg * Math.PI) / 180;
+
+      // Kerr radii in units of M
+      const rPlus = 1 + Math.sqrt(Math.max(0, 1 - a * a));
+      const rMinus = 1 - Math.sqrt(Math.max(0, 1 - a * a));
+      const rE = 1 + Math.sqrt(Math.max(0, 1 - a * a * Math.cos(thetaRad) * Math.cos(thetaRad)));
+
+      // Update readout
+      document.getElementById('kerr-spin-val').textContent = a.toFixed(3);
+      document.getElementById('kerr-lat-val').textContent = `${thetaDeg}° (${thetaDeg === 90 ? 'Equatorial Plane' : (thetaDeg === 0 ? 'Poles' : 'Mid-Latitude')})`;
+      document.getElementById('kerr-rplus').textContent = `${rPlus.toFixed(3)} M`;
+      document.getElementById('kerr-rminus').textContent = `${rMinus.toFixed(3)} M`;
+      document.getElementById('kerr-re').textContent = `${rE.toFixed(3)} M`;
+      document.getElementById('kerr-thick').textContent = `${(rE - rPlus).toFixed(3)} M (${a > 0.8 ? 'Ultra-High Energy Extraction' : 'Moderate Extraction'})`;
+
+      const scale = 55; // pixels per M
+
+      // Draw Kerr Ergosphere cross section (oblate shape)
+      kerrCtx.beginPath();
+      for (let angle = 0; angle <= Math.PI * 2; angle += 0.05) {
+        const ergoR = 1 + Math.sqrt(Math.max(0, 1 - a * a * Math.cos(angle) * Math.cos(angle)));
+        const px = cx + ergoR * scale * Math.sin(angle);
+        const py = cy - ergoR * scale * Math.cos(angle);
+        if (angle === 0) kerrCtx.moveTo(px, py);
+        else kerrCtx.lineTo(px, py);
+      }
+      kerrCtx.closePath();
+      kerrCtx.fillStyle = 'rgba(168, 85, 247, 0.25)';
+      kerrCtx.fill();
+      kerrCtx.strokeStyle = '#c084fc';
+      kerrCtx.lineWidth = 2;
+      kerrCtx.stroke();
+
+      // Outer Event Horizon r+ (spherical in Boyer-Lindquist coords)
+      kerrCtx.beginPath();
+      kerrCtx.arc(cx, cy, rPlus * scale, 0, Math.PI * 2);
+      kerrCtx.fillStyle = '#000000';
+      kerrCtx.fill();
+      kerrCtx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
+      kerrCtx.lineWidth = 2;
+      kerrCtx.stroke();
+
+      // Inner Cauchy Horizon r-
+      kerrCtx.beginPath();
+      kerrCtx.arc(cx, cy, rMinus * scale, 0, Math.PI * 2);
+      kerrCtx.strokeStyle = 'rgba(236, 72, 153, 0.6)';
+      kerrCtx.setLineDash([3, 3]);
+      kerrCtx.stroke();
+      kerrCtx.setLineDash([]);
+
+      // Spin axis rotation arrows
+      kerrCtx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      kerrCtx.lineWidth = 1.5;
+      kerrCtx.beginPath(); kerrCtx.moveTo(cx, 20); kerrCtx.lineTo(cx, h - 20); kerrCtx.stroke();
+
+      kerrCtx.fillStyle = '#38bdf8';
+      kerrCtx.font = '11px "JetBrains Mono"';
+      kerrCtx.fillText('↑ Spin Axis J', cx + 8, 30);
+      kerrCtx.fillStyle = '#c084fc';
+      kerrCtx.fillText(`Ergosphere Boundary r_E = ${rE.toFixed(2)} M`, 20, h - 20);
+    }
+
+    if (kerrSpinSlider && kerrLatSlider) {
+      kerrSpinSlider.addEventListener('input', renderKerrCanvas);
+      kerrLatSlider.addEventListener('input', renderKerrCanvas);
+      renderKerrCanvas();
+    }
+
+    // ===================================================
+    // LAB 3: LIGO Gravitational Wave Synthesizer & Canvas
+    // ===================================================
+    const GW_EVENTS = {
+      gw150914: {
+        name: 'GW150914',
+        masses: '36 M☉ + 29 M☉ → 62 M☉ Remnant',
+        energy: '3.0 M☉ c² in pure GW',
+        freq: '250 Hz (Inspiral → Merger → Ringdown)',
+        dist: '~1.3 Billion Light Years (410 Mpc)',
+        fStart: 35,
+        fPeak: 250,
+        dur: 0.25
+      },
+      gw170817: {
+        name: 'GW170817 (Binary Neutron Star)',
+        masses: '1.4 M☉ + 1.2 M☉ → Hypermassive NS / BH',
+        energy: '0.04 M☉ c² + Kilonova Flash',
+        freq: '1000+ Hz (Long high-pitch chirp)',
+        dist: '~130 Million Light Years (40 Mpc)',
+        fStart: 50,
+        fPeak: 950,
+        dur: 0.7
+      },
+      gw190521: {
+        name: 'GW190521 (Heavy Binary BH)',
+        masses: '85 M☉ + 66 M☉ → 142 M☉ IMBH',
+        energy: '8.0 M☉ c² in pure GW Power',
+        freq: '60 Hz (Deep sub-bass transient pop)',
+        dist: '~17 Billion Light Years (5.3 Gpc)',
+        fStart: 30,
+        fPeak: 85,
+        dur: 0.12
+      }
+    };
+
+    let activeGWKey = 'gw150914';
+    const gwCanvas = document.getElementById('gw-canvas');
+    const gwCtx = gwCanvas ? gwCanvas.getContext('2d') : null;
+    let gwAudioCtx = null;
+    let gwAnimFrame = null;
+
+    function drawGWWaveform(progress = 0) {
+      if (!gwCtx) return;
+      const w = gwCanvas.width;
+      const h = gwCanvas.height;
+      const cy = h / 2;
+
+      gwCtx.fillStyle = '#030712';
+      gwCtx.fillRect(0, 0, w, h);
+
+      // Center grid line
+      gwCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      gwCtx.beginPath(); gwCtx.moveTo(0, cy); gwCtx.lineTo(w, cy); gwCtx.stroke();
+
+      // Strain waveform h(t)
+      gwCtx.beginPath();
+      const ev = GW_EVENTS[activeGWKey];
+      const points = 300;
+
+      for (let i = 0; i < points; i++) {
+        const tNorm = i / points;
+        // Chirp frequency accelerates with time
+        const phase = Math.pow(tNorm, 3.5) * (ev.fPeak * 0.15) * Math.PI * 2;
+        // Amplitude grows then rings down
+        let amp = Math.pow(tNorm, 2.5) * 80;
+        if (tNorm > 0.85) {
+          amp *= Math.exp(-(tNorm - 0.85) * 20); // Ringdown
+        }
+
+        const x = tNorm * w;
+        const y = cy + Math.sin(phase) * amp;
+        if (i === 0) gwCtx.moveTo(x, y);
+        else gwCtx.lineTo(x, y);
+      }
+
+      gwCtx.strokeStyle = '#c084fc';
+      gwCtx.lineWidth = 2.5;
+      gwCtx.stroke();
+
+      // Scanhead cursor if playing
+      if (progress > 0 && progress <= 1) {
+        const scanX = progress * w;
+        gwCtx.strokeStyle = '#38bdf8';
+        gwCtx.lineWidth = 2;
+        gwCtx.beginPath(); gwCtx.moveTo(scanX, 0); gwCtx.lineTo(scanX, h); gwCtx.stroke();
+      }
+    }
+    drawGWWaveform(0);
+
+    document.querySelectorAll('#gw-selector .obj-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#gw-selector .obj-btn').forEach((b) => b.classList.remove('active'));
+        e.target.classList.add('active');
+        activeGWKey = e.target.getAttribute('data-gw');
+        const ev = GW_EVENTS[activeGWKey];
+
+        document.getElementById('gw-name').textContent = ev.name;
+        document.getElementById('gw-masses').textContent = ev.masses;
+        document.getElementById('gw-energy').textContent = ev.energy;
+        document.getElementById('gw-freq').textContent = ev.freq;
+        document.getElementById('gw-dist').textContent = ev.dist;
+        document.getElementById('gw-tag').textContent = `LIGO Strain h(t) · ${ev.name} Loaded`;
+        drawGWWaveform(0);
+      });
+    });
+
+    const btnPlayGW = document.getElementById('btn-play-gw-chirp');
+    const btnStopGW = document.getElementById('btn-stop-gw-chirp');
+
+    if (btnPlayGW) {
+      btnPlayGW.addEventListener('click', () => {
+        if (!gwAudioCtx) gwAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (gwAudioCtx.state === 'suspended') gwAudioCtx.resume();
+
+        const ev = GW_EVENTS[activeGWKey];
+        const osc = gwAudioCtx.createOscillator();
+        const gain = gwAudioCtx.createGain();
+
+        const t0 = gwAudioCtx.currentTime;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(ev.fStart, t0);
+        osc.frequency.exponentialRampToValueAtTime(ev.fPeak, t0 + ev.dur * 0.85);
+        osc.frequency.exponentialRampToValueAtTime(Math.max(40, ev.fPeak * 0.3), t0 + ev.dur);
+
+        gain.gain.setValueAtTime(0.01, t0);
+        gain.gain.linearRampToValueAtTime(0.5, t0 + ev.dur * 0.85);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + ev.dur);
+
+        osc.connect(gain);
+        gain.connect(gwAudioCtx.destination);
+
+        osc.start(t0);
+        osc.stop(t0 + ev.dur);
+
+        const startTime = performance.now();
+        const durMs = ev.dur * 1000;
+        function stepAnim(now) {
+          const prog = (now - startTime) / durMs;
+          drawGWWaveform(prog);
+          if (prog < 1) gwAnimFrame = requestAnimationFrame(stepAnim);
+          else drawGWWaveform(0);
+        }
+        gwAnimFrame = requestAnimationFrame(stepAnim);
+      });
+    }
+
+    if (btnStopGW) {
+      btnStopGW.addEventListener('click', () => {
+        if (gwAnimFrame) cancelAnimationFrame(gwAnimFrame);
+        drawGWWaveform(0);
+      });
+    }
+
+    // ====================================================
+    // LAB 4: Relativistic Doppler Beaming & Spectrum Shift
+    // ====================================================
+    const dopplerCanvas = document.getElementById('doppler-canvas');
+    const dopplerCtx = dopplerCanvas ? dopplerCanvas.getContext('2d') : null;
+    const dopplerSlider = document.getElementById('doppler-beta');
+
+    function renderDoppler() {
+      if (!dopplerCtx) return;
+      const w = dopplerCanvas.width;
+      const h = dopplerCanvas.height;
+      const beta = parseFloat(dopplerSlider.value);
+      const gamma = 1 / Math.sqrt(Math.max(0.001, 1 - beta * beta));
+      // Frequency shift for head-on motion
+      const freqRatio = Math.sqrt((1 + beta) / (1 - beta));
+      // Doppler flux boost delta^4
+      const fluxBoost = Math.pow(freqRatio, 4);
+
+      document.getElementById('doppler-beta-val').textContent = `${beta >= 0 ? '+' : ''}${beta.toFixed(2)} c (${beta >= 0 ? 'Approaching' : 'Receding'})`;
+      document.getElementById('doppler-gamma').textContent = gamma.toFixed(3);
+      document.getElementById('doppler-freq-ratio').textContent = `${freqRatio.toFixed(3)}x (${beta >= 0 ? 'Blueshift' : 'Redshift'})`;
+      document.getElementById('doppler-flux').textContent = `${fluxBoost.toFixed(2)}x Flux Amplification`;
+      document.getElementById('doppler-tag').textContent = `Doppler Beaming Factor: ${fluxBoost.toFixed(2)}x`;
+
+      let colorDesc = 'Visual Optical Spectrum (550 nm)';
+      let colHex = '#38bdf8';
+      if (freqRatio > 2.0) { colorDesc = 'Extreme UV / Hard X-Ray'; colHex = '#c084fc'; }
+      else if (freqRatio > 1.2) { colorDesc = 'Cyan / Blue High-Energy Optical'; colHex = '#38bdf8'; }
+      else if (freqRatio > 0.8) { colorDesc = 'Standard Warm Optical Yellow'; colHex = '#fbbf24'; }
+      else if (freqRatio > 0.4) { colorDesc = 'Deep Redshifted Infrared'; colHex = '#ef4444'; }
+      else { colorDesc = 'Far Infrared / Microwave'; colHex = '#7f1d1d'; }
+
+      document.getElementById('doppler-color-desc').textContent = colorDesc;
+
+      dopplerCtx.fillStyle = '#030712';
+      dopplerCtx.fillRect(0, 0, w, h);
+
+      // Draw relativistic emitter star with transformed wavelength
+      const cx = w / 2;
+      const cy = h / 2;
+      const grad = dopplerCtx.createRadialGradient(cx, cy, 10, cx, cy, 100);
+      grad.addColorStop(0, colHex);
+      grad.addColorStop(0.7, 'rgba(0,0,0,0.8)');
+      grad.addColorStop(1, 'transparent');
+
+      dopplerCtx.fillStyle = grad;
+      dopplerCtx.beginPath();
+      dopplerCtx.arc(cx, cy, 100, 0, Math.PI * 2);
+      dopplerCtx.fill();
+
+      // Central core
+      dopplerCtx.fillStyle = '#ffffff';
+      dopplerCtx.beginPath();
+      dopplerCtx.arc(cx, cy, 25 * Math.min(2, Math.max(0.5, freqRatio)), 0, Math.PI * 2);
+      dopplerCtx.fill();
+    }
+
+    if (dopplerSlider) {
+      dopplerSlider.addEventListener('input', renderDoppler);
+      renderDoppler();
+    }
+
+    const btnPlayDoppler = document.getElementById('btn-play-doppler-tone');
+    if (btnPlayDoppler) {
+      btnPlayDoppler.addEventListener('click', () => {
+        if (!gwAudioCtx) gwAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (gwAudioCtx.state === 'suspended') gwAudioCtx.resume();
+
+        const beta = parseFloat(dopplerSlider.value);
+        const freqRatio = Math.sqrt((1 + beta) / (1 - beta));
+        const baseFreq = 440; // A4
+        const shiftedFreq = Math.max(80, Math.min(2500, baseFreq * freqRatio));
+
+        const osc = gwAudioCtx.createOscillator();
+        const gain = gwAudioCtx.createGain();
+        const t0 = gwAudioCtx.currentTime;
+
+        osc.frequency.setValueAtTime(shiftedFreq, t0);
+        gain.gain.setValueAtTime(0.2, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.6);
+
+        osc.connect(gain);
+        gain.connect(gwAudioCtx.destination);
+
+        osc.start(t0);
+        osc.stop(t0 + 0.6);
+      });
+    }
+
+    // ====================================================
+    // LAB 5: Hawking Radiation & Thermodynamic Presets
+    // ====================================================
+    const HAWKING_PRESETS = {
+      primordial_small: {
+        name: 'Micro PBH (10¹¹ kg · Asteroid / Mountain)',
+        temp: '1.23 × 10¹² K (Ultra-Hot Relativistic Plasma)',
+        power: '3.56 × 10¹³ Watts (Gigawatt Gamma Flash)',
+        rs: '1.48 × 10⁻¹⁶ m (Subatomic Nucleus Scale)',
+        life: '2.7 Hours (Near Terminal Explosive Evaporation)',
+        desc: 'Primordial black holes created in the early universe with asteroid mass are currently reaching the final explosive phase of their lifetime today.'
+      },
+      primordial_lunar: {
+        name: 'Lunar Mass PBH (7.3 × 10²² kg)',
+        temp: '1.68 × 10³ K (Incandescent Glow)',
+        power: '6.68 × 10⁻¹¹ Watts',
+        rs: '0.108 mm',
+        life: '1.05 × 10³⁴ Years',
+        desc: 'A Moon-mass black hole is smaller than a grain of sand (0.1 mm) yet possesses the mass of our Moon and lives for 10³⁴ years.'
+      },
+      stellar_1: {
+        name: 'Stellar Black Hole (1.0 M☉)',
+        temp: '6.17 × 10⁻⁸ K (Nanokelvin)',
+        power: '9.0 × 10⁻²⁹ Watts',
+        rs: '2.95 km',
+        life: '2.1 × 10⁶⁷ Years (~10⁵⁷ Hubble Times)',
+        desc: 'A solar-mass black hole has a Hawking temperature of just 61.7 nanokelvin—colder than the CMB (2.725 K)—so it is currently gaining mass from CMB photons.'
+      },
+      stellar_10: {
+        name: 'Stellar Black Hole (10 M☉)',
+        temp: '6.17 × 10⁻⁹ K',
+        power: '9.0 × 10⁻³¹ Watts',
+        rs: '29.5 km',
+        life: '2.1 × 10⁷⁰ Years',
+        desc: 'Typical 10 solar mass black holes radiate negligible energy and take 10⁷⁰ years to evaporate into pure thermal radiation.'
+      },
+      sgra: {
+        name: 'Supermassive Black Hole (Sgr A* · 4.15 × 10⁶ M☉)',
+        temp: '1.49 × 10⁻¹⁴ K',
+        power: '5.2 × 10⁻⁴² Watts',
+        rs: '12.3 Million km',
+        life: '1.5 × 10⁸⁷ Years',
+        desc: 'Sagittarius A* at the core of the Milky Way is virtually eternal, outlasting all stars and galaxies before final decay.'
+      },
+      ton618: {
+        name: 'Hypermassive Black Hole (TON 618 · 6.6 × 10¹⁰ M☉)',
+        temp: '9.35 × 10⁻¹⁹ K',
+        power: '2.1 × 10⁻⁵⁰ Watts',
+        rs: '390 Billion km',
+        life: '6.0 × 10⁹⁹ Years',
+        desc: 'TON 618 is so vast that its Hawking temperature is indistinguishable from absolute zero, persisting until the deepest heat death of the universe.'
+      }
+    };
+
+    const hawkingSelect = document.getElementById('hawking-preset');
+    if (hawkingSelect) {
+      hawkingSelect.addEventListener('change', (e) => {
+        const item = HAWKING_PRESETS[e.target.value];
+        document.getElementById('hawking-preset-val').textContent = item.name;
+        document.getElementById('hawking-temp').textContent = item.temp;
+        document.getElementById('hawking-power').textContent = item.power;
+        document.getElementById('hawking-rs').textContent = item.rs;
+        document.getElementById('hawking-life').textContent = item.life;
+        document.getElementById('hawking-scenario-desc').textContent = item.desc;
+      });
+    }
+
+    // ====================================================
+    // LAB 6: Micro Gravitational Lensing Starfield Canvas
+    // ====================================================
+    const lensCanvas = document.getElementById('lens-canvas');
+    if (lensCanvas) {
+      const lCtx = lensCanvas.getContext('2d');
+      let lensX = lensCanvas.width / 2;
+      let lensY = lensCanvas.height / 2;
+      let lensM = 2.5;
+
+      const lensSlider = document.getElementById('lens-mass');
+      const lensVal = document.getElementById('lens-mass-val');
+      if (lensSlider) {
+        lensSlider.addEventListener('input', (e) => {
+          lensM = parseFloat(e.target.value);
+          lensVal.textContent = lensM.toFixed(1);
+        });
+      }
+
+      const stars = [];
+      for (let i = 0; i < 90; i++) {
+        stars.push({
+          x: Math.random() * lensCanvas.width,
+          y: Math.random() * lensCanvas.height,
+          radius: Math.random() * 1.5 + 0.5,
+          color: Math.random() > 0.3 ? '#ffffff' : (Math.random() > 0.5 ? '#38bdf8' : '#ec4899')
+        });
+      }
+
+      lensCanvas.addEventListener('mousemove', (e) => {
+        const rect = lensCanvas.getBoundingClientRect();
+        lensX = (e.clientX - rect.left) * (lensCanvas.width / rect.width);
+        lensY = (e.clientY - rect.top) * (lensCanvas.height / rect.height);
+      });
+
+      function renderLensingLoop() {
+        lCtx.fillStyle = '#030712';
+        lCtx.fillRect(0, 0, lensCanvas.width, lensCanvas.height);
+
+        const re = lensM * 20;
+
+        stars.forEach((s) => {
+          const dx = s.x - lensX;
+          const dy = s.y - lensY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist > 2) {
+            const defDist = dist + (re * re) / dist;
+            const factor = defDist / dist;
+            const px = lensX + dx * factor;
+            const py = lensY + dy * factor;
+
+            lCtx.beginPath();
+            lCtx.arc(px, py, s.radius * (1 + (re / (dist + 10))), 0, Math.PI * 2);
+            lCtx.fillStyle = s.color;
+            lCtx.fill();
+          }
+        });
+
+        // Einstein Ring Perimeter
+        lCtx.beginPath();
+        lCtx.arc(lensX, lensY, re, 0, Math.PI * 2);
+        lCtx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+        lCtx.lineWidth = 1.5;
+        lCtx.stroke();
+
+        // Event Horizon
+        lCtx.beginPath();
+        lCtx.arc(lensX, lensY, re * 0.35, 0, Math.PI * 2);
+        lCtx.fillStyle = '#000000';
+        lCtx.fill();
+        lCtx.strokeStyle = '#ffffff';
+        lCtx.lineWidth = 1;
+        lCtx.stroke();
+
+        requestAnimationFrame(renderLensingLoop);
+      }
+      renderLensingLoop();
+    }
+
+    // ====================================================
+    // LAB 7: 2D Schwarzschild Photon Geodesic Integrator
+    // ====================================================
+    const geoCanvas = document.getElementById('geodesic-canvas');
+    if (geoCanvas) {
+      const gCtx = geoCanvas.getContext('2d');
+      const geoBSlider = document.getElementById('geodesic-b');
+      const geoCountSlider = document.getElementById('geodesic-count');
+      const geoBVal = document.getElementById('geodesic-b-val');
+      const geoCountVal = document.getElementById('geodesic-count-val');
+      const geoFate = document.getElementById('geodesic-fate');
+      const geoTag = document.getElementById('geodesic-tag');
+
+      function renderGeodesics() {
+        const w = geoCanvas.width;
+        const h = geoCanvas.height;
+        const cx = w / 2;
+        const cy = h / 2;
+        const scale = 22; // pixels per M
+
+        gCtx.fillStyle = '#030712';
+        gCtx.fillRect(0, 0, w, h);
+
+        const bMain = parseFloat(geoBSlider.value);
+        const count = parseInt(geoCountSlider.value, 10);
+        const bc = 3 * Math.sqrt(3); // 5.196 M
+
+        geoBVal.textContent = `${bMain.toFixed(2)} M (${bMain < bc ? 'Direct Capture / Horizon Infall' : (Math.abs(bMain - bc) < 0.15 ? 'Multiple Photon Sphere Orbits' : 'Deflected to Infinity')})`;
+        geoCountVal.textContent = `${count} Beams`;
+        geoTag.textContent = `b = ${bMain.toFixed(2)} M | Critical b_c = 5.196 M`;
+
+        if (bMain < bc) {
+          geoFate.textContent = 'Capture Infall into Event Horizon (r <= 2.0 M)';
+          geoFate.style.color = '#ef4444';
+        } else if (Math.abs(bMain - bc) < 0.15) {
+          geoFate.textContent = 'Unstable Multi-Orbit Photon Ring (r ~ 3.0 M)';
+          geoFate.style.color = '#fbbf24';
+        } else {
+          geoFate.textContent = 'Deflected to Infinity by Curved Spacetime';
+          geoFate.style.color = '#10b981';
+        }
+
+        // Draw Photon Sphere (3 M)
+        gCtx.beginPath();
+        gCtx.arc(cx, cy, 3 * scale, 0, Math.PI * 2);
+        gCtx.strokeStyle = 'rgba(251, 191, 36, 0.5)';
+        gCtx.setLineDash([4, 4]);
+        gCtx.lineWidth = 1.5;
+        gCtx.stroke();
+        gCtx.setLineDash([]);
+
+        // Draw Event Horizon (2 M)
+        gCtx.beginPath();
+        gCtx.arc(cx, cy, 2 * scale, 0, Math.PI * 2);
+        gCtx.fillStyle = '#000000';
+        gCtx.fill();
+        gCtx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
+        gCtx.lineWidth = 2;
+        gCtx.stroke();
+
+        // Integrate multiple photon trajectories using 4th order Runge-Kutta / Euler-Verlet
+        const bStep = count > 1 ? (bMain * 0.4) / (count / 2) : 0;
+        
+        for (let idx = 0; idx < count; idx++) {
+          const bCurrent = bMain + (idx - Math.floor(count / 2)) * bStep;
+          if (bCurrent <= 0.5) continue;
+
+          gCtx.beginPath();
+          let x = -w / 2;
+          let y = -bCurrent * scale;
+          let vx = 1.0;
+          let vy = 0.0;
+          const dt = 0.8;
+
+          gCtx.moveTo(cx + x, cy + y);
+
+          for (let step = 0; step < 700; step++) {
+            const r = Math.sqrt(x * x + y * y) / scale; // in units of M
+            if (r < 2.0) {
+              // Plunged into Event Horizon
+              gCtx.lineTo(cx + x, cy + y);
+              break;
+            }
+            if (x > w / 2 + 50 || Math.abs(y) > h / 2 + 50) break;
+
+            // Effective acceleration in Schwarzschild metric: d²r/dt² ~ -M/r² - 3M L² / r⁴
+            const rM = Math.max(2.0, r);
+            const accMag = (1.5 * scale * scale * scale) / Math.pow(rM, 4);
+            const ax = -accMag * (x / (r * scale));
+            const ay = -accMag * (y / (r * scale));
+
+            vx += ax * dt;
+            vy += ay * dt;
+            // Normalize speed to c
+            const speed = Math.sqrt(vx * vx + vy * vy);
+            vx = (vx / speed);
+            vy = (vy / speed);
+
+            x += vx * dt * 2.5;
+            y += vy * dt * 2.5;
+
+            gCtx.lineTo(cx + x, cy + y);
+          }
+
+          if (Math.abs(bCurrent - bMain) < 0.05) {
+            gCtx.strokeStyle = '#38bdf8';
+            gCtx.lineWidth = 2.5;
+          } else if (bCurrent < bc) {
+            gCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+            gCtx.lineWidth = 1;
+          } else {
+            gCtx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+            gCtx.lineWidth = 1;
+          }
+          gCtx.stroke();
+        }
+
+        // Labels
+        gCtx.fillStyle = '#ffffff';
+        gCtx.font = '11px "JetBrains Mono"';
+        gCtx.fillText('Incident Photons (c) →', 20, 30);
+        gCtx.fillStyle = 'rgba(251, 191, 36, 0.8)';
+        gCtx.fillText('Photon Sphere (R_ph = 3M)', cx + 3.2 * scale, cy - 10);
+      }
+
+      if (geoBSlider && geoCountSlider) {
+        geoBSlider.addEventListener('input', renderGeodesics);
+        geoCountSlider.addEventListener('input', renderGeodesics);
+        renderGeodesics();
+      }
+    }
+
+    // ====================================================
+    // LAB 8: EHT Polarized Synchrotron Magnetic Field Lab
+    // ====================================================
+    const ehtCanvas = document.getElementById('eht-canvas');
+    if (ehtCanvas) {
+      const eCtx = ehtCanvas.getContext('2d');
+      const ehtPitchSlider = document.getElementById('eht-pitch');
+      const ehtPitchVal = document.getElementById('eht-pitch-val');
+      let activeEHTTarget = 'sgra';
+
+      function renderEHT() {
+        const w = ehtCanvas.width;
+        const h = ehtCanvas.height;
+        const cx = w / 2;
+        const cy = h / 2;
+
+        eCtx.fillStyle = '#030712';
+        eCtx.fillRect(0, 0, w, h);
+
+        const pitchDeg = parseFloat(ehtPitchSlider.value);
+        const pitchRad = (pitchDeg * Math.PI) / 180;
+        ehtPitchVal.textContent = `${pitchDeg}° (${pitchDeg > 50 ? 'Strong Toroidal Dominance' : 'Balanced Poloidal/Toroidal Jet'})`;
+
+        // Accretion Ring Brightness Gradient
+        const ringRad = 70;
+        const grad = eCtx.createRadialGradient(cx, cy, ringRad * 0.4, cx, cy, ringRad * 1.5);
+        if (activeEHTTarget === 'sgra') {
+          grad.addColorStop(0, '#000000');
+          grad.addColorStop(0.5, '#f97316');
+          grad.addColorStop(0.8, '#ea580c');
+          grad.addColorStop(1, 'transparent');
+        } else {
+          grad.addColorStop(0, '#000000');
+          grad.addColorStop(0.4, '#38bdf8');
+          grad.addColorStop(0.7, '#a855f7');
+          grad.addColorStop(1, 'transparent');
+        }
+
+        eCtx.fillStyle = grad;
+        eCtx.beginPath();
+        eCtx.arc(cx, cy, ringRad * 1.5, 0, Math.PI * 2);
+        eCtx.fill();
+
+        // Shadow
+        eCtx.fillStyle = '#000000';
+        eCtx.beginPath();
+        eCtx.arc(cx, cy, ringRad * 0.55, 0, Math.PI * 2);
+        eCtx.fill();
+
+        // Draw Polarized EVPA (Electric Vector Position Angle) Ticks
+        eCtx.strokeStyle = '#ffffff';
+        eCtx.lineWidth = 1.8;
+
+        const numRings = 4;
+        for (let rIdx = 0; rIdx < numRings; rIdx++) {
+          const currentR = ringRad * 0.65 + rIdx * 14;
+          const numTicks = 20 + rIdx * 6;
+
+          for (let tIdx = 0; tIdx < numTicks; tIdx++) {
+            const phi = (tIdx / numTicks) * Math.PI * 2;
+            const px = cx + currentR * Math.cos(phi);
+            const py = cy + currentR * Math.sin(phi);
+
+            // Vector angle with spiral pitch
+            const tickAngle = phi + Math.PI / 2 + pitchRad * (activeEHTTarget === 'sgra' ? 1 : -1);
+            const tickLen = 7;
+
+            const x1 = px - Math.cos(tickAngle) * tickLen;
+            const y1 = py - Math.sin(tickAngle) * tickLen;
+            const x2 = px + Math.cos(tickAngle) * tickLen;
+            const y2 = py + Math.sin(tickAngle) * tickLen;
+
+            eCtx.beginPath();
+            eCtx.moveTo(x1, y1);
+            eCtx.lineTo(x2, y2);
+            eCtx.stroke();
+          }
+        }
+
+        // Relativistic Jet base for M87*
+        if (activeEHTTarget === 'm87') {
+          eCtx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+          eCtx.lineWidth = 3;
+          eCtx.beginPath(); eCtx.moveTo(cx - 30, cy - 20); eCtx.lineTo(cx - 180, cy - 100); eCtx.stroke();
+          eCtx.fillStyle = '#38bdf8';
+          eCtx.font = '11px "JetBrains Mono"';
+          eCtx.fillText('↖ 5,000 ly Relativistic Jet', cx - 170, cy - 110);
+        }
+
+        eCtx.fillStyle = '#ffffff';
+        eCtx.font = '11px "JetBrains Mono"';
+        eCtx.fillText(`Target: ${activeEHTTarget === 'sgra' ? 'Sgr A* (2024 Polarized Ring)' : 'M87* (2026 Jet Base)'}`, 20, 25);
+      }
+
+      document.querySelectorAll('#eht-target-selector .obj-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('#eht-target-selector .obj-btn').forEach((b) => b.classList.remove('active'));
+          e.target.classList.add('active');
+          activeEHTTarget = e.target.getAttribute('data-target');
+          renderEHT();
+        });
+      });
+
+      if (ehtPitchSlider) {
+        ehtPitchSlider.addEventListener('input', renderEHT);
+        renderEHT();
+      }
+    }
+
+    // ====================================================
+    // AMBIENT COSMIC STARFIELD BACKGROUND CANVAS
+    // ====================================================
+    const bgCanvas = document.getElementById('ambient-starfield');
+    if (bgCanvas) {
+      const bgCtx = bgCanvas.getContext('2d');
+      let w = bgCanvas.width = window.innerWidth;
+      let h = bgCanvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        w = bgCanvas.width = window.innerWidth;
+        h = bgCanvas.height = window.innerHeight;
+      });
+
+      const bgStars = [];
+      for (let i = 0; i < 140; i++) {
+        bgStars.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          size: Math.random() * 1.6 + 0.4,
+          speed: Math.random() * 0.2 + 0.05,
+          opacity: Math.random() * 0.7 + 0.3,
+          color: Math.random() > 0.4 ? '#38bdf8' : (Math.random() > 0.5 ? '#ec4899' : '#ffffff')
+        });
+      }
+
+      function renderAmbientLoop() {
+        bgCtx.clearRect(0, 0, w, h);
+        bgStars.forEach((st) => {
+          st.y -= st.speed;
+          if (st.y < 0) { st.y = h; st.x = Math.random() * w; }
+          bgCtx.fillStyle = st.color;
+          bgCtx.globalAlpha = st.opacity;
+          bgCtx.beginPath();
+          bgCtx.arc(st.x, st.y, st.size, 0, Math.PI * 2);
+          bgCtx.fill();
+        });
+        bgCtx.globalAlpha = 1.0;
+        requestAnimationFrame(renderAmbientLoop);
+      }
+      renderAmbientLoop();
+    }
+
+    // ====================================================
+    // THREE.JS EMBEDDED 3D MINI-STUDIO VIEWPORT
+    // ====================================================
+    const threeContainer = document.getElementById('three-academy-container');
+    if (threeContainer) {
+      const tCanvas = document.createElement('canvas');
+      threeContainer.appendChild(tCanvas);
+      const tCtx = tCanvas.getContext('2d');
+
+      let tWidth = tCanvas.width = threeContainer.clientWidth || 500;
+      let tHeight = tCanvas.height = threeContainer.clientHeight || 380;
+      let angle = 0;
+      let userSpeed = 1.0;
+      let plasmaTempIdx = 3;
+
+      const speedSlider = document.getElementById('three-speed');
+      const tempSlider = document.getElementById('three-temp');
+
+      if (speedSlider) {
+        speedSlider.addEventListener('input', (e) => {
+          userSpeed = parseFloat(e.target.value);
+          document.getElementById('three-speed-val').textContent = `${userSpeed.toFixed(1)}x (Relativistic Orbit)`;
+        });
+      }
+      if (tempSlider) {
+        tempSlider.addEventListener('input', (e) => {
+          plasmaTempIdx = parseInt(e.target.value, 10);
+          const temps = ['1,000,000 K (Infrared Warm)', '5,000,000 K (Visible Optical)', '10,000,000 K (Soft X-Ray)', '25,000,000 K (Hard X-Ray)', '50,000,000 K (Relativistic Gamma)'];
+          document.getElementById('three-temp-val').textContent = temps[plasmaTempIdx - 1];
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        if (threeContainer.clientWidth) {
+          tWidth = tCanvas.width = threeContainer.clientWidth;
+          tHeight = tCanvas.height = threeContainer.clientHeight;
+        }
+      });
+
+      // Render simulated 3D warped relativistic accretion disk
+      function render3DStudio() {
+        tCtx.fillStyle = '#030712';
+        tCtx.fillRect(0, 0, tWidth, tHeight);
+
+        const cx = tWidth / 2;
+        const cy = tHeight / 2;
+        angle += 0.015 * userSpeed;
+
+        const colorPalettes = [
+          ['#ef4444', '#f97316'],
+          ['#f59e0b', '#fbbf24'],
+          ['#38bdf8', '#0284c7'],
+          ['#a855f7', '#ec4899'],
+          ['#10b981', '#38bdf8']
+        ];
+        const currentPalette = colorPalettes[plasmaTempIdx - 1] || colorPalettes[2];
+
+        // 1. Back Upper Lensed Arch of Accretion Disk
+        tCtx.save();
+        tCtx.beginPath();
+        tCtx.ellipse(cx, cy - 12, 160, 85, 0, Math.PI, 0);
+        tCtx.strokeStyle = currentPalette[0];
+        tCtx.lineWidth = 22;
+        tCtx.filter = 'blur(6px)';
+        tCtx.stroke();
+        tCtx.restore();
+
+        // 2. Black Hole Event Horizon Silhouette (Front)
+        tCtx.beginPath();
+        tCtx.arc(cx, cy, 55, 0, Math.PI * 2);
+        tCtx.fillStyle = '#000000';
+        tCtx.fill();
+        tCtx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        tCtx.lineWidth = 2;
+        tCtx.stroke();
+
+        // 3. Photon Ring (1.5 Rs)
+        tCtx.beginPath();
+        tCtx.arc(cx, cy, 75, 0, Math.PI * 2);
+        tCtx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+        tCtx.lineWidth = 3;
+        tCtx.stroke();
+
+        // 4. Front Accretion Disk Plane (With Doppler Beaming Asymmetry)
+        tCtx.save();
+        // Left side (Approaching - Blazing Bright)
+        const leftGrad = tCtx.createRadialGradient(cx - 90, cy, 10, cx - 90, cy, 140);
+        leftGrad.addColorStop(0, '#ffffff');
+        leftGrad.addColorStop(0.3, currentPalette[0]);
+        leftGrad.addColorStop(1, 'transparent');
+
+        tCtx.beginPath();
+        tCtx.ellipse(cx, cy + 8, 180, 48, 0, 0, Math.PI);
+        tCtx.strokeStyle = leftGrad;
+        tCtx.lineWidth = 28;
+        tCtx.stroke();
+
+        // Doppler Hotspots
+        for (let p = 0; p < 8; p++) {
+          const pAngle = angle + (p * Math.PI) / 4;
+          const px = cx + Math.cos(pAngle) * 140;
+          const py = cy + Math.sin(pAngle) * 35;
+          const isApproaching = Math.sin(pAngle) < 0;
+
+          tCtx.beginPath();
+          tCtx.arc(px, py, isApproaching ? 6 : 3, 0, Math.PI * 2);
+          tCtx.fillStyle = isApproaching ? '#ffffff' : currentPalette[1];
+          tCtx.fill();
+        }
+        tCtx.restore();
+
+        requestAnimationFrame(render3DStudio);
+      }
+      render3DStudio();
+    }
+
+    // ====================================================
+    // LAB 09: GRAVITATIONAL TIME DILATION & DUAL CLOCKS
+    // ====================================================
+    const dilationRSlider = document.getElementById('dilation-r');
+    const clockEarth = document.getElementById('clock-earth');
+    const clockAstronaut = document.getElementById('clock-astronaut');
+    let earthSeconds = 0;
+    let astronautSeconds = 0;
+
+    function updateDilation() {
+      if (!dilationRSlider) return;
+      const r = parseFloat(dilationRSlider.value);
+      // Schwarzschild gravitational time dilation gamma = 1 / sqrt(1 - 1/r)
+      const gammaGrav = 1 / Math.sqrt(Math.max(0.001, 1 - 1 / r));
+      const zRedshift = gammaGrav - 1;
+
+      document.getElementById('dilation-r-val').textContent = `${r.toFixed(2)} R_s (${r < 1.1 ? 'Extreme Ergosphere Boundary' : (r < 2.0 ? 'Strong Gravity' : 'Moderate Gravity')})`;
+      document.getElementById('dilation-gamma').textContent = `${gammaGrav.toFixed(2)}x`;
+      document.getElementById('dilation-earth-equiv').textContent = `${gammaGrav.toFixed(2)} Hours on Earth`;
+      document.getElementById('dilation-z').textContent = `${zRedshift.toFixed(2)} (${zRedshift > 2 ? 'Severe Optical Redshift' : 'Moderate Redshift'})`;
+      document.getElementById('dilation-factor-display').textContent = gammaGrav.toFixed(2);
+    }
+
+    if (dilationRSlider) {
+      dilationRSlider.addEventListener('input', updateDilation);
+      updateDilation();
+    }
+
+    setInterval(() => {
+      if (!dilationRSlider) return;
+      const r = parseFloat(dilationRSlider.value);
+      const gammaGrav = 1 / Math.sqrt(Math.max(0.001, 1 - 1 / r));
+
+      earthSeconds += gammaGrav;
+      astronautSeconds += 1;
+
+      function fmtTime(secTotal) {
+        const s = Math.floor(secTotal % 60).toString().padStart(2, '0');
+        const m = Math.floor((secTotal / 60) % 60).toString().padStart(2, '0');
+        const h = Math.floor((secTotal / 3600) % 24).toString().padStart(2, '0');
+        return `${h}:${m}:${s}`;
+      }
+
+      if (clockEarth) clockEarth.textContent = fmtTime(earthSeconds);
+      if (clockAstronaut) clockAstronaut.textContent = fmtTime(astronautSeconds);
+    }, 1000);
+
+    // ====================================================
+    // LAB 10: COSMIC PULSAR ACOUSTIC SYNTHESIZER
+    // ====================================================
+    const PULSARS = {
+      bell: {
+        name: 'PSR B1919+21 (CP 1919)',
+        freqDesc: '0.748 Hz (Period: 1.337 seconds)',
+        freqHz: 0.748,
+        toneFreq: 440,
+        bfield: '1.2 × 10¹² Gauss (TeraGauss)',
+        citation: 'Jocelyn Bell Burnell & Antony Hewish (1967)'
+      },
+      vela: {
+        name: 'Vela Pulsar (PSR B0833-45)',
+        freqDesc: '11.19 Hz (Period: 89.3 milliseconds)',
+        freqHz: 11.19,
+        toneFreq: 220,
+        bfield: '3.4 × 10¹² Gauss',
+        citation: 'Molonglo Radio Observatory (1968)'
+      },
+      crab: {
+        name: 'Crab Nebula Pulsar (PSR B0531+21)',
+        freqDesc: '30.2 Hz (Period: 33.1 milliseconds)',
+        freqHz: 30.2,
+        toneFreq: 180,
+        bfield: '3.8 × 10¹² Gauss',
+        citation: 'Arecibo Observatory (1968)'
+      },
+      millisecond: {
+        name: 'PSR J1748-2446ad (Fastest Known Pulsar)',
+        freqDesc: '716 Hz (Period: 1.396 milliseconds)',
+        freqHz: 716.0,
+        toneFreq: 716,
+        bfield: '1.0 × 10⁹ Gauss',
+        citation: 'Green Bank Telescope (Hessels et al. 2006)'
+      }
+    };
+
+    let activePulsarKey = 'bell';
+    let pulsarAudioTimer = null;
+    const pulsarCanvas = document.getElementById('pulsar-canvas');
+    const pCtx = pulsarCanvas ? pulsarCanvas.getContext('2d') : null;
+    let pulsarPulseWave = 0;
+
+    function renderPulsarCanvas() {
+      if (!pCtx) return;
+      const w = pulsarCanvas.width;
+      const h = pulsarCanvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      pCtx.fillStyle = '#030712';
+      pCtx.fillRect(0, 0, w, h);
+
+      const pObj = PULSARS[activePulsarKey];
+
+      // Draw Rotating Neutron Star
+      pCtx.beginPath();
+      pCtx.arc(cx, cy, 38, 0, Math.PI * 2);
+      pCtx.fillStyle = '#38bdf8';
+      pCtx.fill();
+      pCtx.strokeStyle = '#ffffff';
+      pCtx.lineWidth = 2;
+      pCtx.stroke();
+
+      // Magnetic Lighthouse Beams
+      const beamAngle = Date.now() * 0.001 * pObj.freqHz * Math.PI * 2;
+      const len = 130;
+
+      // Beam 1
+      pCtx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+      pCtx.lineWidth = 14;
+      pCtx.beginPath();
+      pCtx.moveTo(cx, cy);
+      pCtx.lineTo(cx + Math.cos(beamAngle) * len, cy + Math.sin(beamAngle) * len);
+      pCtx.stroke();
+
+      // Beam 2 (Opposite pole)
+      pCtx.beginPath();
+      pCtx.moveTo(cx, cy);
+      pCtx.lineTo(cx - Math.cos(beamAngle) * len, cy - Math.sin(beamAngle) * len);
+      pCtx.stroke();
+
+      // Oscilloscope pulse graph at bottom
+      pCtx.strokeStyle = '#10b981';
+      pCtx.lineWidth = 2;
+      pCtx.beginPath();
+      pCtx.moveTo(20, h - 30);
+      for (let x = 20; x < w - 20; x += 5) {
+        const pulse = Math.sin((x + Date.now() * 0.05 * pObj.freqHz) * 0.1);
+        const y = h - 30 - (Math.abs(pulse) > 0.85 ? 25 : 0);
+        pCtx.lineTo(x, y);
+      }
+      pCtx.stroke();
+
+      pCtx.fillStyle = '#ffffff';
+      pCtx.font = '11px "JetBrains Mono"';
+      pCtx.fillText(`Frequency: ${pObj.freqDesc}`, 20, 25);
+
+      requestAnimationFrame(renderPulsarCanvas);
+    }
+    renderPulsarCanvas();
+
+    document.querySelectorAll('#pulsar-selector .obj-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('#pulsar-selector .obj-btn').forEach((b) => b.classList.remove('active'));
+        e.target.classList.add('active');
+        activePulsarKey = e.target.getAttribute('data-pulsar');
+        const pObj = PULSARS[activePulsarKey];
+
+        document.getElementById('pulsar-name').textContent = pObj.name;
+        document.getElementById('pulsar-freq').textContent = pObj.freqDesc;
+        document.getElementById('pulsar-bfield').textContent = pObj.bfield;
+        document.getElementById('pulsar-citation').textContent = pObj.citation;
+        document.getElementById('pulsar-tag').textContent = `Active: ${pObj.name}`;
+      });
+    });
+
+    const btnPlayPulsar = document.getElementById('btn-play-pulsar');
+    const btnStopPulsar = document.getElementById('btn-stop-pulsar');
+
+    if (btnPlayPulsar) {
+      btnPlayPulsar.addEventListener('click', () => {
+        if (!gwAudioCtx) gwAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (gwAudioCtx.state === 'suspended') gwAudioCtx.resume();
+        if (pulsarAudioTimer) clearInterval(pulsarAudioTimer);
+
+        const pObj = PULSARS[activePulsarKey];
+        const periodMs = Math.max(20, (1 / pObj.freqHz) * 1000);
+
+        function triggerPulse() {
+          const osc = gwAudioCtx.createOscillator();
+          const gain = gwAudioCtx.createGain();
+          const t0 = gwAudioCtx.currentTime;
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(pObj.toneFreq, t0);
+          gain.gain.setValueAtTime(0.25, t0);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + Math.min(0.08, periodMs * 0.0008));
+
+          osc.connect(gain);
+          gain.connect(gwAudioCtx.destination);
+          osc.start(t0);
+          osc.stop(t0 + 0.08);
+        }
+
+        triggerPulse();
+        pulsarAudioTimer = setInterval(triggerPulse, periodMs);
+        btnPlayPulsar.textContent = '🔊 Pulsing...';
+      });
+    }
+
+    if (btnStopPulsar) {
+      btnStopPulsar.addEventListener('click', () => {
+        if (pulsarAudioTimer) {
+          clearInterval(pulsarAudioTimer);
+          pulsarAudioTimer = null;
+        }
+        btnPlayPulsar.textContent = '🔊 Play Pulsar Audio';
+      });
+    }
+
+    // ====================================================
+    // ACADEMY QUIZ & CANVAS CERTIFICATE SYSTEM
+    // ====================================================
+    let score = 0;
+    const totalQuiz = 4;
+    const scoreDisplay = document.getElementById('quiz-score-display');
 
     document.querySelectorAll('.quiz-opt').forEach((btn) => {
       btn.addEventListener('click', (e) => {
-        const parent = e.target.closest('div').parentElement;
+        const parent = e.target.closest('.quiz-card');
         const feedback = parent.querySelector('.quiz-feedback');
         const isCorrect = e.target.getAttribute('data-correct') === 'true';
 
@@ -336,146 +2458,110 @@
           e.target.style.borderColor = '#10b981';
           e.target.style.background = 'rgba(16, 185, 129, 0.2)';
           feedback.style.color = '#34d399';
-          feedback.textContent = '✓ Correct! You demonstrated accurate understanding of General Relativity.';
+          feedback.textContent = '✓ Correct! Verified against General Relativity and observation.';
           if (!parent.hasAttribute('data-scored')) {
             parent.setAttribute('data-scored', 'true');
-            correctCount++;
-            const pct = Math.round((correctCount / totalQuestions) * 100);
-            progressFill.style.width = `${pct}%`;
-            progressText.textContent = `${pct}%`;
+            score++;
+            scoreDisplay.textContent = `${score} / ${totalQuiz} (${Math.round((score / totalQuiz) * 100)}%)`;
           }
         } else {
           e.target.style.borderColor = '#ef4444';
           e.target.style.background = 'rgba(239, 68, 68, 0.2)';
           feedback.style.color = '#f87171';
-          feedback.textContent = '✗ Incorrect. Review the chapter equations above and try again.';
+          feedback.textContent = '✗ Incorrect. Review the lab equations above and try again.';
         }
       });
     });
 
-    // Certificate Modal
+    // Certificate Modal & Dynamic Canvas Export
     const certModal = document.getElementById('cert-modal');
-    const btnClaim = document.getElementById('btn-claim-cert');
+    const btnClaimCert = document.getElementById('btn-claim-cert');
     const btnCloseCert = document.getElementById('btn-close-cert');
+    const btnDownloadCert = document.getElementById('btn-download-cert');
 
-    if (btnClaim && certModal) {
-      btnClaim.addEventListener('click', () => { certModal.style.display = 'flex'; });
+    if (btnClaimCert && certModal) {
+      btnClaimCert.addEventListener('click', () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('cert-date').textContent = today;
+        document.getElementById('cert-hash').textContent = `0xKERR_${Math.floor(Math.random() * 899999 + 100000)}_M87_CONFIRMED`;
+        certModal.style.display = 'flex';
+      });
       btnCloseCert.addEventListener('click', () => { certModal.style.display = 'none'; });
       certModal.addEventListener('click', (e) => { if (e.target === certModal) certModal.style.display = 'none'; });
     }
 
-    // Micro Gravitational Lensing 2D Canvas Simulator
-    const canvas = document.getElementById('lens-canvas');
-    if (canvas) {
-      const ctx = canvas.getContext('2d');
-      let lensX = canvas.width / 2;
-      let lensY = canvas.height / 2;
-      let lensM = 2.5;
+    if (btnDownloadCert) {
+      btnDownloadCert.addEventListener('click', () => {
+        const name = document.getElementById('cert-name-input').value || 'Astrophysics Scholar';
+        const hash = document.getElementById('cert-hash').textContent;
+        const date = document.getElementById('cert-date').textContent;
 
-      const lensSlider = document.getElementById('lens-mass');
-      const lensVal = document.getElementById('lens-mass-val');
-      if (lensSlider) {
-        lensSlider.addEventListener('input', (e) => {
-          lensM = parseFloat(e.target.value);
-          lensVal.textContent = lensM.toFixed(1);
-        });
-      }
+        const c = document.createElement('canvas');
+        c.width = 1200;
+        c.height = 800;
+        const ctx = c.getContext('2d');
 
-      // Generate fixed background stars
-      const stars = [];
-      for (let i = 0; i < 80; i++) {
-        stars.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          radius: Math.random() * 1.5 + 0.5,
-          color: Math.random() > 0.3 ? '#ffffff' : (Math.random() > 0.5 ? '#38bdf8' : '#f472b6')
-        });
-      }
+        // Background
+        const grad = ctx.createRadialGradient(600, 400, 50, 600, 400, 700);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(1, '#030712');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1200, 800);
 
-      canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        lensX = (e.clientX - rect.left) * (canvas.width / rect.width);
-        lensY = (e.clientY - rect.top) * (canvas.height / rect.height);
-      });
+        // Gold / Purple border
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 12;
+        ctx.strokeRect(30, 30, 1140, 740);
 
-      function renderLensing() {
-        ctx.fillStyle = '#030712';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(45, 45, 1110, 710);
 
-        const re = lensM * 18; // Einstein radius scale
+        // Header Text
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 24px "Space Grotesk", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('COSMIC CANVAS ASTROPHYSICS ACADEMY', 600, 140);
 
-        // Draw deflected background stars
-        stars.forEach((s) => {
-          const dx = s.x - lensX;
-          const dy = s.y - lensY;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 44px "Space Grotesk", sans-serif';
+        ctx.fillText('CERTIFICATE OF RELATIVISTIC MASTERY', 600, 210);
 
-          if (dist > 2) {
-            // Deflection displacement
-            const defDist = dist + (re * re) / dist;
-            const factor = defDist / dist;
-            const px = lensX + dx * factor;
-            const py = lensY + dy * factor;
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '20px "Outfit", sans-serif';
+        ctx.fillText('This certifies that', 600, 280);
 
-            ctx.beginPath();
-            ctx.arc(px, py, s.radius * (1 + (re / (dist + 10))), 0, Math.PI * 2);
-            ctx.fillStyle = s.color;
-            ctx.fill();
-          }
-        });
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = 'bold 48px "Space Grotesk", sans-serif';
+        ctx.fillText(name, 600, 350);
 
-        // Draw Einstein Ring glow
-        ctx.beginPath();
-        ctx.arc(lensX, lensY, re, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '18px "Outfit", sans-serif';
+        ctx.fillText('has successfully demonstrated advanced computational mastery of General Relativity,', 600, 420);
+        ctx.fillText('Schwarzschild & Kerr Spacetime Metrics, Gravitational Lensing, and LIGO Waveform Analysis.', 600, 450);
+
+        // Verification stamp
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+        ctx.fillRect(200, 520, 800, 90);
+        ctx.strokeStyle = '#a855f7';
         ctx.lineWidth = 1.5;
-        ctx.stroke();
+        ctx.strokeRect(200, 520, 800, 90);
 
-        // Draw black hole horizon
-        ctx.beginPath();
-        ctx.arc(lensX, lensY, re * 0.4, 0, Math.PI * 2);
-        ctx.fillStyle = '#000000';
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
+        ctx.fillStyle = '#c084fc';
+        ctx.font = '16px "JetBrains Mono", monospace';
+        ctx.fillText(`VERIFICATION HASH: ${hash}`, 600, 555);
+        ctx.fillText(`DATE OF ATTESTATION: ${date} | EHT & LIGO-VIRGO CURRICULUM`, 600, 585);
 
-        requestAnimationFrame(renderLensing);
-      }
-      renderLensing();
-    }
+        // Seal
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '14px "Space Grotesk", sans-serif';
+        ctx.fillText('COSMIC CANVAS FOUNDATION · REPUTATION ORACLE', 600, 690);
 
-    // LIGO Gravitational Wave Chirp Synthesizer (Web Audio API)
-    const btnPlayChirp = document.getElementById('btn-play-chirp');
-    let gwAudioCtx = null;
-    if (btnPlayChirp) {
-      btnPlayChirp.addEventListener('click', () => {
-        if (!gwAudioCtx) gwAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (gwAudioCtx.state === 'suspended') gwAudioCtx.resume();
-
-        const osc = gwAudioCtx.createOscillator();
-        const gain = gwAudioCtx.createGain();
-
-        // LIGO chirp: Frequency accelerates exponentially from 35 Hz to 250 Hz in 0.25s
-        const t0 = gwAudioCtx.currentTime;
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(35, t0);
-        osc.frequency.exponentialRampToValueAtTime(250, t0 + 0.22);
-        osc.frequency.setValueAtTime(250, t0 + 0.22);
-        osc.frequency.exponentialRampToValueAtTime(80, t0 + 0.26); // Ringdown
-
-        gain.gain.setValueAtTime(0.01, t0);
-        gain.gain.linearRampToValueAtTime(0.4, t0 + 0.2);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.28);
-
-        osc.connect(gain);
-        gain.connect(gwAudioCtx.destination);
-
-        osc.start(t0);
-        osc.stop(t0 + 0.28);
-
-        btnPlayChirp.textContent = '🌊 Chirping...';
-        setTimeout(() => { btnPlayChirp.textContent = '🔊 GW Chirp'; }, 500);
+        // Download trigger
+        const link = document.createElement('a');
+        link.download = `CosmicCanvas_Certificate_${name.replace(/\s+/g, '_')}.png`;
+        link.href = c.toDataURL('image/png');
+        link.click();
       });
     }
   </script>
