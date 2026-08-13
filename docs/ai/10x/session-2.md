@@ -6,6 +6,7 @@ Date: 2026-08-14
 - [x] **Cinematic Video Export**: 5s 60 FPS WebM orbital recording with instant download.
 - [x] **Einstein-Rosen Wormhole Engine**: Dual throat geometry with custom pulsating shader.
 - [x] **Relativistic Time Dilation Clocks**: Real-time proper time calculation and dual HUD display.
+- [x] **Relativistic Acoustic Sonification**: Web Audio API synthesizer for spacetime frequencies.
 
 ---
 
