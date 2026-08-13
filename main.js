@@ -54,6 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnVr = document.getElementById('btn-vr');
+  if (btnVr) {
+    btnVr.addEventListener('click', () => {
+      const isGyro = engine.toggleGyroscope();
+      if (isGyro) {
+        btnVr.textContent = '🥽 Gyro: ACTIVE';
+        btnVr.style.background = 'rgba(139, 92, 246, 0.3)';
+        btnVr.style.borderColor = '#8b5cf6';
+      } else {
+        btnVr.textContent = '🥽 Gyro/VR';
+        btnVr.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnVr.style.borderColor = '#8b5cf6';
+      }
+    });
+  }
+
   // Event Listeners
   if (modeSelect) {
     modeSelect.addEventListener('change', (e) => {

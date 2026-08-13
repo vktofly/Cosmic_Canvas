@@ -53,6 +53,12 @@ export class CosmicEngine {
     this.recordTheta = 0;
     this.photonRays = [];
 
+    // Gyroscope / Device Orientation
+    this.isGyroActive = false;
+    this.gyroAlpha = 0;
+    this.gyroBeta = 0;
+    this.gyroGamma = 0;
+
     // Time Dilation State
     this.coordinateTime = 0;
     this.probeTime = 0;
@@ -404,6 +410,40 @@ export class CosmicEngine {
     const line = new THREE.Line(geometry, material);
     this.scene.add(line);
     this.photonRays.push({ mesh: line, createdAt: performance.now() });
+  }
+
+  toggleGyroscope() {
+    this.isGyroActive = !this.isGyroActive;
+    if (this.isGyroActive) {
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then((response) => {
+            if (response === 'granted') {
+              window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+            }
+          })
+          .catch(console.error);
+      } else {
+        window.addEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+      }
+    } else {
+      window.removeEventListener('deviceorientation', this.handleOrientation.bind(this), true);
+      this.camera.position.set(0, 4, 12);
+      this.camera.lookAt(0, 0, 0);
+    }
+    return this.isGyroActive;
+  }
+
+  handleOrientation(event) {
+    if (!this.isGyroActive) return;
+    const beta = event.beta ? THREE.MathUtils.degToRad(event.beta) : 0;
+    const gamma = event.gamma ? THREE.MathUtils.degToRad(event.gamma) : 0;
+    const radius = 12.0;
+
+    this.camera.position.x = radius * Math.sin(gamma);
+    this.camera.position.y = 4.0 + radius * Math.sin(beta) * 0.5;
+    this.camera.position.z = radius * Math.cos(gamma);
+    this.camera.lookAt(0, 0, 0);
   }
 
   addEventListeners() {
