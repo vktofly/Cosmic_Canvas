@@ -5,6 +5,7 @@ export class CosmicEngine {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
     this.params = {
+      mode: 'blackhole',
       mass: 1.0,
       spin: 1.0,
       lensing: 1.0,
@@ -13,6 +14,7 @@ export class CosmicEngine {
 
     this.initScene();
     this.createBlackHole();
+    this.createWormhole();
     this.createAccretionDisk();
     this.createStarfield();
     this.addEventListeners();
@@ -85,6 +87,38 @@ export class CosmicEngine {
     });
     this.photonSphere = new THREE.Mesh(haloGeometry, haloMaterial);
     this.scene.add(this.photonSphere);
+  }
+
+  createWormhole() {
+    // Einstein-Rosen Throat Geometry (Cylinder with flared ends)
+    const throatGeo = new THREE.CylinderGeometry(1.2, 3.5, 6, 64, 32, true);
+    const throatMat = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        varying vec3 vNormal;
+        void main() {
+          float pulse = 0.5 + 0.5 * sin(vUv.y * 20.0);
+          vec3 col = mix(vec3(0.1, 0.8, 0.9), vec3(0.9, 0.2, 0.8), vUv.y);
+          gl_FragColor = vec4(col * (0.8 + pulse * 0.2), 0.85);
+        }
+      `,
+      side: THREE.DoubleSide,
+      transparent: true,
+      blending: THREE.AdditiveBlending
+    });
+
+    this.wormholeThroat = new THREE.Mesh(throatGeo, throatMat);
+    this.wormholeThroat.visible = false;
+    this.scene.add(this.wormholeThroat);
   }
 
   createAccretionDisk() {
@@ -162,11 +196,21 @@ export class CosmicEngine {
   updateParams(newParams) {
     this.params = { ...this.params, ...newParams };
 
-    if (this.eventHorizon) {
+    const isWormhole = this.params.mode === 'wormhole';
+
+    if (this.eventHorizon && this.photonSphere) {
+      this.eventHorizon.visible = !isWormhole;
+      this.photonSphere.visible = !isWormhole;
       const scale = this.params.mass;
       this.eventHorizon.scale.set(scale, scale, scale);
       this.photonSphere.scale.set(scale, scale, scale);
       this.photonSphere.material.uniforms.uLensing.value = this.params.lensing;
+    }
+
+    if (this.wormholeThroat) {
+      this.wormholeThroat.visible = isWormhole;
+      const scale = this.params.mass;
+      this.wormholeThroat.scale.set(scale, 1.0, scale);
     }
 
     if (this.accretionDisk) {

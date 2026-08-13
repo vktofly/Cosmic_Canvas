@@ -17,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnReset = document.getElementById('btn-reset');
   const btnSupermassive = document.getElementById('btn-supermassive');
 
-  const fpsCounter = document.getElementById('fps-counter');
+  const modeSelect = document.getElementById('mode-select');
+  const infoTitle = document.getElementById('info-title');
+  const infoDesc = document.getElementById('info-desc');
 
   engine.onFpsUpdate = (fps) => {
     if (fpsCounter) {
@@ -26,6 +28,20 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Event Listeners
+  if (modeSelect) {
+    modeSelect.addEventListener('change', (e) => {
+      const mode = e.target.value;
+      engine.updateParams({ mode });
+
+      if (mode === 'wormhole') {
+        infoTitle.textContent = 'Einstein-Rosen Bridge (Wormhole)';
+        infoDesc.textContent = 'A hypothetical topological bridge connecting two distant regions of spacetime. The throat radius determines the cross-sectional geometry through which light and matter could theoretically pass.';
+      } else {
+        infoTitle.textContent = 'Event Horizon & Doppler Beaming';
+        infoDesc.textContent = 'Light passing near the Schwarzschild radius bends sharply due to warped spacetime. The approaching side of the accretion disk shines brighter due to relativistic Doppler beaming.';
+      }
+    });
+  }
   massSlider.addEventListener('input', (e) => {
     const val = parseFloat(e.target.value);
     massVal.textContent = val.toFixed(1);
