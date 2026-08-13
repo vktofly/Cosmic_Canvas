@@ -70,6 +70,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const scaleSelect = document.getElementById('scale-select');
+  if (scaleSelect) {
+    scaleSelect.addEventListener('change', (e) => {
+      engine.setScale(e.target.value);
+    });
+  }
+
   // Event Listeners
   if (modeSelect) {
     modeSelect.addEventListener('change', (e) => {

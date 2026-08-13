@@ -16,6 +16,7 @@ export class CosmicEngine {
     this.createBlackHole();
     this.createWormhole();
     this.createBinaryBlackHoles();
+    this.createScaleComparisonObjects();
     this.createAccretionDisk();
     this.createStarfield();
     this.addEventListeners();
@@ -59,6 +60,10 @@ export class CosmicEngine {
     this.gyroAlpha = 0;
     this.gyroBeta = 0;
     this.gyroGamma = 0;
+
+    // Scale Comparison Meshes
+    this.currentScale = 'none';
+    this.scaleMeshes = {};
 
     // Time Dilation State
     this.coordinateTime = 0;
@@ -292,6 +297,68 @@ export class CosmicEngine {
     this.scene.add(this.binaryGroup);
     this.binaryTheta = 0;
     this.binarySeparation = 4.0;
+  }
+
+  createScaleComparisonObjects() {
+    this.scaleGroup = new THREE.Group();
+
+    // 1. Earth Scale Mesh (Tiny blue sphere next to black hole)
+    const earthGeo = new THREE.SphereGeometry(0.08, 16, 16);
+    const earthMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+    earthMesh.position.set(2.8, 0, 0);
+
+    // Earth Orbit Ring
+    const earthRingGeo = new THREE.RingGeometry(2.78, 2.82, 64);
+    const earthRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+    const earthRing = new THREE.Mesh(earthRingGeo, earthRingMat);
+    earthRing.rotation.x = Math.PI / 2;
+
+    const earthGroup = new THREE.Group();
+    earthGroup.add(earthMesh);
+    earthGroup.add(earthRing);
+    earthGroup.visible = false;
+    this.scaleGroup.add(earthGroup);
+    this.scaleMeshes['earth'] = earthGroup;
+
+    // 2. Our Sun Scale Mesh (Golden glowing sphere)
+    const sunGeo = new THREE.SphereGeometry(0.75, 32, 32);
+    const sunMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24 });
+    const sunMesh = new THREE.Mesh(sunGeo, sunMat);
+    sunMesh.position.set(4.5, 0, 0);
+
+    const sunRingGeo = new THREE.RingGeometry(4.46, 4.54, 64);
+    const sunRingMat = new THREE.MeshBasicMaterial({ color: 0xfbbf24, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+    const sunRing = new THREE.Mesh(sunRingGeo, sunRingMat);
+    sunRing.rotation.x = Math.PI / 2;
+
+    const sunGroup = new THREE.Group();
+    sunGroup.add(sunMesh);
+    sunGroup.add(sunRing);
+    sunGroup.visible = false;
+    this.scaleGroup.add(sunGroup);
+    this.scaleMeshes['sun'] = sunGroup;
+
+    // 3. Solar System Scale Orbit (Outer Pluto/Kuiper Orbit Ellipse)
+    const ssGeo = new THREE.RingGeometry(8.0, 8.1, 96);
+    const ssMat = new THREE.MeshBasicMaterial({ color: 0xec4899, side: THREE.DoubleSide, transparent: true, opacity: 0.75 });
+    const ssRing = new THREE.Mesh(ssGeo, ssMat);
+    ssRing.rotation.x = Math.PI / 2;
+
+    const ssGroup = new THREE.Group();
+    ssGroup.add(ssRing);
+    ssGroup.visible = false;
+    this.scaleGroup.add(ssGroup);
+    this.scaleMeshes['solarsystem'] = ssGroup;
+
+    this.scene.add(this.scaleGroup);
+  }
+
+  setScale(scaleName) {
+    this.currentScale = scaleName;
+    Object.keys(this.scaleMeshes).forEach((key) => {
+      this.scaleMeshes[key].visible = (key === scaleName);
+    });
   }
 
   createAccretionDisk() {
