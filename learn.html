@@ -207,6 +207,57 @@
       </article>
     </div>
 
+    <!-- 10x Feature 1: Dynamic Academy Progress Tracker -->
+    <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 20px 28px; margin-bottom: 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--accent-cyan); letter-spacing: 0.08em;">Curriculum Mastery</span>
+        <h3 style="color: #ffffff; font-size: 1.2rem; margin: 4px 0 0 0;">Relativity Academy Progress: <span id="progress-percent" style="color: var(--accent-cyan);">50%</span></h3>
+      </div>
+      <div style="flex: 1; min-width: 200px; max-width: 400px;">
+        <div style="height: 10px; background: rgba(3, 7, 18, 0.8); border-radius: 9999px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);">
+          <div id="progress-bar-fill" style="height: 100%; width: 50%; background: linear-gradient(90deg, var(--accent-cyan), #a855f7); transition: width 0.4s ease;"></div>
+        </div>
+      </div>
+      <button id="btn-claim-cert" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.8rem; border-color: #a855f7; color: #c084fc;">🎓 Claim Certificate</button>
+    </div>
+
+    <!-- 10x Feature 2: Interactive Micro Gravitational Lensing Sandbox -->
+    <section class="glass-panel" style="padding: 36px; border-radius: 20px; margin-bottom: 48px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.3);">
+      <span class="chapter-badge" style="color: var(--accent-cyan);">Live Experimental Tool</span>
+      <h2 style="font-family: var(--font-heading); font-size: 1.6rem; color: #ffffff; margin-bottom: 8px;">Interactive Gravitational Lensing Sandbox</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">Drag your cursor across the starfield to move a simulated point singularity and observe spacetime deflection in real time.</p>
+
+      <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: center;">
+        <div style="position: relative; border-radius: 16px; overflow: hidden; border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 10px 30px rgba(0,0,0,0.7); width: 100%; max-width: 500px; height: 260px; background: #030712;">
+          <canvas id="lens-canvas" width="500" height="260" style="width: 100%; height: 100%; cursor: crosshair; display: block;"></canvas>
+          <div style="position: absolute; bottom: 10px; left: 14px; font-size: 0.75rem; color: var(--accent-cyan); font-family: monospace; pointer-events: none; background: rgba(3, 7, 18, 0.7); padding: 2px 8px; border-radius: 4px;">
+            θ_E Einstein Ring Deflection: Active
+          </div>
+        </div>
+
+        <div style="flex: 1; min-width: 260px;">
+          <label style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
+            Lensing Mass (M): <span id="lens-mass-val" style="color: var(--accent-cyan); font-weight: 600;">2.5</span>
+          </label>
+          <input type="range" id="lens-mass" min="0.5" max="5.0" step="0.1" value="2.5" style="width: 100%; margin-bottom: 16px;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Light rays passing near the singularity suffer coordinate angle deflection \(\alpha = 4GM / (c^2 b)\). When the observer, lens, and source align collinearly, background photons warp into a complete Einstein Ring.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certificate Modal -->
+    <div id="cert-modal" style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.85); backdrop-filter: blur(20px); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+      <div style="background: rgba(15, 23, 42, 0.95); border: 2px solid #a855f7; border-radius: 24px; padding: 40px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);">
+        <span style="font-size: 3rem;">🎓</span>
+        <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: #ffffff; margin: 12px 0 6px 0;">Certificate of Relativistic Mastery</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">Awarded by Cosmic Canvas Academy for demonstrating comprehensive understanding of Schwarzschild metrics, Kerr ergospheres, and Einstein gravitational lensing.</p>
+        <div style="background: rgba(3, 7, 18, 0.7); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 24px; font-family: monospace; font-size: 0.85rem; color: #c084fc;">
+          VERIFICATION HASH: 0xKERR_998_M87_CONFIRMED
+        </div>
+        <button id="btn-close-cert" class="btn btn-primary" style="background: linear-gradient(135deg, #a855f7, var(--accent-pink)); border: none; padding: 10px 24px;">Close Certificate</button>
+      </div>
+    </div>
+
     <!-- Interactive Knowledge Check Section -->
     <section class="glass-panel" style="padding: 36px; border-radius: 20px; margin-top: 40px; background: rgba(15, 23, 42, 0.85);">
       <span class="chapter-badge" style="color: var(--accent-amber);">Interactive Knowledge Check</span>
@@ -242,6 +293,12 @@
   </main>
 
   <script>
+    // Quiz & Progress Logic
+    let correctCount = 0;
+    const totalQuestions = 2;
+    const progressFill = document.getElementById('progress-bar-fill');
+    const progressText = document.getElementById('progress-percent');
+
     document.querySelectorAll('.quiz-opt').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const parent = e.target.closest('div').parentElement;
@@ -259,6 +316,13 @@
           e.target.style.background = 'rgba(16, 185, 129, 0.2)';
           feedback.style.color = '#34d399';
           feedback.textContent = '✓ Correct! You demonstrated accurate understanding of General Relativity.';
+          if (!parent.hasAttribute('data-scored')) {
+            parent.setAttribute('data-scored', 'true');
+            correctCount++;
+            const pct = Math.round((correctCount / totalQuestions) * 100);
+            progressFill.style.width = `${pct}%`;
+            progressText.textContent = `${pct}%`;
+          }
         } else {
           e.target.style.borderColor = '#ef4444';
           e.target.style.background = 'rgba(239, 68, 68, 0.2)';
@@ -267,6 +331,98 @@
         }
       });
     });
+
+    // Certificate Modal
+    const certModal = document.getElementById('cert-modal');
+    const btnClaim = document.getElementById('btn-claim-cert');
+    const btnCloseCert = document.getElementById('btn-close-cert');
+
+    if (btnClaim && certModal) {
+      btnClaim.addEventListener('click', () => { certModal.style.display = 'flex'; });
+      btnCloseCert.addEventListener('click', () => { certModal.style.display = 'none'; });
+      certModal.addEventListener('click', (e) => { if (e.target === certModal) certModal.style.display = 'none'; });
+    }
+
+    // Micro Gravitational Lensing 2D Canvas Simulator
+    const canvas = document.getElementById('lens-canvas');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      let lensX = canvas.width / 2;
+      let lensY = canvas.height / 2;
+      let lensM = 2.5;
+
+      const lensSlider = document.getElementById('lens-mass');
+      const lensVal = document.getElementById('lens-mass-val');
+      if (lensSlider) {
+        lensSlider.addEventListener('input', (e) => {
+          lensM = parseFloat(e.target.value);
+          lensVal.textContent = lensM.toFixed(1);
+        });
+      }
+
+      // Generate fixed background stars
+      const stars = [];
+      for (let i = 0; i < 80; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5 + 0.5,
+          color: Math.random() > 0.3 ? '#ffffff' : (Math.random() > 0.5 ? '#38bdf8' : '#f472b6')
+        });
+      }
+
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        lensX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        lensY = (e.clientY - rect.top) * (canvas.height / rect.height);
+      });
+
+      function renderLensing() {
+        ctx.fillStyle = '#030712';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const re = lensM * 18; // Einstein radius scale
+
+        // Draw deflected background stars
+        stars.forEach((s) => {
+          const dx = s.x - lensX;
+          const dy = s.y - lensY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist > 2) {
+            // Deflection displacement
+            const defDist = dist + (re * re) / dist;
+            const factor = defDist / dist;
+            const px = lensX + dx * factor;
+            const py = lensY + dy * factor;
+
+            ctx.beginPath();
+            ctx.arc(px, py, s.radius * (1 + (re / (dist + 10))), 0, Math.PI * 2);
+            ctx.fillStyle = s.color;
+            ctx.fill();
+          }
+        });
+
+        // Draw Einstein Ring glow
+        ctx.beginPath();
+        ctx.arc(lensX, lensY, re, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Draw black hole horizon
+        ctx.beginPath();
+        ctx.arc(lensX, lensY, re * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = '#000000';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        requestAnimationFrame(renderLensing);
+      }
+      renderLensing();
+    }
   </script>
 </body>
 </html>
