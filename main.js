@@ -17,6 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnReset = document.getElementById('btn-reset');
   const btnSupermassive = document.getElementById('btn-supermassive');
 
+  const fpsCounter = document.getElementById('fps-counter');
+
+  engine.onFpsUpdate = (fps) => {
+    if (fpsCounter) {
+      fpsCounter.textContent = `${fps} FPS`;
+    }
+  };
+
   // Event Listeners
   massSlider.addEventListener('input', (e) => {
     const val = parseFloat(e.target.value);

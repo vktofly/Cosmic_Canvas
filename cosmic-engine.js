@@ -42,6 +42,10 @@ export class CosmicEngine {
     this.controls.maxDistance = 30.0;
 
     this.clock = new THREE.Clock();
+    this.frameCount = 0;
+    this.lastFpsTime = performance.now();
+    this.fps = 60;
+    this.onFpsUpdate = null;
   }
 
   createBlackHole() {
@@ -177,6 +181,17 @@ export class CosmicEngine {
 
   animate() {
     requestAnimationFrame(() => this.animate());
+
+    const now = performance.now();
+    this.frameCount++;
+    if (now - this.lastFpsTime >= 500) {
+      this.fps = Math.round((this.frameCount * 1000) / (now - this.lastFpsTime));
+      this.frameCount = 0;
+      this.lastFpsTime = now;
+      if (typeof this.onFpsUpdate === 'function') {
+        this.onFpsUpdate(this.fps);
+      }
+    }
 
     const delta = this.clock.getDelta();
     if (this.accretionDisk && this.diskPositions) {

@@ -18,7 +18,7 @@ A web-native, interactive 3D astrophysics visualization engine built using Three
   - Update `cosmic-engine.js` particle update loop with radius-dependent orbital speeds.
   - Tie speeds to `spin` and `mass` parameter sliders.
 
-- [ ] **Task 4: FPS & Performance Monitoring**
+- [x] **Task 4: FPS & Performance Monitoring**
   - Add real-time FPS counter logic in header.
 
 - [ ] **Task 5: Doppler Shift Shader & Gravitational Relativistic Redshift**
