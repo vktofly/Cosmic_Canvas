@@ -25,6 +25,48 @@ document.addEventListener('DOMContentLoaded', () => {
   const clockProbe = document.getElementById('clock-probe');
   const dilationFactor = document.getElementById('dilation-factor');
 
+  // Parse Deep-Link URL Search Parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialParams = {};
+  if (urlParams.has('mass')) {
+    const m = parseFloat(urlParams.get('mass'));
+    initialParams.mass = m;
+    massSlider.value = m;
+    massVal.textContent = m.toFixed(1);
+  }
+  if (urlParams.has('spin')) {
+    const s = parseFloat(urlParams.get('spin'));
+    initialParams.spin = s;
+    spinSlider.value = s;
+    spinVal.textContent = s.toFixed(1);
+  }
+  if (urlParams.has('tilt')) {
+    const t = parseInt(urlParams.get('tilt'), 10);
+    initialParams.tilt = t;
+    tiltSlider.value = t;
+    tiltVal.textContent = t;
+  }
+  if (urlParams.has('lensing')) {
+    const l = parseFloat(urlParams.get('lensing'));
+    initialParams.lensing = l;
+    lensingSlider.value = l;
+    lensingVal.textContent = l.toFixed(1);
+  }
+  if (urlParams.has('mode')) {
+    const mode = urlParams.get('mode');
+    if (mode === 'wormhole' || mode === 'binary' || mode === 'multibody') {
+      initialParams.mode = mode;
+      if (modeSelect) modeSelect.value = mode;
+    } else if (mode === 'ton618') {
+      const scaleSelectEl = document.getElementById('scale-select');
+      if (scaleSelectEl) scaleSelectEl.value = 'ton618';
+      engine.setScale('ton618');
+    }
+  }
+  if (Object.keys(initialParams).length > 0) {
+    engine.updateParams(initialParams);
+  }
+
   engine.onFpsUpdate = (fps) => {
     if (fpsCounter) {
       fpsCounter.textContent = `${fps} FPS`;

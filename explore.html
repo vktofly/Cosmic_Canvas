@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Programmatic SEO & Black Hole Directory — Cosmic Canvas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      overflow-y: auto !important;
+      height: auto !important;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 10%, #0f172a 0%, #030712 100%);
+      user-select: text;
+    }
+    .directory-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 120px 24px 80px 24px;
+    }
+    .directory-hero {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .directory-hero h1 {
+      font-family: var(--font-heading);
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      text-wrap: balance;
+    }
+    .search-box {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto 40px auto;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--panel-border);
+      color: #ffffff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);
+    }
+    .bh-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .bh-card {
+      padding: 28px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .bh-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.4);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+    }
+    .bh-card h3 {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .bh-type {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-cyan);
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+    .bh-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.12);
+    }
+  </style>
+</head>
+<body>
+  <!-- Global Navigation Header -->
+  <header class="glass-header" role="banner" style="position: fixed; top: 16px; left: 16px; right: 16px; z-index: 100;">
+    <div class="brand">
+      <span class="icon" aria-hidden="true">🌌</span>
+      <div>
+        <a href="/" style="text-decoration: none;"><h1 style="font-size: 1.3rem; margin: 0;">Cosmic Canvas</h1></a>
+        <p class="subtitle">Astronomical Black Hole Index</p>
+      </div>
+    </div>
+    <nav style="display: flex; gap: 8px; align-items: center;" aria-label="Main Navigation">
+      <a href="/" class="nav-link">🚀 3D Studio</a>
+      <a href="/learn.html" class="nav-link">📚 Academy</a>
+      <a href="/gallery.html" class="nav-link">🎬 Gallery</a>
+      <a href="/explore.html" class="nav-link active">🔭 Directory</a>
+      <a href="/" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">Launch Engine</a>
+    </nav>
+  </header>
+
+  <main class="directory-container">
+    <section class="directory-hero">
+      <span style="display: inline-block; padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-cyan); background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); margin-bottom: 16px;">Verified Astrophysical Catalog</span>
+      <h1>Astronomical Black Hole Directory</h1>
+      <p style="font-size: 1.1rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 32px auto; line-height: 1.6; text-wrap: balance;">Search and launch real-time 3D relativistic simulations for verified stellar, intermediate, and supermassive black holes.</p>
+      
+      <div class="search-box">
+        <input type="text" id="bh-search" class="search-input" placeholder="Filter by name (e.g. M87, Gargantua, Cygnus)..." />
+      </div>
+    </section>
+
+    <div id="catalog-grid" class="bh-grid">
+      <!-- M87* -->
+      <article class="bh-card" data-name="m87 event horizon telescope supermassive virgo a">
+        <div>
+          <span class="bh-type">Supermassive (6.5B M☉)</span>
+          <h3>M87* (Messier 87)</h3>
+          <p>The first black hole ever imaged by the Event Horizon Telescope (EHT). Located 55 million light-years away in the constellation Virgo with a massive relativistic plasma jet.</p>
+        </div>
+        <a href="/?mass=2.8&spin=0.9&tilt=17" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Simulate M87* →</a>
+      </article>
+
+      <!-- Sagittarius A* -->
+      <article class="bh-card" data-name="sagittarius a milky way galactic center sgr a">
+        <div>
+          <span class="bh-type">Galactic Center (4.3M M☉)</span>
+          <h3>Sagittarius A*</h3>
+          <p>The supermassive black hole at the center of our Milky Way galaxy. Imaged by EHT in 2022 displaying three distinctive accretion hotspots.</p>
+        </div>
+        <a href="/?mass=2.4&spin=0.52&tilt=15" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Simulate Sagittarius A* →</a>
+      </article>
+
+      <!-- Cygnus X-1 -->
+      <article class="bh-card" data-name="cygnus x-1 stellar microquasar hde 226868">
+        <div>
+          <span class="bh-type">Stellar Mass (21.2 M☉)</span>
+          <h3>Cygnus X-1</h3>
+          <p>First widely accepted black hole candidate. Fast-spinning stellar singularity pulling high-velocity accreted gas from blue supergiant companion star HDE 226868.</p>
+        </div>
+        <a href="/?mass=0.8&spin=2.8&tilt=60" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Simulate Cygnus X-1 →</a>
+      </article>
+
+      <!-- Gargantua -->
+      <article class="bh-card" data-name="gargantua interstellar thorne kerr extremal">
+        <div>
+          <span class="bh-type">Extreme Kerr (100M M☉)</span>
+          <h3>Gargantua</h3>
+          <p>Supermassive rotating black hole based on Kip Thorne's equations from Interstellar. Features extreme spin \(a^* = 0.998\) and edge-on gravitational lensing.</p>
+        </div>
+        <a href="/?mass=3.0&spin=2.9&tilt=85" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Simulate Gargantua →</a>
+      </article>
+
+      <!-- TON 618 -->
+      <article class="bh-card" data-name="ton 618 ultramassive quasar canes venatici">
+        <div>
+          <span class="bh-type">Ultramassive (66B M☉)</span>
+          <h3>TON 618</h3>
+          <p>One of the most massive black holes known in the observable universe. Diameter spans 390 billion kilometers, easily swallowing entire planetary systems.</p>
+        </div>
+        <a href="/?mode=ton618" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Simulate TON 618 →</a>
+      </article>
+
+      <!-- GW150914 Binary Merger -->
+      <article class="bh-card" data-name="gw150914 ligo gravitational wave binary merger">
+        <div>
+          <span class="bh-type">Binary Coalescence (36 + 29 M☉)</span>
+          <h3>GW150914 Merger</h3>
+          <p>First direct gravitational wave detection by LIGO in 2015. Two stellar black holes merging into a single spinning singularity, converting 3 solar masses into pure gravitational radiation.</p>
+        </div>
+        <a href="/?mode=binary" class="btn btn-secondary" style="text-align: center; text-decoration: none;">Simulate GW150914 →</a>
+      </article>
+    </div>
+  </main>
+
+  <script>
+    const searchInput = document.getElementById('bh-search');
+    const cards = document.querySelectorAll('.bh-card');
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        cards.forEach((card) => {
+          const name = card.getAttribute('data-name');
+          if (!query || name.includes(query)) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
