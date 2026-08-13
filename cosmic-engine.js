@@ -83,6 +83,11 @@ export class CosmicEngine {
     this.multiBodies = [];
     this.multiBodyGroup = new THREE.Group();
 
+    // Zero-GC Reusable Vector Buffers for 60 FPS Physics
+    this._v1 = new THREE.Vector3();
+    this._v2 = new THREE.Vector3();
+    this._diff = new THREE.Vector3();
+
     // Scale Comparison Meshes
     this.currentScale = 'none';
     this.scaleMeshes = {};
@@ -900,27 +905,32 @@ export class CosmicEngine {
       });
     }
 
-    // Multi-Body Spacetime Gravity Sandbox N-Body Physics Solver
+    // Multi-Body Spacetime Gravity Sandbox Zero-GC N-Body Physics Solver
     for (let i = 0; i < this.multiBodies.length; i++) {
       const b1 = this.multiBodies[i];
       // Central black hole gravity
       const rCenter = b1.pos.length();
       const accelCenter = (32.0 * this.params.mass) / Math.max(1.0, rCenter * rCenter);
-      b1.vel.add(b1.pos.clone().negate().normalize().multiplyScalar(accelCenter * delta));
+      this._v1.copy(b1.pos).negate().normalize().multiplyScalar(accelCenter * delta);
+      b1.vel.add(this._v1);
 
       // Inter-body gravitational attraction between custom singularities
       for (let j = i + 1; j < this.multiBodies.length; j++) {
         const b2 = this.multiBodies[j];
-        const diff = b2.pos.clone().sub(b1.pos);
-        const dist = Math.max(0.5, diff.length());
+        this._diff.copy(b2.pos).sub(b1.pos);
+        const dist = Math.max(0.5, this._diff.length());
         const force = (12.0 * b1.mass * b2.mass) / (dist * dist);
-        const dir = diff.normalize();
+        this._diff.normalize();
 
-        b1.vel.add(dir.clone().multiplyScalar((force / b1.mass) * delta));
-        b2.vel.add(dir.clone().negate().multiplyScalar((force / b2.mass) * delta));
+        this._v2.copy(this._diff).multiplyScalar((force / b1.mass) * delta);
+        b1.vel.add(this._v2);
+
+        this._v2.copy(this._diff).negate().multiplyScalar((force / b2.mass) * delta);
+        b2.vel.add(this._v2);
       }
 
-      b1.pos.add(b1.vel.clone().multiplyScalar(delta));
+      this._v1.copy(b1.vel).multiplyScalar(delta);
+      b1.pos.add(this._v1);
       b1.group.position.copy(b1.pos);
     }
 
