@@ -177,6 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnStar = document.getElementById('btn-star');
+  if (btnStar) {
+    btnStar.addEventListener('click', () => {
+      engine.spawnStar();
+    });
+  }
+
   const btnPhoton = document.getElementById('btn-photon');
 
   btnPhoton.addEventListener('click', () => {

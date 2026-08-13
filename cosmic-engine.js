@@ -52,6 +52,7 @@ export class CosmicEngine {
     this.isRecording = false;
     this.recordTheta = 0;
     this.photonRays = [];
+    this.stellarDebris = [];
 
     // Gyroscope / Device Orientation
     this.isGyroActive = false;
@@ -445,6 +446,58 @@ export class CosmicEngine {
     this.photonRays.push({ mesh: line, createdAt: performance.now() });
   }
 
+  spawnStar() {
+    this.playPhotonSound();
+
+    // 1200 particles representing a star undergoing Tidal Disruption Event (TDE)
+    const starCount = 1200;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(starCount * 3);
+    const colors = new Float32Array(starCount * 3);
+    const velocities = [];
+
+    const origin = new THREE.Vector3(-14, (Math.random() - 0.5) * 3, 10);
+    const baseVel = new THREE.Vector3(10, 0, -6).normalize().multiplyScalar(9);
+
+    for (let i = 0; i < starCount; i++) {
+      const offset = new THREE.Vector3(
+        (Math.random() - 0.5) * 0.8,
+        (Math.random() - 0.5) * 0.8,
+        (Math.random() - 0.5) * 0.8
+      );
+      const pos = origin.clone().add(offset);
+      positions[i * 3] = pos.x;
+      positions[i * 3 + 1] = pos.y;
+      positions[i * 3 + 2] = pos.z;
+
+      velocities.push(baseVel.clone().add(offset.clone().multiplyScalar(0.5)));
+
+      // Glowing golden-white stellar core
+      colors[i * 3] = 1.0;
+      colors[i * 3 + 1] = 0.85 + Math.random() * 0.15;
+      colors[i * 3 + 2] = 0.4 + Math.random() * 0.4;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+      size: 0.15,
+      vertexColors: true,
+      transparent: true,
+      opacity: 1.0,
+      blending: THREE.AdditiveBlending
+    });
+
+    const points = new THREE.Points(geometry, material);
+    this.scene.add(points);
+    this.stellarDebris.push({
+      mesh: points,
+      velocities: velocities,
+      createdAt: performance.now()
+    });
+  }
+
   toggleGyroscope() {
     this.isGyroActive = !this.isGyroActive;
     if (this.isGyroActive) {
@@ -501,17 +554,50 @@ export class CosmicEngine {
       }
     }
 
-    // Fade out and clean up old photon rays
-    for (let i = this.photonRays.length - 1; i >= 0; i--) {
-      const ray = this.photonRays[i];
-      const age = (now - ray.createdAt) / 1000;
-      if (age > 4.0) {
-        this.scene.remove(ray.mesh);
-        ray.mesh.geometry.dispose();
-        ray.mesh.material.dispose();
-        this.photonRays.splice(i, 1);
-      } else if (age > 2.5) {
-        ray.mesh.material.opacity = (4.0 - age) / 1.5;
+    // Animate and Spaghettify Stellar Debris (Tidal Disruption Event)
+    for (let i = this.stellarDebris.length - 1; i >= 0; i--) {
+      const debris = this.stellarDebris[i];
+      const age = (now - debris.createdAt) / 1000;
+      if (age > 6.0) {
+        this.scene.remove(debris.mesh);
+        debris.mesh.geometry.dispose();
+        debris.mesh.material.dispose();
+        this.stellarDebris.splice(i, 1);
+        continue;
+      }
+
+      const posAttr = debris.mesh.geometry.attributes.position;
+      const positions = posAttr.array;
+      const count = positions.length / 3;
+
+      for (let p = 0; p < count; p++) {
+        const px = positions[p * 3];
+        const py = positions[p * 3 + 1];
+        const pz = positions[p * 3 + 2];
+        const r = Math.sqrt(px * px + py * py + pz * pz);
+
+        if (r > 1.2 * this.params.mass) {
+          // Gravitational acceleration towards center: a = G*M / r^2
+          const accelMag = (35.0 * this.params.mass) / (r * r);
+          const vel = debris.velocities[p];
+          vel.x += (-px / r) * accelMag * 0.016;
+          vel.y += (-py / r) * accelMag * 0.016;
+          vel.z += (-pz / r) * accelMag * 0.016;
+
+          // Tidal elongation (spaghettification along radial vector)
+          positions[p * 3] += vel.x * 0.016;
+          positions[p * 3 + 1] += vel.y * 0.016;
+          positions[p * 3 + 2] += vel.z * 0.016;
+        } else {
+          // Fall through event horizon
+          positions[p * 3] = 0;
+          positions[p * 3 + 1] = 0;
+          positions[p * 3 + 2] = 0;
+        }
+      }
+      posAttr.needsUpdate = true;
+      if (age > 4.5) {
+        debris.mesh.material.opacity = (6.0 - age) / 1.5;
       }
     }
 
