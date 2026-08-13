@@ -226,6 +226,104 @@
         <a href="/" class="btn btn-secondary" style="text-align: center; text-decoration: none; border-color: #fbbf24; color: #fbbf24;">Load in Studio →</a>
       </article>
     </div>
+
+    <!-- Section: Side-by-Side Preset Comparison Matrix -->
+    <section style="margin-top: 40px; padding: 36px; border-radius: 20px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(236, 72, 153, 0.3);">
+      <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--accent-pink); letter-spacing: 0.08em; display: inline-block; margin-bottom: 8px;">Physical Comparison Tool</span>
+      <h2 style="font-family: var(--font-heading); font-size: 1.8rem; color: #ffffff; margin-bottom: 8px;">Side-by-Side Preset Comparator</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 28px;">Select any two black holes to evaluate physical scale, spin rate, and horizon radius side-by-side.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+        <!-- Selector Left -->
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--accent-cyan); font-weight: 600; margin-bottom: 8px;">Select Black Hole A:</label>
+          <select id="comp-select-a" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(3, 7, 18, 0.8); border: 1px solid rgba(56, 189, 248, 0.4); color: #ffffff; font-family: var(--font-body); outline: none;">
+            <option value="gargantua" selected>Gargantua (100M M☉, a*=0.998)</option>
+            <option value="cygnus">Cygnus X-1 (21.2 M☉, a*=0.95)</option>
+            <option value="sgra">Sagittarius A* (4.3M M☉, a*=0.52)</option>
+            <option value="ton618">TON 618 (66B M☉, a*=0.90)</option>
+          </select>
+        </div>
+
+        <!-- Selector Right -->
+        <div>
+          <label style="display: block; font-size: 0.85rem; color: var(--accent-pink); font-weight: 600; margin-bottom: 8px;">Select Black Hole B:</label>
+          <select id="comp-select-b" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(3, 7, 18, 0.8); border: 1px solid rgba(236, 72, 153, 0.4); color: #ffffff; font-family: var(--font-body); outline: none;">
+            <option value="gargantua">Gargantua (100M M☉, a*=0.998)</option>
+            <option value="cygnus" selected>Cygnus X-1 (21.2 M☉, a*=0.95)</option>
+            <option value="sgra">Sagittarius A* (4.3M M☉, a*=0.52)</option>
+            <option value="ton618">TON 618 (66B M☉, a*=0.90)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Comparative Table -->
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.12);">
+              <th style="padding: 12px; color: var(--text-muted); font-weight: 600;">Astrophysical Metric</th>
+              <th id="th-name-a" style="padding: 12px; color: var(--accent-cyan); font-weight: 700;">Gargantua</th>
+              <th id="th-name-b" style="padding: 12px; color: var(--accent-pink); font-weight: 700;">Cygnus X-1</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding: 12px; color: var(--text-muted);">Solar Mass (M☉)</td>
+              <td id="td-mass-a" style="padding: 12px; font-weight: 600; font-family: monospace; color: #ffffff;">100,000,000 M☉</td>
+              <td id="td-mass-b" style="padding: 12px; font-weight: 600; font-family: monospace; color: #ffffff;">21.2 M☉</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding: 12px; color: var(--text-muted);">Dimensionless Spin (a*)</td>
+              <td id="td-spin-a" style="padding: 12px; font-weight: 600; font-family: monospace; color: #ffffff;">0.998c (Extremal)</td>
+              <td id="td-spin-b" style="padding: 12px; font-weight: 600; font-family: monospace; color: #ffffff;">0.95c (High Spin)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.06);">
+              <td style="padding: 12px; color: var(--text-muted);">Schwarzschild Radius (Rs)</td>
+              <td id="td-rs-a" style="padding: 12px; font-weight: 600; font-family: monospace; color: #ffffff;">295,300,000 km</td>
+              <td id="td-rs-b" style="padding: 12px; font-weight: 600; font-family: monospace; color: #ffffff;">62.6 km</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px; color: var(--text-muted);">Ergosphere Energy Extraction</td>
+              <td id="td-penrose-a" style="padding: 12px; font-weight: 600; font-family: monospace; color: #34d399;">20.6% Efficiency</td>
+              <td id="td-penrose-b" style="padding: 12px; font-weight: 600; font-family: monospace; color: #34d399;">18.5% Efficiency</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
+
+  <script>
+    const data = {
+      gargantua: { name: 'Gargantua', mass: '100,000,000 M☉', spin: '0.998c (Extremal)', rs: '295,300,000 km', penrose: '20.6% Efficiency' },
+      cygnus: { name: 'Cygnus X-1', mass: '21.2 M☉', spin: '0.95c (High Spin)', rs: '62.6 km', penrose: '18.5% Efficiency' },
+      sgra: { name: 'Sagittarius A*', mass: '4,300,000 M☉', spin: '0.52c (Moderate)', rs: '12,700,000 km', penrose: '8.4% Efficiency' },
+      ton618: { name: 'TON 618', mass: '66,000,000,000 M☉', spin: '0.90c (High Spin)', rs: '390,000,000,000 km', penrose: '17.2% Efficiency' }
+    };
+
+    const selA = document.getElementById('comp-select-a');
+    const selB = document.getElementById('comp-select-b');
+
+    const updateComp = () => {
+      const a = data[selA.value];
+      const b = data[selB.value];
+
+      document.getElementById('th-name-a').textContent = a.name;
+      document.getElementById('td-mass-a').textContent = a.mass;
+      document.getElementById('td-spin-a').textContent = a.spin;
+      document.getElementById('td-rs-a').textContent = a.rs;
+      document.getElementById('td-penrose-a').textContent = a.penrose;
+
+      document.getElementById('th-name-b').textContent = b.name;
+      document.getElementById('td-mass-b').textContent = b.mass;
+      document.getElementById('td-spin-b').textContent = b.spin;
+      document.getElementById('td-rs-b').textContent = b.rs;
+      document.getElementById('td-penrose-b').textContent = b.penrose;
+    };
+
+    selA.addEventListener('change', updateComp);
+    selB.addEventListener('change', updateComp);
+  </script>
 </body>
 </html>
