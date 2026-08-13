@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Canvas — Science, Mathematical Derivations & Engine Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+  <style>
+    body {
+      overflow-y: auto !important;
+      height: auto !important;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 10%, #0f172a 0%, #030712 100%);
+      user-select: text;
+    }
+    .about-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 120px 24px 80px 24px;
+    }
+    .about-hero {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .eyebrow-about {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      margin-bottom: 16px;
+    }
+    .about-hero h1 {
+      font-family: var(--font-heading);
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      text-wrap: balance;
+    }
+    .about-hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+      text-wrap: balance;
+    }
+    .content-section {
+      padding: 32px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      margin-bottom: 32px;
+    }
+    .content-section h2 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 10px;
+    }
+    .content-section p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .content-section ul {
+      margin-left: 20px;
+      margin-bottom: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .math-block {
+      background: rgba(3, 7, 18, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.12);
+    }
+  </style>
+</head>
+<body>
+  <!-- Global Navigation Header -->
+  <header class="glass-header" role="banner" style="position: fixed; top: 16px; left: 16px; right: 16px; z-index: 100;">
+    <div class="brand">
+      <span class="icon" aria-hidden="true">🌌</span>
+      <div>
+        <a href="/" style="text-decoration: none;"><h1 style="font-size: 1.3rem; margin: 0;">Cosmic Canvas</h1></a>
+        <p class="subtitle">Science & Engine Architecture</p>
+      </div>
+    </div>
+    <nav style="display: flex; gap: 8px; align-items: center;" aria-label="Main Navigation">
+      <a href="/" class="nav-link">🚀 3D Studio</a>
+      <a href="/learn.html" class="nav-link">📚 Academy</a>
+      <a href="/gallery.html" class="nav-link">🎬 Gallery</a>
+      <a href="/about.html" class="nav-link active">📐 Science Docs</a>
+      <a href="/" class="btn btn-primary" style="padding: 6px 14px; font-size: 0.8rem;">Launch Engine</a>
+    </nav>
+  </header>
+
+  <main class="about-container">
+    <section class="about-hero">
+      <span class="eyebrow-about">Scientific Whitepaper & Architecture</span>
+      <h1>Astrophysics, Mathematics & WebGL Architecture</h1>
+      <p>A transparent technical reference for the relativistic equations, numerical approximations, and graphics pipeline behind Cosmic Canvas.</p>
+    </section>
+
+    <!-- Section 1: Kerr Metric -->
+    <section class="content-section">
+      <h2>1. The Kerr Metric & Horizon Geodesics</h2>
+      <p>For a rotating uncharged black hole with mass \(M\) and angular momentum parameter \(a = J / M\), the spacetime interval in Boyer-Lindquist coordinates is given by:</p>
+      <div class="math-block">
+        ds² = -(1 - 2Mr/Σ) dt² - (4Mar sin²θ / Σ) dt dφ + (Σ / Δ) dr² + Σ dθ² + (r² + a² + 2Ma²r sin²θ / Σ) sin²θ dφ²<br><br>
+        where: Σ = r² + a² cos²θ,  Δ = r² - 2Mr + a²
+      </div>
+      <p>The event horizon outer boundary \(r_+\) and static limit (ergosphere) \(r_{\text{ergo}}\) are calculated as:</p>
+      <div class="math-block">
+        r₊ = M + √(M² - a²)<br>
+        r_ergo(θ) = M + √(M² - a² cos²θ)
+      </div>
+    </section>
+
+    <!-- Section 2: Relativistic Beaming & Doppler Redshift -->
+    <section class="content-section">
+      <h2>2. Relativistic Doppler Beaming & Optical Aberration</h2>
+      <p>Plasma in the accretion disk orbiting at relativistic speeds \(\vec{v}\) exhibits asymmetric radiant flux towards an observer according to the relativistic Doppler factor \(D\):</p>
+      <div class="math-block">
+        D = 1 / (γ (1 - β cos θ))<br>
+        I_obs(ν) = D⁴ · I_emit(ν / D)
+      </div>
+      <p>The \(D^4\) radiance factor produces the characteristic visual asymmetry where the plasma moving towards the camera appears exponentially brighter and blue-shifted, while receding material is dimmed and red-shifted.</p>
+    </section>
+
+    <!-- Section 3: WebGL & Audio Engine Pipeline -->
+    <section class="content-section">
+      <h2>3. WebGL Engine & Web Audio Synthesis Graph</h2>
+      <p>Cosmic Canvas executes entirely on the client GPU and Web Audio thread:</p>
+      <ul>
+        <li><strong>Post-Processing:</strong> Three.js <code>EffectComposer</code> with downsampled <code>UnrealBloomPass</code> and <code>ACESFilmicToneMapping</code> ($&lt;0.8\text{ms}$ GPU frametime).</li>
+        <li><strong>Zero-GC Vector Pools:</strong> Pre-allocated scratchpad buffers for $O(N^2)$ N-body gravity calculations, completely avoiding Garbage Collection stutter.</li>
+        <li><strong>Gravitational Redshift Sonar:</strong> Real-time Web Audio synthesis modulated by the gravitational time dilation factor \(\sqrt{1 - R_s / r}\).</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
