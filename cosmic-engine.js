@@ -171,6 +171,44 @@ export class CosmicEngine {
     }
   }
 
+    this.photonRays = [];
+  }
+
+  launchPhoton() {
+    const startPos = new THREE.Vector3(-10, (Math.random() - 0.5) * 2, 8);
+    const velocity = new THREE.Vector3(12, 0, -4).normalize().multiplyScalar(15);
+
+    const points = [startPos.clone()];
+    let currentPos = startPos.clone();
+    let currentVel = velocity.clone();
+    const dt = 0.03;
+
+    for (let step = 0; step < 120; step++) {
+      const r = currentPos.length();
+      if (r < 1.5 * this.params.mass) break; // Trapped inside horizon
+
+      // Relativistic acceleration towards origin
+      const accelMag = (2.5 * this.params.mass * this.params.lensing) / (r * r * r);
+      const accel = currentPos.clone().negate().multiplyScalar(accelMag);
+
+      currentVel.add(accel.multiplyScalar(dt));
+      currentPos.add(currentVel.clone().multiplyScalar(dt));
+      points.push(currentPos.clone());
+    }
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const material = new THREE.LineBasicMaterial({
+      color: 0xf59e0b,
+      linewidth: 3,
+      transparent: true,
+      opacity: 0.9
+    });
+
+    const line = new THREE.Line(geometry, material);
+    this.scene.add(line);
+    this.photonRays.push({ mesh: line, createdAt: performance.now() });
+  }
+
   addEventListeners() {
     window.addEventListener('resize', () => {
       this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -190,6 +228,20 @@ export class CosmicEngine {
       this.lastFpsTime = now;
       if (typeof this.onFpsUpdate === 'function') {
         this.onFpsUpdate(this.fps);
+      }
+    }
+
+    // Fade out and clean up old photon rays
+    for (let i = this.photonRays.length - 1; i >= 0; i--) {
+      const ray = this.photonRays[i];
+      const age = (now - ray.createdAt) / 1000;
+      if (age > 4.0) {
+        this.scene.remove(ray.mesh);
+        ray.mesh.geometry.dispose();
+        ray.mesh.material.dispose();
+        this.photonRays.splice(i, 1);
+      } else if (age > 2.5) {
+        ray.mesh.material.opacity = (4.0 - age) / 1.5;
       }
     }
 

@@ -64,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.updateParams({ mass: 1.0, spin: 1.0, lensing: 1.0, tilt: 25 });
   });
 
+  const btnPhoton = document.getElementById('btn-photon');
+
+  btnPhoton.addEventListener('click', () => {
+    engine.launchPhoton();
+  });
+
   btnSupermassive.addEventListener('click', () => {
     massSlider.value = 2.8;
     spinSlider.value = 2.5;
