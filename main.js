@@ -500,7 +500,38 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.recordTheta = 0;
 
     const canvas = engine.renderer.domElement;
-    const stream = canvas.captureStream(60);
+    
+    // Create dedicated compositing canvas for watermark & telemetry overlay
+    const compCanvas = document.createElement('canvas');
+    compCanvas.width = canvas.width;
+    compCanvas.height = canvas.height;
+    const ctx = compCanvas.getContext('2d');
+
+    let isExportActive = true;
+
+    const drawFrame = () => {
+      if (!isExportActive) return;
+      ctx.drawImage(canvas, 0, 0);
+
+      // Render sleek semi-transparent watermark in lower-left
+      ctx.save();
+      ctx.font = '600 18px Outfit, sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 8;
+      ctx.fillText('✦ Rendered on Cosmic Canvas', 24, compCanvas.height - 24);
+
+      // Telemetry metadata tag
+      ctx.font = '500 12px monospace';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.9)';
+      ctx.fillText(`KERR a*=${engine.params.spin.toFixed(2)} | MASS=${engine.params.mass.toFixed(1)} M☉ | 60 FPS`, 24, compCanvas.height - 48);
+      ctx.restore();
+
+      requestAnimationFrame(drawFrame);
+    };
+    drawFrame();
+
+    const stream = compCanvas.captureStream(60);
     const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
     const chunks = [];
 
@@ -509,6 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     mediaRecorder.onstop = () => {
+      isExportActive = false;
       const blob = new Blob(chunks, { type: 'video/webm' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
