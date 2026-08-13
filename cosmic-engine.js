@@ -176,33 +176,66 @@ export class CosmicEngine {
   }
 
   createWormhole() {
-    // Einstein-Rosen Throat Geometry (Cylinder with flared ends)
-    const throatGeo = new THREE.CylinderGeometry(1.2, 3.5, 6, 64, 32, true);
-    const throatMat = new THREE.ShaderMaterial({
+    // 3D Spherical Wormhole Throat (Interstellar-style Spherical Gravitational Lens)
+    const sphereGeo = new THREE.SphereGeometry(2.0, 64, 64);
+    const wormholeMat = new THREE.ShaderMaterial({
       vertexShader: `
-        varying vec2 vUv;
         varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        varying vec3 vViewDir;
         void main() {
-          vUv = uv;
           vNormal = normalize(normalMatrix * normal);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+          vWorldPos = worldPosition.xyz;
+          vViewDir = normalize(cameraPosition - worldPosition.xyz);
+          gl_Position = projectionMatrix * viewMatrix * worldPosition;
         }
       `,
       fragmentShader: `
-        varying vec2 vUv;
         varying vec3 vNormal;
+        varying vec3 vWorldPos;
+        varying vec3 vViewDir;
+        uniform float uTime;
+        uniform float uLensing;
+
+        // Procedural Starfield & Alternate Nebula
+        float hash(vec3 p) {
+          p = fract(p * 0.3183099 + 0.1);
+          p *= 17.0;
+          return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+        }
+
         void main() {
-          float pulse = 0.5 + 0.5 * sin(vUv.y * 20.0);
-          vec3 col = mix(vec3(0.1, 0.8, 0.9), vec3(0.9, 0.2, 0.8), vUv.y);
-          gl_FragColor = vec4(col * (0.8 + pulse * 0.2), 0.85);
+          // Spherical Gravitational Refraction Angle
+          vec3 refRay = refract(-vViewDir, vNormal, 0.75);
+          if (length(refRay) == 0.0) refRay = reflect(-vViewDir, vNormal);
+
+          // Alternate Universe Celestial Coordinate Space
+          vec3 altCoord = refRay * 4.0 + vec3(sin(uTime * 0.2), cos(uTime * 0.15), 0.0);
+          float stars = step(0.985, hash(floor(altCoord * 16.0)));
+
+          // Magenta/Teal Alternate Galaxy Core Nebula
+          float nebula = 0.5 + 0.5 * sin(altCoord.x * 2.0 + altCoord.y * 3.0 + uTime * 0.3);
+          vec3 galaxyColor = mix(vec3(0.1, 0.5, 0.9), vec3(0.9, 0.2, 0.7), nebula);
+          galaxyColor += vec3(stars * 1.5);
+
+          // Einstein Ring Lensing Perimeter Glow
+          float rim = 1.0 - max(0.0, dot(vViewDir, vNormal));
+          float einsteinRing = pow(rim, 3.5) * uLensing * 2.2;
+          vec3 ringColor = vec3(0.3, 0.8, 1.0) * einsteinRing;
+
+          gl_FragColor = vec4(galaxyColor * 0.9 + ringColor, 0.95);
         }
       `,
-      side: THREE.DoubleSide,
+      uniforms: {
+        uTime: { value: 0 },
+        uLensing: { value: this.params.lensing }
+      },
       transparent: true,
-      blending: THREE.AdditiveBlending
+      side: THREE.DoubleSide
     });
 
-    this.wormholeThroat = new THREE.Mesh(throatGeo, throatMat);
+    this.wormholeThroat = new THREE.Mesh(sphereGeo, wormholeMat);
     this.wormholeThroat.visible = false;
     this.scene.add(this.wormholeThroat);
   }
@@ -497,6 +530,11 @@ export class CosmicEngine {
         probeTime: this.probeTime,
         dilationRatio: dilationRatio
       });
+    }
+
+    if (this.params.mode === 'wormhole' && this.wormholeThroat) {
+      this.wormholeThroat.material.uniforms.uTime.value = now * 0.001;
+      this.wormholeThroat.material.uniforms.uLensing.value = this.params.lensing;
     }
 
     if (this.params.mode === 'binary' && this.binaryGroup) {
