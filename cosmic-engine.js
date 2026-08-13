@@ -198,17 +198,40 @@ export class CosmicEngine {
       // Keplerian Velocity: omega = v / r = sqrt(G*M/r^3) -> omega proportional to M^0.5 * r^(-1.5)
       const baseSpeed = 1.8 * Math.sqrt(this.params.mass) * this.params.spin;
 
+      const colorsAttr = this.accretionDisk.geometry.attributes.color;
+      const colors = colorsAttr.array;
+
       for (let i = 0; i < this.particleCount; i++) {
         const r = this.diskRadii[i];
         const omega = baseSpeed * Math.pow(r, -1.5);
         this.diskAngles[i] += delta * omega;
 
         const theta = this.diskAngles[i];
-        this.diskPositions[i * 3] = r * Math.cos(theta);
-        this.diskPositions[i * 3 + 2] = r * Math.sin(theta);
+        const px = r * Math.cos(theta);
+        const pz = r * Math.sin(theta);
+
+        this.diskPositions[i * 3] = px;
+        this.diskPositions[i * 3 + 2] = pz;
+
+        // Line-of-sight velocity toward observer for relativistic Doppler shift
+        const vTangentialX = -pz * omega;
+        const dopplerFactor = Math.min(Math.max(vTangentialX * 0.15, -0.35), 0.35);
+
+        const ratio = (r - 2.2) / 4.8;
+        const baseHue = ratio < 0.3 ? (0.55 + ratio * 0.1) : (0.08 - (ratio - 0.3) * 0.05);
+        const shiftedHue = THREE.MathUtils.clamp(baseHue + dopplerFactor * 0.1, 0.0, 0.7);
+        const lightness = THREE.MathUtils.clamp(0.55 + dopplerFactor * 0.3, 0.2, 0.95);
+
+        const color = new THREE.Color();
+        color.setHSL(shiftedHue, 0.95, lightness);
+
+        colors[i * 3] = color.r;
+        colors[i * 3 + 1] = color.g;
+        colors[i * 3 + 2] = color.b;
       }
 
       this.accretionDisk.geometry.attributes.position.needsUpdate = true;
+      this.accretionDisk.geometry.attributes.color.needsUpdate = true;
     }
 
     if (this.controls) {

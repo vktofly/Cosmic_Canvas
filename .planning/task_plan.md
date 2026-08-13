@@ -21,5 +21,5 @@ A web-native, interactive 3D astrophysics visualization engine built using Three
 - [x] **Task 4: FPS & Performance Monitoring**
   - Add real-time FPS counter logic in header.
 
-- [ ] **Task 5: Doppler Shift Shader & Gravitational Relativistic Redshift**
+- [x] **Task 5: Doppler Shift Shader & Gravitational Relativistic Redshift**
   - Enhance photon sphere and accretion disk shaders for spectral shift visualization.
