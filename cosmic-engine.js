@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 export class CosmicEngine {
   constructor(containerId) {
@@ -33,6 +34,12 @@ export class CosmicEngine {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.container.appendChild(this.renderer.domElement);
+
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.minDistance = 3.0;
+    this.controls.maxDistance = 30.0;
 
     this.clock = new THREE.Clock();
   }
@@ -166,6 +173,10 @@ export class CosmicEngine {
     const delta = this.clock.getDelta();
     if (this.accretionDisk) {
       this.accretionDisk.rotation.y += delta * 0.4 * this.params.spin;
+    }
+
+    if (this.controls) {
+      this.controls.update();
     }
 
     this.renderer.render(this.scene, this.camera);
