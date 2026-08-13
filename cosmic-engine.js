@@ -15,6 +15,7 @@ export class CosmicEngine {
     this.initScene();
     this.createBlackHole();
     this.createWormhole();
+    this.createBinaryBlackHoles();
     this.createAccretionDisk();
     this.createStarfield();
     this.addEventListeners();
@@ -121,8 +122,14 @@ export class CosmicEngine {
 
   updateAudioParams() {
     if (this.droneOsc && this.audioCtx && this.audioCtx.state === 'running') {
-      const baseFreq = 40.0 * Math.max(0.5, this.params.spin) / Math.max(0.5, this.params.mass);
-      this.droneOsc.frequency.setTargetAtTime(baseFreq, this.audioCtx.currentTime, 0.1);
+      if (this.params.mode === 'binary') {
+        // Gravitational Wave Chirp: f_GW = 2 * f_orbit
+        const gwFreq = 160.0 * Math.max(0.5, this.params.spin) / Math.max(0.8, this.binarySeparation || 2.5);
+        this.droneOsc.frequency.setTargetAtTime(gwFreq, this.audioCtx.currentTime, 0.05);
+      } else {
+        const baseFreq = 110.0 * Math.max(0.5, this.params.spin) / Math.max(0.5, this.params.mass);
+        this.droneOsc.frequency.setTargetAtTime(baseFreq, this.audioCtx.currentTime, 0.1);
+      }
     }
   }
 
@@ -192,6 +199,59 @@ export class CosmicEngine {
     this.wormholeThroat = new THREE.Mesh(throatGeo, throatMat);
     this.wormholeThroat.visible = false;
     this.scene.add(this.wormholeThroat);
+  }
+
+  createBinaryBlackHoles() {
+    this.binaryGroup = new THREE.Group();
+    this.binaryGroup.visible = false;
+
+    // BH 1
+    const bh1Geo = new THREE.SphereGeometry(0.8, 32, 32);
+    const bh1Mat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    this.bh1 = new THREE.Mesh(bh1Geo, bh1Mat);
+    this.binaryGroup.add(this.bh1);
+
+    // BH 2
+    const bh2Geo = new THREE.SphereGeometry(0.8, 32, 32);
+    const bh2Mat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    this.bh2 = new THREE.Mesh(bh2Geo, bh2Mat);
+    this.binaryGroup.add(this.bh2);
+
+    // Gravitational Spacetime Wave Distortion Ripples (Plane)
+    const waveGeo = new THREE.RingGeometry(0.5, 14.0, 64, 16);
+    const waveMat = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        varying vec2 vUv;
+        uniform float uTime;
+        void main() {
+          float dist = length(vUv - vec2(0.5));
+          float wave = sin(dist * 40.0 - uTime * 8.0);
+          float alpha = smoothstep(0.0, 0.4, dist) * (1.0 - smoothstep(0.3, 0.5, dist)) * abs(wave);
+          gl_FragColor = vec4(0.2, 0.8, 1.0, alpha * 0.7);
+        }
+      `,
+      uniforms: {
+        uTime: { value: 0 }
+      },
+      side: THREE.DoubleSide,
+      transparent: true,
+      blending: THREE.AdditiveBlending
+    });
+
+    this.gwWaves = new THREE.Mesh(waveGeo, waveMat);
+    this.gwWaves.rotation.x = Math.PI / 2;
+    this.binaryGroup.add(this.gwWaves);
+
+    this.scene.add(this.binaryGroup);
+    this.binaryTheta = 0;
+    this.binarySeparation = 4.0;
   }
 
   createAccretionDisk() {
@@ -270,10 +330,11 @@ export class CosmicEngine {
     this.params = { ...this.params, ...newParams };
 
     const isWormhole = this.params.mode === 'wormhole';
+    const isBinary = this.params.mode === 'binary';
 
     if (this.eventHorizon && this.photonSphere) {
-      this.eventHorizon.visible = !isWormhole;
-      this.photonSphere.visible = !isWormhole;
+      this.eventHorizon.visible = !isWormhole && !isBinary;
+      this.photonSphere.visible = !isWormhole && !isBinary;
       const scale = this.params.mass;
       this.eventHorizon.scale.set(scale, scale, scale);
       this.photonSphere.scale.set(scale, scale, scale);
@@ -286,7 +347,12 @@ export class CosmicEngine {
       this.wormholeThroat.scale.set(scale, 1.0, scale);
     }
 
+    if (this.binaryGroup) {
+      this.binaryGroup.visible = isBinary;
+    }
+
     if (this.accretionDisk) {
+      this.accretionDisk.visible = !isBinary;
       this.accretionDisk.rotation.x = THREE.MathUtils.degToRad(this.params.tilt);
     }
 
@@ -382,7 +448,22 @@ export class CosmicEngine {
       });
     }
 
-    if (this.accretionDisk) {
+    if (this.params.mode === 'binary' && this.binaryGroup) {
+      // Binary orbital decay and inspiral: omega proportional to r^(-1.5)
+      this.binarySeparation = 2.5 + Math.sin(now * 0.001) * 0.8;
+      const omega = (3.5 * this.params.spin) * Math.pow(this.binarySeparation, -1.5);
+      this.binaryTheta += delta * omega;
+
+      const r = this.binarySeparation;
+      this.bh1.position.set(r * Math.cos(this.binaryTheta), 0, r * Math.sin(this.binaryTheta));
+      this.bh2.position.set(-r * Math.cos(this.binaryTheta), 0, -r * Math.sin(this.binaryTheta));
+
+      if (this.gwWaves) {
+        this.gwWaves.material.uniforms.uTime.value = now * 0.003;
+      }
+    }
+
+    if (this.accretionDisk && this.accretionDisk.visible) {
       // Keplerian Velocity: omega = v / r = sqrt(G*M/r^3) -> omega proportional to M^0.5 * r^(-1.5)
       const baseSpeed = 1.8 * Math.sqrt(this.params.mass) * this.params.spin;
 

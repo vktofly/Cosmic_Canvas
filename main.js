@@ -63,6 +63,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (mode === 'wormhole') {
         infoTitle.textContent = 'Einstein-Rosen Bridge (Wormhole)';
         infoDesc.textContent = 'A hypothetical topological bridge connecting two distant regions of spacetime. The throat radius determines the cross-sectional geometry through which light and matter could theoretically pass.';
+      } else if (mode === 'binary') {
+        infoTitle.textContent = 'Binary Black Hole Inspiral & Gravitational Waves';
+        infoDesc.textContent = 'Two co-orbiting black holes lose energy to gravitational radiation, spiraling inwards towards coalescence while emitting quadrupolar spacetime metric distortions and acoustic chirps.';
       } else {
         infoTitle.textContent = 'Event Horizon & Doppler Beaming';
         infoDesc.textContent = 'Light passing near the Schwarzschild radius bends sharply due to warped spacetime. The approaching side of the accretion disk shines brighter due to relativistic Doppler beaming.';
