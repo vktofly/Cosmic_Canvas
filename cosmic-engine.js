@@ -17,6 +17,7 @@ export class CosmicEngine {
     this.createWormhole();
     this.createBinaryBlackHoles();
     this.createScaleComparisonObjects();
+    this.scene.add(this.multiBodyGroup);
     this.createAccretionDisk();
     this.createStarfield();
     this.addEventListeners();
@@ -77,6 +78,10 @@ export class CosmicEngine {
     this.shipSpeedC = 0; // Speed in units of c
     this.keys = { forward: false, backward: false, left: false, right: false, up: false, down: false };
     this.onFlightTelemetryUpdate = null;
+
+    // Multi-Body Spacetime Gravity Sandbox
+    this.multiBodies = [];
+    this.multiBodyGroup = new THREE.Group();
 
     // Scale Comparison Meshes
     this.currentScale = 'none';
@@ -652,6 +657,51 @@ export class CosmicEngine {
     });
   }
 
+  spawnCustomBody() {
+    this.playPhotonSound();
+
+    // Spawn a new orbiting black hole singularity with photon halo
+    const mass = 0.6 + Math.random() * 0.8;
+    const radius = 1.5 * mass;
+
+    const bhGeo = new THREE.SphereGeometry(radius * 0.5, 32, 32);
+    const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const bhMesh = new THREE.Mesh(bhGeo, bhMat);
+
+    const haloGeo = new THREE.RingGeometry(radius * 0.5, radius * 0.9, 32);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color().setHSL(Math.random(), 0.9, 0.6),
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending
+    });
+    const haloMesh = new THREE.Mesh(haloGeo, haloMat);
+    haloMesh.rotation.x = Math.PI / 2;
+
+    const group = new THREE.Group();
+    group.add(bhMesh);
+    group.add(haloMesh);
+
+    // Initial position on an orbital trajectory in X-Z plane
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 5.0 + Math.random() * 6.0;
+    const pos = new THREE.Vector3(Math.cos(angle) * dist, (Math.random() - 0.5) * 1.5, Math.sin(angle) * dist);
+    group.position.copy(pos);
+
+    // Tangential orbital velocity: v = sqrt(G*M_center / r)
+    const speed = Math.sqrt((32.0 * this.params.mass) / dist);
+    const vel = new THREE.Vector3(-Math.sin(angle), 0, Math.cos(angle)).multiplyScalar(speed);
+
+    this.multiBodyGroup.add(group);
+    this.multiBodies.push({
+      group: group,
+      pos: pos.clone(),
+      vel: vel.clone(),
+      mass: mass
+    });
+  }
+
   toggleGyroscope() {
     this.isGyroActive = !this.isGyroActive;
     if (this.isGyroActive) {
@@ -848,6 +898,28 @@ export class CosmicEngine {
         probeTime: this.probeTime,
         dilationRatio: dilationRatio
       });
+    // Multi-Body Spacetime Gravity Sandbox N-Body Physics Solver
+    for (let i = 0; i < this.multiBodies.length; i++) {
+      const b1 = this.multiBodies[i];
+      // Central black hole gravity
+      const rCenter = b1.pos.length();
+      const accelCenter = (32.0 * this.params.mass) / Math.max(1.0, rCenter * rCenter);
+      b1.vel.add(b1.pos.clone().negate().normalize().multiplyScalar(accelCenter * delta));
+
+      // Inter-body gravitational attraction between custom singularities
+      for (let j = i + 1; j < this.multiBodies.length; j++) {
+        const b2 = this.multiBodies[j];
+        const diff = b2.pos.clone().sub(b1.pos);
+        const dist = Math.max(0.5, diff.length());
+        const force = (12.0 * b1.mass * b2.mass) / (dist * dist);
+        const dir = diff.normalize();
+
+        b1.vel.add(dir.clone().multiplyScalar((force / b1.mass) * delta));
+        b2.vel.add(dir.clone().negate().multiplyScalar((force / b2.mass) * delta));
+      }
+
+      b1.pos.add(b1.vel.clone().multiplyScalar(delta));
+      b1.group.position.copy(b1.pos);
     }
 
     if (this.params.mode === 'wormhole' && this.wormholeThroat) {

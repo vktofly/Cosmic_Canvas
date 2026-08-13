@@ -223,6 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (mode === 'binary') {
         infoTitle.textContent = 'Binary Black Hole Inspiral & Gravitational Waves';
         infoDesc.textContent = 'Two co-orbiting black holes lose energy to gravitational radiation, spiraling inwards towards coalescence while emitting quadrupolar spacetime metric distortions and acoustic chirps.';
+      } else if (mode === 'multibody') {
+        infoTitle.textContent = 'Multi-Body Spacetime Gravity Sandbox';
+        infoDesc.textContent = 'Interactive N-body gravitational dynamics sandbox. Spawn arbitrary black hole singularities to observe complex inter-body gravitational attractions and chaotic multi-horizon orbital choreographies.';
       } else {
         infoTitle.textContent = 'Event Horizon & Doppler Beaming';
         infoDesc.textContent = 'Light passing near the Schwarzschild radius bends sharply due to warped spacetime. The approaching side of the accretion disk shines brighter due to relativistic Doppler beaming.';
@@ -322,6 +325,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnStar) {
     btnStar.addEventListener('click', () => {
       engine.spawnStar();
+    });
+  }
+
+  const btnSpawnBody = document.getElementById('btn-spawn-body');
+  if (btnSpawnBody) {
+    btnSpawnBody.addEventListener('click', () => {
+      engine.spawnCustomBody();
     });
   }
 
