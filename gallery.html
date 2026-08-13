@@ -13,82 +13,124 @@
       overflow-y: auto !important;
       height: auto !important;
       min-height: 100vh;
-      background: radial-gradient(circle at 50% 10%, #0f172a 0%, #030712 100%);
+      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(236, 72, 153, 0.15), rgba(15, 23, 42, 0) 70%), #030712;
       user-select: text;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; height: 100vh;
+      background: radial-gradient(circle at 80% 80%, rgba(56, 189, 248, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: -1;
     }
     .gallery-container {
-      max-width: 1100px;
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 120px 24px 80px 24px;
+      padding: 130px 24px 80px 24px;
     }
     .gallery-hero {
       text-align: center;
-      margin-bottom: 56px;
+      margin-bottom: 60px;
+      position: relative;
     }
     .eyebrow-gallery {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 9999px;
       font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: var(--accent-pink);
       background: rgba(236, 72, 153, 0.12);
       border: 1px solid rgba(236, 72, 153, 0.3);
-      margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.2);
+      margin-bottom: 20px;
     }
     .gallery-hero h1 {
       font-family: var(--font-heading);
-      font-size: 2.8rem;
+      font-size: 3.2rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #ffffff 0%, var(--accent-pink) 100%);
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, #f472b6 70%, #c084fc 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       text-wrap: balance;
     }
     .gallery-hero p {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 700px;
+      font-size: 1.15rem;
+      color: #94a3b8;
+      max-width: 680px;
       margin: 0 auto;
-      line-height: 1.6;
+      line-height: 1.7;
       text-wrap: balance;
     }
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 28px;
-      margin-bottom: 60px;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 32px;
+      margin-bottom: 64px;
     }
     .gallery-card {
       padding: 32px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      border-radius: 20px;
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 24px;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.35s ease;
+    }
+    .gallery-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(236, 72, 153, 0.6), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
     .gallery-card:hover {
-      transform: translateY(-6px);
+      transform: translateY(-8px);
       border-color: rgba(236, 72, 153, 0.4);
-      box-shadow: 0 24px 56px rgba(0, 0, 0, 0.7), 0 0 20px rgba(236, 72, 153, 0.15);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(236, 72, 153, 0.18);
     }
+    .gallery-card:hover::before {
+      opacity: 1;
+    }
+    .visual-preview {
+      height: 120px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview-gargantua { background: radial-gradient(circle at center, #000 35%, #38bdf8 65%, transparent 75%), #030712; }
+    .preview-cygnus { background: radial-gradient(circle at center, #000 30%, #ec4899 65%, transparent 75%), #030712; }
+    .preview-sagittarius { background: radial-gradient(circle at center, #000 35%, #a855f7 65%, transparent 75%), #030712; }
+    .preview-ton618 { background: radial-gradient(circle at center, #000 45%, #fbbf24 70%, transparent 80%), #030712; }
+    
     .preset-tag {
       display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
+      padding: 4px 14px;
+      border-radius: 9999px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 14px;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
     }
     .tag-gargantua { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
     .tag-cygnus { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
@@ -96,16 +138,16 @@
     .tag-ton618 { background: rgba(251, 191, 36, 0.15); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
     .gallery-card h3 {
       font-family: var(--font-heading);
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       color: #ffffff;
-      margin-bottom: 10px;
-      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
     }
     .gallery-card p {
-      font-size: 0.92rem;
-      color: var(--text-muted);
+      font-size: 0.9rem;
+      color: #94a3b8;
       line-height: 1.65;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .card-metrics {
       display: grid;
@@ -114,19 +156,18 @@
       font-size: 0.78rem;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding-top: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       font-family: monospace;
-      color: var(--text-muted);
       text-align: center;
     }
     .metric-pill {
-      background: rgba(3, 7, 18, 0.6);
-      padding: 6px 4px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(3, 7, 18, 0.7);
+      padding: 8px 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
     }
     .nav-link {
-      color: var(--text-muted);
+      color: #94a3b8;
       text-decoration: none;
       font-size: 0.85rem;
       font-weight: 600;
@@ -177,6 +218,9 @@
       <!-- Gargantua -->
       <article class="gallery-card" data-category="supermassive extremal">
         <div>
+          <div class="visual-preview preview-gargantua">
+            <span style="font-size: 2.2rem; filter: drop-shadow(0 0 12px #38bdf8);">🌀</span>
+          </div>
           <span class="preset-tag tag-gargantua">Extreme Kerr Spin</span>
           <h3>Gargantua (Supermassive)</h3>
           <p>Supermassive rotating black hole spinning near the theoretical Thorne limit (\(a^* = 0.998\)). Features an edge-on accretion disk with intense Doppler beaming.</p>
@@ -196,6 +240,9 @@
       <!-- Cygnus X-1 -->
       <article class="gallery-card" data-category="stellar extremal">
         <div>
+          <div class="visual-preview preview-cygnus">
+            <span style="font-size: 2.2rem; filter: drop-shadow(0 0 12px #ec4899);">💫</span>
+          </div>
           <span class="preset-tag tag-cygnus">Stellar Mass</span>
           <h3>Cygnus X-1 (Microquasar)</h3>
           <p>First confirmed stellar-mass black hole in our galaxy. Fast accretion disk dynamics with high-frequency acoustic redshift sonar.</p>
@@ -215,6 +262,9 @@
       <!-- Sagittarius A* -->
       <article class="gallery-card" data-category="supermassive">
         <div>
+          <div class="visual-preview preview-sagittarius">
+            <span style="font-size: 2.2rem; filter: drop-shadow(0 0 12px #a855f7);">✨</span>
+          </div>
           <span class="preset-tag tag-sagittarius">Galactic Core</span>
           <h3>Sagittarius A* (Milky Way)</h3>
           <p>The 4.3 million solar mass giant at the center of the Milky Way. Mild spin with a diffuse plasma photon ring.</p>
@@ -234,6 +284,9 @@
       <!-- TON 618 -->
       <article class="gallery-card" data-category="supermassive extremal">
         <div>
+          <div class="visual-preview preview-ton618">
+            <span style="font-size: 2.2rem; filter: drop-shadow(0 0 12px #fbbf24);">☀️</span>
+          </div>
           <span class="preset-tag tag-ton618">Ultramassive</span>
           <h3>TON 618 (Cosmic Behemoth)</h3>
           <p>Ultramassive black hole spanning 390 billion kilometers in diameter. Easily swallowing our entire solar system inside its event horizon.</p>
