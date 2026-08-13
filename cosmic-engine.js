@@ -81,21 +81,29 @@ export class CosmicEngine {
   }
 
   createAccretionDisk() {
-    const particleCount = 40000;
+    this.particleCount = 40000;
     const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
+    this.diskPositions = new Float32Array(this.particleCount * 3);
+    this.diskRadii = new Float32Array(this.particleCount);
+    this.diskAngles = new Float32Array(this.particleCount);
+    this.diskYOffsets = new Float32Array(this.particleCount);
+    const colors = new Float32Array(this.particleCount * 3);
 
     const innerRadius = 2.2;
     const outerRadius = 7.0;
 
-    for (let i = 0; i < particleCount; i++) {
+    for (let i = 0; i < this.particleCount; i++) {
       const r = innerRadius + Math.random() * (outerRadius - innerRadius);
       const theta = Math.random() * Math.PI * 2;
+      const yOffset = (Math.random() - 0.5) * 0.15 * (r / outerRadius);
 
-      positions[i * 3] = r * Math.cos(theta);
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 0.15 * (r / outerRadius);
-      positions[i * 3 + 2] = r * Math.sin(theta);
+      this.diskRadii[i] = r;
+      this.diskAngles[i] = theta;
+      this.diskYOffsets[i] = yOffset;
+
+      this.diskPositions[i * 3] = r * Math.cos(theta);
+      this.diskPositions[i * 3 + 1] = yOffset;
+      this.diskPositions[i * 3 + 2] = r * Math.sin(theta);
 
       // Doppler color gradient (Blue hot inner, Amber cool outer)
       const ratio = (r - innerRadius) / (outerRadius - innerRadius);
@@ -111,7 +119,7 @@ export class CosmicEngine {
       colors[i * 3 + 2] = color.b;
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('position', new THREE.BufferAttribute(this.diskPositions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
     const material = new THREE.PointsMaterial({
@@ -171,8 +179,21 @@ export class CosmicEngine {
     requestAnimationFrame(() => this.animate());
 
     const delta = this.clock.getDelta();
-    if (this.accretionDisk) {
-      this.accretionDisk.rotation.y += delta * 0.4 * this.params.spin;
+    if (this.accretionDisk && this.diskPositions) {
+      // Keplerian Velocity: omega = v / r = sqrt(G*M/r^3) -> omega proportional to M^0.5 * r^(-1.5)
+      const baseSpeed = 1.8 * Math.sqrt(this.params.mass) * this.params.spin;
+
+      for (let i = 0; i < this.particleCount; i++) {
+        const r = this.diskRadii[i];
+        const omega = baseSpeed * Math.pow(r, -1.5);
+        this.diskAngles[i] += delta * omega;
+
+        const theta = this.diskAngles[i];
+        this.diskPositions[i * 3] = r * Math.cos(theta);
+        this.diskPositions[i * 3 + 2] = r * Math.sin(theta);
+      }
+
+      this.accretionDisk.geometry.attributes.position.needsUpdate = true;
     }
 
     if (this.controls) {

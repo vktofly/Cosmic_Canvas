@@ -14,7 +14,7 @@ A web-native, interactive 3D astrophysics visualization engine built using Three
 - [x] **Task 2: Interactive Camera Controls**
   - Integrate Three.js `OrbitControls` for drag rotation & scroll zoom.
 
-- [ ] **Task 3: Keplerian Orbital Velocity ($v \propto r^{-1/2}$)**
+- [x] **Task 3: Keplerian Orbital Velocity ($v \propto r^{-1/2}$)**
   - Update `cosmic-engine.js` particle update loop with radius-dependent orbital speeds.
   - Tie speeds to `spin` and `mass` parameter sliders.
 
