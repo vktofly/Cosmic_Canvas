@@ -1,16 +1,45 @@
-# Product Vision: Cosmic Canvas
+# Product Vision Brainstorm & Definition: Cosmic Canvas
 
-## Mission Statement
-Democratize astrophysics intuition by providing an instantaneous, interactive 3D browser simulation of black hole mechanics, gravitational lensing, and relativistic physics.
+## 1. Core Problem Solved
+Astrophysics concepts (curved spacetime, relativistic Doppler beaming, photon spheres) are mathematically abstract and locked behind dry textbook equations or static 2D diagrams. People cannot build physical intuition without interactive, touchable visualization.
 
-## Core Pillars & Invariants
+---
 
-1. **Zero-Friction Access**: Web-native rendering with $0 hosting cost, running at 60 FPS on standard consumer hardware.
-2. **Interactive Intuition**: Every abstract equation (Keplerian velocity $v \propto r^{-1.5}$, Doppler beaming, light bending) must be visually manipulable in real-time.
-3. **Cinematic Aesthetic**: Dark space glassmorphism interface with high-fidelity visual feedback.
+## 2. Vision Variations (3-5 Options)
 
-## Strategic Roadmap
+### Option 1 (Experiential / Emotional)
+> *"Make the unseeable universe touchable for every curious mind."*
+- **Why**: Emotionally evocative, focuses on wonder and accessibility.
 
-- **Phase 1 (Done)**: Accretion Disk Particle System, OrbitControls, Keplerian Speeds, Doppler Shift, Photon Ray-Tracer.
-- **Phase 2 (Next)**: One-Click Video/GIF Recording & Presets Export.
-- **Phase 3 (Future)**: Einstein-Rosen Wormhole topology shaders.
+### Option 2 (Capability / Action-Oriented) — **(Recommended)**
+> *"Give everyone a personal interactive observatory to simulate and understand relativistic astrophysics in real time."*
+- **Why**: Balances high scientific ambition with a concrete, achievable product definition.
+
+### Option 3 (Mission / Democratic)
+> *"Democratize cosmic physics intuition through zero-barrier, browser-native 3D simulations."*
+- **Why**: Aligns directly with the zero-install, zero-cost web architecture.
+
+### Option 4 (Scale / Future-Looking)
+> *"Transform every web browser into an interactive playground for exploring general relativity and cosmic mechanics."*
+- **Why**: Broadens horizons toward multi-body mechanics, wormholes, and gravitational waves.
+
+---
+
+## 3. Recommended North Star Vision
+
+> **"Give everyone a personal interactive observatory to simulate and understand relativistic astrophysics in real time."**
+
+### Why this Vision Wins:
+- **Inspiring**: Elevates the user from passive reader to active cosmic observer/experimenter.
+- **Achievable**: Anchored in our existing high-performance Three.js WebGL engine and zero-cost hosting.
+- **Emotional**: Taps into human awe and truth-seeking about black holes and general relativity.
+
+---
+
+## 4. Alignment with Pillars & Strategic Objectives
+
+| Pillar | How the Vision Guides It |
+| :--- | :--- |
+| **Zero-Friction Access** | Keep engine 100% web-native with sub-second load times on any standard device. |
+| **Interactive Intuition** | Prioritize interactive sliders and real-time ray-tracing over static pre-rendered animations. |
+| **Cinematic Aesthetic** | Deliver glassmorphism and motion polish that creates a wow factor on first render. |
