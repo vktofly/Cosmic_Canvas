@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "architecture-blueprint-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/architecture-blueprint-generator/SKILL.md",
+      "computedHash": "9b20f13d1d96ba1c2550e1ce535f932e943c42939d3fae906a9e0d6c1bfb471a"
+    },
+    "game-changing-features": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/game-changing-features/SKILL.md",
+      "computedHash": "957248a5654c01fe82186b4b31199b0c618a9375c1d0024fd66568afbe12c48f"
+    },
+    "tech-stack-evaluator": {
+      "source": "alirezarezvani/claude-skills",
+      "sourceType": "github",
+      "skillPath": "engineering-team/skills/tech-stack-evaluator/SKILL.md",
+      "computedHash": "7471f5aa3441983351ba394de6028ed2a6ffaace23767a87e8c01dfa796aeaa6"
+    }
+  }
+}
