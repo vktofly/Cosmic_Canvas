@@ -37,6 +37,97 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dilationFactor) dilationFactor.textContent = `${(dilationRatio * 100).toFixed(1)}%`;
   };
 
+  // AI Voice-Guided Planetarium Tour (Web Speech API)
+  const btnTour = document.getElementById('btn-tour');
+  let isTourActive = false;
+  let tourIndex = 0;
+
+  const tourSteps = [
+    {
+      title: 'Schwarzschild Event Horizon',
+      text: 'Welcome to Cosmic Canvas. You are observing a Kerr-Schwarzschild Black Hole. Notice how light from the accretion disk bends sharply around the photon sphere due to warped spacetime.',
+      action: () => {
+        if (modeSelect) modeSelect.value = 'blackhole';
+        engine.updateParams({ mode: 'blackhole', mass: 1.0, spin: 1.0, lensing: 1.2 });
+      }
+    },
+    {
+      title: 'Tidal Disruption Event (TDE)',
+      text: 'Watch as an approaching star crosses the Roche tidal limit. Gravitational differential forces pull the stellar core into a spaghettified stream that accretes into the singularity.',
+      action: () => {
+        engine.spawnStar();
+      }
+    },
+    {
+      title: 'Einstein-Rosen Wormhole',
+      text: 'Switching to an Einstein-Rosen Bridge. In general relativity, a wormhole throat acts as a spherical gravitational lens through which an entire alternate galaxy is visibly refracted.',
+      action: () => {
+        if (modeSelect) modeSelect.value = 'wormhole';
+        engine.updateParams({ mode: 'wormhole', mass: 1.2, lensing: 1.4 });
+      }
+    },
+    {
+      title: 'Binary Black Hole Merger',
+      text: 'Observing two co-orbiting black holes emitting gravitational waves. Listen to the acoustic chirp frequency rising as they spiral towards coalescence.',
+      action: () => {
+        if (modeSelect) modeSelect.value = 'binary';
+        engine.updateParams({ mode: 'binary', spin: 1.8 });
+      }
+    },
+    {
+      title: 'Powers of Ten Scale: TON 618',
+      text: 'Finally, comparing with TON 618, an ultramassive black hole sixty-six billion times the mass of our Sun, easily swallowing our entire solar system.',
+      action: () => {
+        const scaleSelectEl = document.getElementById('scale-select');
+        if (scaleSelectEl) scaleSelectEl.value = 'ton618';
+        engine.setScale('ton618');
+      }
+    }
+  ];
+
+  function speakNarration(step) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(step.text);
+    utterance.rate = 1.0;
+    utterance.pitch = 0.95;
+    utterance.onend = () => {
+      if (isTourActive) {
+        tourIndex = (tourIndex + 1) % tourSteps.length;
+        setTimeout(() => {
+          if (isTourActive) {
+            const nextStep = tourSteps[tourIndex];
+            nextStep.action();
+            speakNarration(nextStep);
+          }
+        }, 1500);
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+  }
+
+  if (btnTour) {
+    btnTour.addEventListener('click', () => {
+      isTourActive = !isTourActive;
+      if (isTourActive) {
+        btnTour.textContent = '🎙️ Tour: PLAYING';
+        btnTour.style.background = 'rgba(236, 72, 153, 0.3)';
+        btnTour.style.borderColor = '#ec4899';
+        tourIndex = 0;
+        const firstStep = tourSteps[0];
+        firstStep.action();
+        speakNarration(firstStep);
+      } else {
+        btnTour.textContent = '🎙️ AI Tour';
+        btnTour.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnTour.style.borderColor = '#ec4899';
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+      }
+    });
+  }
+
   const btnAudio = document.getElementById('btn-audio');
 
   if (btnAudio) {
