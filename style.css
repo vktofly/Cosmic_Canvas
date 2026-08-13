@@ -48,12 +48,35 @@ body {
 /* Glassmorphism Observatory Components */
 .glass-header, .glass-panel {
   background: var(--panel-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--panel-border);
   border-radius: 16px;
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   z-index: 10;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 20px 56px 0 rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.brand .icon {
+  font-size: 1.8rem;
+  display: inline-block;
+  animation: celestialGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes celestialGlow {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+  }
+  100% {
+    transform: scale(1.08) rotate(4deg);
+    filter: drop-shadow(0 0 18px rgba(236, 72, 153, 0.7));
+  }
 }
 
 .glass-header {
