@@ -93,9 +93,16 @@ export class CosmicEngine {
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     this.audioCtx = new AudioContext();
 
+    this.pannerNode = this.audioCtx.createStereoPanner ? this.audioCtx.createStereoPanner() : null;
     this.gainNode = this.audioCtx.createGain();
     this.gainNode.gain.setValueAtTime(0.25, this.audioCtx.currentTime); // Audible volume
-    this.gainNode.connect(this.audioCtx.destination);
+
+    if (this.pannerNode) {
+      this.pannerNode.connect(this.audioCtx.destination);
+      this.gainNode.connect(this.pannerNode);
+    } else {
+      this.gainNode.connect(this.audioCtx.destination);
+    }
 
     // Deep Sub-Bass Spacetime Drone (Dual rich harmonics)
     this.droneOsc = this.audioCtx.createOscillator();
@@ -144,13 +151,24 @@ export class CosmicEngine {
 
   updateAudioParams() {
     if (this.droneOsc && this.audioCtx && this.audioCtx.state === 'running') {
+      // Gravitational Redshift Factor: z = 1 / sqrt(1 - Rs/r) -> f_observed = f_emit * sqrt(1 - Rs/r)
+      const camDist = this.camera.position.length();
+      const rs = 1.5 * this.params.mass;
+      const redshiftRatio = Math.sqrt(Math.max(0.15, 1.0 - (rs / Math.max(rs + 0.1, camDist))));
+
+      if (this.pannerNode) {
+        // Stereo panning based on camera azimuth angle in X-Z plane
+        const pan = THREE.MathUtils.clamp(this.camera.position.x / 14.0, -0.9, 0.9);
+        this.pannerNode.pan.setTargetAtTime(pan, this.audioCtx.currentTime, 0.1);
+      }
+
       if (this.params.mode === 'binary') {
         // Gravitational Wave Chirp: f_GW = 2 * f_orbit
         const gwFreq = 160.0 * Math.max(0.5, this.params.spin) / Math.max(0.8, this.binarySeparation || 2.5);
-        this.droneOsc.frequency.setTargetAtTime(gwFreq, this.audioCtx.currentTime, 0.05);
+        this.droneOsc.frequency.setTargetAtTime(gwFreq * redshiftRatio, this.audioCtx.currentTime, 0.05);
       } else {
         const baseFreq = 110.0 * Math.max(0.5, this.params.spin) / Math.max(0.5, this.params.mass);
-        this.droneOsc.frequency.setTargetAtTime(baseFreq, this.audioCtx.currentTime, 0.1);
+        this.droneOsc.frequency.setTargetAtTime(baseFreq * redshiftRatio, this.audioCtx.currentTime, 0.1);
       }
     }
   }
@@ -810,6 +828,8 @@ export class CosmicEngine {
         this.gwWaves.material.uniforms.uTime.value = now * 0.003;
       }
     }
+
+    this.updateAudioParams();
 
     if (this.accretionDisk && this.accretionDisk.visible) {
       // Keplerian Velocity: omega = v / r = sqrt(G*M/r^3) -> omega proportional to M^0.5 * r^(-1.5)
