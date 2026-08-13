@@ -175,6 +175,77 @@
         <li><strong>Gravitational Redshift Sonar:</strong> Real-time Web Audio synthesis modulated by the gravitational time dilation factor \(\sqrt{1 - R_s / r}\).</li>
       </ul>
     </section>
+
+    <!-- Section 4: Live Interactive Kerr Metric Calculator -->
+    <section class="content-section" style="background: rgba(15, 23, 42, 0.85); border-color: rgba(56, 189, 248, 0.3);">
+      <h2 style="color: var(--accent-cyan);">4. Interactive Kerr Metric Calculator</h2>
+      <p>Test real-time general relativistic horizons by adjusting black hole Mass \(M\) and Dimensionless Kerr Spin Parameter \(a^*\):</p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+        <div>
+          <label style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
+            Black Hole Mass (M☉): <span id="calc-mass-val" style="color: var(--accent-cyan); font-weight: 600;">10.0</span>
+          </label>
+          <input type="range" id="calc-mass" min="1" max="100" step="1" value="10" />
+        </div>
+        <div>
+          <label style="display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
+            Kerr Spin Parameter a* (J/M): <span id="calc-spin-val" style="color: var(--accent-pink); font-weight: 600;">0.90</span>
+          </label>
+          <input type="range" id="calc-spin" min="0.0" max="0.998" step="0.01" value="0.90" />
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div style="background: rgba(3, 7, 18, 0.7); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); text-align: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Schwarzschild Radius</span>
+          <h3 id="res-rs" style="color: var(--accent-cyan); font-family: monospace; font-size: 1.2rem; margin-top: 6px;">29.53 km</h3>
+        </div>
+        <div style="background: rgba(3, 7, 18, 0.7); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); text-align: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Kerr Event Horizon (r+)</span>
+          <h3 id="res-rplus" style="color: var(--accent-pink); font-family: monospace; font-size: 1.2rem; margin-top: 6px;">21.19 km</h3>
+        </div>
+        <div style="background: rgba(3, 7, 18, 0.7); padding: 16px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.08); text-align: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Equatorial Ergosphere (r_ergo)</span>
+          <h3 id="res-ergo" style="color: var(--accent-amber); font-family: monospace; font-size: 1.2rem; margin-top: 6px;">29.53 km</h3>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <script>
+    const massSlider = document.getElementById('calc-mass');
+    const spinSlider = document.getElementById('calc-spin');
+    const massVal = document.getElementById('calc-mass-val');
+    const spinVal = document.getElementById('calc-spin-val');
+
+    const resRs = document.getElementById('res-rs');
+    const resRplus = document.getElementById('res-rplus');
+    const resErgo = document.getElementById('res-ergo');
+
+    const updateCalc = () => {
+      const M = parseFloat(massSlider.value);
+      const a = parseFloat(spinSlider.value);
+
+      massVal.textContent = M.toFixed(1);
+      spinVal.textContent = a.toFixed(2);
+
+      // Rs = 2.953 km per solar mass
+      const rsKm = 2.95319 * M;
+      const mKm = rsKm / 2.0;
+
+      // Kerr r+ = M + sqrt(M^2 - a^2)
+      const rPlusKm = mKm * (1.0 + Math.sqrt(Math.max(0, 1.0 - a * a)));
+      // Equatorial ergosphere = 2M = Rs
+      const rErgoKm = 2.0 * mKm;
+
+      resRs.textContent = `${rsKm.toFixed(2)} km`;
+      resRplus.textContent = `${rPlusKm.toFixed(2)} km`;
+      resErgo.textContent = `${rErgoKm.toFixed(2)} km`;
+    };
+
+    massSlider.addEventListener('input', updateCalc);
+    spinSlider.addEventListener('input', updateCalc);
+  </script>
 </body>
 </html>
