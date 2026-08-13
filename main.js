@@ -86,6 +86,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnPilot = document.getElementById('btn-pilot');
+  const flightHud = document.getElementById('flight-hud');
+  const shipVelEl = document.getElementById('ship-vel');
+  const shipDistEl = document.getElementById('ship-dist');
+
+  if (btnPilot) {
+    btnPilot.addEventListener('click', () => {
+      const isPilot = engine.togglePilotMode();
+      if (isPilot) {
+        btnPilot.textContent = '🚀 Cockpit: ACTIVE';
+        btnPilot.style.background = 'rgba(245, 158, 11, 0.3)';
+        btnPilot.style.borderColor = '#fbbf24';
+        if (flightHud) flightHud.style.display = 'block';
+      } else {
+        btnPilot.textContent = '🚀 Pilot Ship';
+        btnPilot.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnPilot.style.borderColor = '#f59e0b';
+        if (flightHud) flightHud.style.display = 'none';
+      }
+    });
+  }
+
+  engine.onFlightTelemetryUpdate = ({ speedC, proximityRs }) => {
+    if (shipVelEl) shipVelEl.textContent = speedC.toFixed(2);
+    if (shipDistEl) shipDistEl.textContent = proximityRs.toFixed(1);
+  };
+
   const scaleSelect = document.getElementById('scale-select');
   if (scaleSelect) {
     scaleSelect.addEventListener('change', (e) => {

@@ -71,6 +71,13 @@ export class CosmicEngine {
       1000
     );
 
+    // Relativistic Flight Simulator Mode
+    this.isPilotMode = false;
+    this.shipVelocity = new THREE.Vector3();
+    this.shipSpeedC = 0; // Speed in units of c
+    this.keys = { forward: false, backward: false, left: false, right: false, up: false, down: false };
+    this.onFlightTelemetryUpdate = null;
+
     // Scale Comparison Meshes
     this.currentScale = 'none';
     this.scaleMeshes = {};
@@ -685,6 +692,40 @@ export class CosmicEngine {
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    window.addEventListener('keydown', (e) => {
+      if (!this.isPilotMode) return;
+      if (e.code === 'KeyW' || e.code === 'ArrowUp') this.keys.forward = true;
+      if (e.code === 'KeyS' || e.code === 'ArrowDown') this.keys.backward = true;
+      if (e.code === 'KeyA' || e.code === 'ArrowLeft') this.keys.left = true;
+      if (e.code === 'KeyD' || e.code === 'ArrowRight') this.keys.right = true;
+      if (e.code === 'Space') this.keys.up = true;
+      if (e.code === 'ShiftLeft' || e.code === 'KeyC') this.keys.down = true;
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'KeyW' || e.code === 'ArrowUp') this.keys.forward = false;
+      if (e.code === 'KeyS' || e.code === 'ArrowDown') this.keys.backward = false;
+      if (e.code === 'KeyA' || e.code === 'ArrowLeft') this.keys.left = false;
+      if (e.code === 'KeyD' || e.code === 'ArrowRight') this.keys.right = false;
+      if (e.code === 'Space') this.keys.up = false;
+      if (e.code === 'ShiftLeft' || e.code === 'KeyC') this.keys.down = false;
+    });
+  }
+
+  togglePilotMode() {
+    this.isPilotMode = !this.isPilotMode;
+    if (this.isPilotMode) {
+      this.controls.enabled = false;
+      this.shipVelocity.set(0, 0, 0);
+      this.camera.position.set(0, 0, 14);
+      this.camera.lookAt(0, 0, 0);
+    } else {
+      this.controls.enabled = true;
+      this.camera.fov = 60;
+      this.camera.updateProjectionMatrix();
+    }
+    return this.isPilotMode;
   }
 
   animate() {
@@ -871,7 +912,50 @@ export class CosmicEngine {
       this.accretionDisk.geometry.attributes.color.needsUpdate = true;
     }
 
-    if (this.isRecording) {
+    if (this.isPilotMode) {
+      // General Relativistic Flight Controls & Orbital Physics
+      const thrust = new THREE.Vector3();
+      const forwardDir = new THREE.Vector3();
+      this.camera.getWorldDirection(forwardDir);
+      const rightDir = new THREE.Vector3().crossVectors(forwardDir, this.camera.up).normalize();
+
+      if (this.keys.forward) thrust.add(forwardDir.clone().multiplyScalar(18.0));
+      if (this.keys.backward) thrust.add(forwardDir.clone().multiplyScalar(-14.0));
+      if (this.keys.right) thrust.add(rightDir.clone().multiplyScalar(12.0));
+      if (this.keys.left) thrust.add(rightDir.clone().multiplyScalar(-12.0));
+      if (this.keys.up) thrust.add(this.camera.up.clone().multiplyScalar(12.0));
+      if (this.keys.down) thrust.add(this.camera.up.clone().multiplyScalar(-12.0));
+
+      // Gravitational pull toward singularity: a = - GM / r^2
+      const pos = this.camera.position;
+      const r = pos.length();
+      const rs = 1.5 * this.params.mass;
+      const gravity = pos.clone().negate().normalize().multiplyScalar((28.0 * this.params.mass) / Math.max(1.0, r * r));
+
+      this.shipVelocity.add(thrust.multiplyScalar(delta));
+      this.shipVelocity.add(gravity.multiplyScalar(delta));
+      this.shipVelocity.multiplyScalar(0.98); // Space drag damping
+
+      this.camera.position.add(this.shipVelocity.clone().multiplyScalar(delta));
+
+      // Prevent falling completely through singularity (bounce/orbit)
+      if (this.camera.position.length() < rs + 0.1) {
+        this.camera.position.normalize().multiplyScalar(rs + 0.1);
+        this.shipVelocity.multiplyScalar(-0.5);
+      }
+
+      // Relativistic Velocity Aberration: FOV expands/tunnels forward as speed approaches c
+      this.shipSpeedC = Math.min(0.92, this.shipVelocity.length() / 25.0);
+      this.camera.fov = 60.0 + this.shipSpeedC * 40.0; // Forward tunnel warping
+      this.camera.updateProjectionMatrix();
+
+      if (this.onFlightTelemetryUpdate) {
+        this.onFlightTelemetryUpdate({
+          speedC: this.shipSpeedC,
+          proximityRs: r / rs
+        });
+      }
+    } else if (this.isRecording) {
       this.recordTheta += delta * (Math.PI * 2 / 5.0); // 360 degrees in 5 seconds
       const radius = 12.0;
       this.camera.position.x = radius * Math.sin(this.recordTheta);
