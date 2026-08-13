@@ -61,6 +61,16 @@ export class CosmicEngine {
     this.gyroBeta = 0;
     this.gyroGamma = 0;
 
+    // Infall Observer Split View
+    this.isInfallActive = false;
+    this.infallRadius = 14.0;
+    this.infallCamera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.01,
+      1000
+    );
+
     // Scale Comparison Meshes
     this.currentScale = 'none';
     this.scaleMeshes = {};
@@ -852,6 +862,50 @@ export class CosmicEngine {
       this.controls.update();
     }
 
-    this.renderer.render(this.scene, this.camera);
+    if (this.isInfallActive) {
+      // Infalling Astronaut Geodesic Descent (r -> Rs)
+      this.infallRadius -= delta * 1.8;
+      const rs = 1.5 * this.params.mass;
+      if (this.infallRadius < rs + 0.05) {
+        this.infallRadius = 14.0; // Reset infall cycle
+      }
+
+      this.infallCamera.position.set(0, 0.4, this.infallRadius);
+      this.infallCamera.lookAt(0, 0, 0);
+
+      // Scissor Split Screen: Left = Distant Observer, Right = Infalling Astronaut
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const halfWidth = width / 2;
+
+      this.renderer.setScissorTest(true);
+
+      // View 1: Left Viewport (Distant Coordinate Observer)
+      this.renderer.setViewport(0, 0, halfWidth, height);
+      this.renderer.setScissor(0, 0, halfWidth, height);
+      this.camera.aspect = halfWidth / height;
+      this.camera.updateProjectionMatrix();
+      this.renderer.render(this.scene, this.camera);
+
+      // View 2: Right Viewport (Infalling Astronaut POV)
+      this.renderer.setViewport(halfWidth, 0, halfWidth, height);
+      this.renderer.setScissor(halfWidth, 0, halfWidth, height);
+      this.infallCamera.aspect = halfWidth / height;
+      this.infallCamera.updateProjectionMatrix();
+      this.renderer.render(this.scene, this.infallCamera);
+
+      this.renderer.setScissorTest(false);
+    } else {
+      this.renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.updateProjectionMatrix();
+      this.renderer.render(this.scene, this.camera);
+    }
+  }
+
+  toggleInfallView() {
+    this.isInfallActive = !this.isInfallActive;
+    this.infallRadius = 14.0;
+    return this.isInfallActive;
   }
 }

@@ -70,6 +70,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const btnSplit = document.getElementById('btn-split');
+  if (btnSplit) {
+    btnSplit.addEventListener('click', () => {
+      const isSplit = engine.toggleInfallView();
+      if (isSplit) {
+        btnSplit.textContent = '🪟 Split: ACTIVE';
+        btnSplit.style.background = 'rgba(16, 185, 129, 0.3)';
+        btnSplit.style.borderColor = '#10b981';
+      } else {
+        btnSplit.textContent = '🪟 Infall View';
+        btnSplit.style.background = 'rgba(255, 255, 255, 0.05)';
+        btnSplit.style.borderColor = '#10b981';
+      }
+    });
+  }
+
   const scaleSelect = document.getElementById('scale-select');
   if (scaleSelect) {
     scaleSelect.addEventListener('change', (e) => {
