@@ -1,5 +1,9 @@
 Global Skills
 
+Example Skills
+  frontend-design ~\.agents\skills\frontend-design
+    Agents: Antigravity, Cursor, Gemini CLI  Source: anthropics/skills
+
 Mattpocock Skills
   ask-matt                      ~\.agents\skills\ask-matt
     Agents: Antigravity, Cursor, Gemini CLI  Source: mattpocock/skills
@@ -52,62 +56,88 @@ Mattpocock Skills
   writing-for-agents            ~\.agents\skills\writing-for-agents
     Agents: Antigravity, Cursor, Gemini CLI  Source: mattpocock/skills
 
+Prd Generator
+  prd-generator ~\.agents\skills\prd-generator
+    Agents: Antigravity, Cursor, Gemini CLI  Source: jamesrochabrun/skills
+
 General
-  api-and-interface-design          ~\.agents\skills\api-and-interface-design
+  api-and-interface-design             ~\.agents\skills\api-and-interface-design
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  browser-testing-with-devtools     ~\.agents\skills\browser-testing-with-devtools
+  brainstorm-ideas-existing            ~\.agents\skills\brainstorm-ideas-existing
+    Agents: Antigravity, Cursor, Gemini CLI  Source: phuryn/pm-skills
+  browser-testing-with-devtools        ~\.agents\skills\browser-testing-with-devtools
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  caveman-help                      ~\.agents\skills\caveman-help
+  caveman-help                         ~\.agents\skills\caveman-help
     Agents: Antigravity, Cursor, Gemini CLI  Source: juliusbrussee/caveman
-  ci-cd-and-automation              ~\.agents\skills\ci-cd-and-automation
+  ci-cd-and-automation                 ~\.agents\skills\ci-cd-and-automation
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  code-review-and-quality           ~\.agents\skills\code-review-and-quality
+  code-review-and-quality              ~\.agents\skills\code-review-and-quality
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  code-simplification               ~\.agents\skills\code-simplification
+  code-simplification                  ~\.agents\skills\code-simplification
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  context-engineering               ~\.agents\skills\context-engineering
+  context-engineering                  ~\.agents\skills\context-engineering
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  debugging-and-error-recovery      ~\.agents\skills\debugging-and-error-recovery
+  debugging-and-error-recovery         ~\.agents\skills\debugging-and-error-recovery
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  deprecation-and-migration         ~\.agents\skills\deprecation-and-migration
+  deprecation-and-migration            ~\.agents\skills\deprecation-and-migration
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  developing-with-streamlit         ~\.agents\skills\developing-with-streamlit
+  developing-with-streamlit            ~\.agents\skills\developing-with-streamlit
     Agents: Antigravity, Cursor, Gemini CLI  Source: local
-  documentation-and-adrs            ~\.agents\skills\documentation-and-adrs
+  documentation-and-adrs               ~\.agents\skills\documentation-and-adrs
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  doubt-driven-development          ~\.agents\skills\doubt-driven-development
+  doubt-driven-development             ~\.agents\skills\doubt-driven-development
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  find-skills                       ~\.agents\skills\find-skills
+  find-skills                          ~\.agents\skills\find-skills
     Agents: Antigravity, Cursor, Gemini CLI  Source: vercel-labs/skills
-  frontend-ui-engineering           ~\.agents\skills\frontend-ui-engineering
+  frontend-ui-engineering              ~\.agents\skills\frontend-ui-engineering
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  git-workflow-and-versioning       ~\.agents\skills\git-workflow-and-versioning
+  git-workflow-and-versioning          ~\.agents\skills\git-workflow-and-versioning
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  idea-generator                    ~\.agents\skills\idea-generator
+  idea-generator                       ~\.agents\skills\idea-generator
     Agents: Antigravity, Cursor, Gemini CLI  Source: buildgreatproducts/builder-os
-  idea-refine                       ~\.agents\skills\idea-refine
+  idea-refine                          ~\.agents\skills\idea-refine
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  incremental-implementation        ~\.agents\skills\incremental-implementation
+  ideal-customer-profile               ~\.agents\skills\ideal-customer-profile
+    Agents: Antigravity, Cursor, Gemini CLI  Source: phuryn/pm-skills
+  imagegen-frontend-web                ~\.agents\skills\imagegen-frontend-web
+    Agents: Antigravity, Cursor, Gemini CLI  Source: leonxlnx/taste-skill
+  incremental-implementation           ~\.agents\skills\incremental-implementation
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  interview-me                      ~\.agents\skills\interview-me
+  interview-me                         ~\.agents\skills\interview-me
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  observability-and-instrumentation ~\.agents\skills\observability-and-instrumentation
+  observability-and-instrumentation    ~\.agents\skills\observability-and-instrumentation
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  performance-optimization          ~\.agents\skills\performance-optimization
+  performance-optimization             ~\.agents\skills\performance-optimization
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  planning-and-task-breakdown       ~\.agents\skills\planning-and-task-breakdown
+  persona-project-manager              ~\.agents\skills\persona-project-manager
+    Agents: Antigravity, Cursor, Gemini CLI  Source: googleworkspace/cli
+  planning-and-task-breakdown          ~\.agents\skills\planning-and-task-breakdown
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  project-graveyard                 ~\.agents\skills\project-graveyard
+  planning-with-files                  ~\.agents\skills\planning-with-files
+    Agents: Antigravity, Cursor, Gemini CLI  Source: othmanadi/planning-with-files
+  positioning-ideas                    ~\.agents\skills\positioning-ideas
+    Agents: Antigravity, Cursor, Gemini CLI  Source: phuryn/pm-skills
+  prd-next                             ~\.agents\skills\prd-next
+    Agents: Antigravity, Cursor, Gemini CLI  Source: vtmocanu/skills
+  product-vision                       ~\.agents\skills\product-vision
+    Agents: Antigravity, Cursor, Gemini CLI  Source: phuryn/pm-skills
+  project-graveyard                    ~\.agents\skills\project-graveyard
     Agents: Antigravity, Cursor, Gemini CLI  Source: Shubhamsaboo/awesome-llm-apps
-  security-and-hardening            ~\.agents\skills\security-and-hardening
+  security-and-hardening               ~\.agents\skills\security-and-hardening
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  shipping-and-launch               ~\.agents\skills\shipping-and-launch
+  shipping-and-launch                  ~\.agents\skills\shipping-and-launch
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  source-driven-development         ~\.agents\skills\source-driven-development
+  source-driven-development            ~\.agents\skills\source-driven-development
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  spec-driven-development           ~\.agents\skills\spec-driven-development
+  spec-driven-development              ~\.agents\skills\spec-driven-development
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  test-driven-development           ~\.agents\skills\test-driven-development
+  tech-stack-evaluator                 ~\.agents\skills\tech-stack-evaluator
+    Agents: Antigravity, Cursor, Gemini CLI  Source: alirezarezvani/claude-skills
+  technology-stack-blueprint-generator ~\.agents\skills\technology-stack-blueprint-generator
+    Agents: Antigravity, Cursor, Gemini CLI  Source: github/awesome-copilot
+  test-driven-development              ~\.agents\skills\test-driven-development
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
-  using-agent-skills                ~\.agents\skills\using-agent-skills
+  using-agent-skills                   ~\.agents\skills\using-agent-skills
     Agents: Antigravity, Cursor, Gemini CLI  Source: addyosmani/agent-skills
+  write-product-spec                   ~\.agents\skills\write-product-spec
+    Agents: Antigravity, Cursor, Gemini CLI  Source: warpdotdev/common-skills
