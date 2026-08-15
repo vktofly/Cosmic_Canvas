@@ -1,0 +1,17 @@
+{
+  "name": "Cosmic Canvas",
+  "short_name": "Cosmic Canvas",
+  "description": "Interactive 3D Black Hole Physics Simulator",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0d0d12",
+  "theme_color": "#0d0d12",
+  "icons": [
+    {
+      "src": "./icon-512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

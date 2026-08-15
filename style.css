@@ -1,3 +1,4 @@
+  .mobile-only-btn { display: none; }
 :root {
   --bg-color: #030712;
   --panel-bg: rgba(15, 23, 42, 0.75);
@@ -289,6 +290,18 @@ select:hover {
 
 /* --- Mobile Responsiveness --- */
 @media (max-width: 768px) {
+  .mobile-only-btn {
+    display: block !important;
+  }
+  .controls-drawer.collapsed .drawer-content {
+    display: none !important;
+  }
+  .controls-drawer.collapsed .drawer-header {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
   body, #app {
     height: 100dvh;
   }
@@ -319,6 +332,10 @@ select:hover {
     padding-bottom: 4px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none; /* Firefox */
+    justify-content: flex-start !important;
+  }
+  .stats-badge button {
+    flex-shrink: 0;
   }
 
   .stats-badge::-webkit-scrollbar {
@@ -342,8 +359,8 @@ select:hover {
   }
 
   .time-dilation-hud {
-    top: auto;
-    bottom: calc(45dvh + 20px); /* Just above the controls drawer */
+    top: auto !important;
+    bottom: calc(45dvh + 20px) !important;
     right: 10px;
     min-width: 0;
     width: calc(100vw - 20px);
@@ -351,6 +368,11 @@ select:hover {
     flex-wrap: wrap;
     align-items: center;
     padding: 10px 14px !important;
+    transition: bottom 0.3s ease;
+  }
+
+  .controls-drawer.collapsed ~ .time-dilation-hud {
+    bottom: 80px !important;
   }
 
   .time-dilation-hud h4 {
@@ -399,4 +421,5 @@ select:hover {
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
 }
+
 

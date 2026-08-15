@@ -1,9 +1,24 @@
 import { CosmicEngine } from './cosmic-engine.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // PWA Service Worker Registration
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(error => {
+      console.warn('Service Worker registration failed:', error);
+    });
+  }
+
   const engine = new CosmicEngine('canvas-container');
 
   // UI Elements
+  const drawerToggle = document.getElementById('drawer-toggle');
+  const controlsDrawer = document.getElementById('controls-drawer');
+  if (drawerToggle && controlsDrawer) {
+    drawerToggle.addEventListener('click', () => {
+      controlsDrawer.classList.toggle('collapsed');
+    });
+  }
+
   const massSlider = document.getElementById('mass-slider');
   const spinSlider = document.getElementById('spin-slider');
   const lensingSlider = document.getElementById('lensing-slider');
@@ -24,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const clockInfinity = document.getElementById('clock-infinity');
   const clockProbe = document.getElementById('clock-probe');
   const dilationFactor = document.getElementById('dilation-factor');
+  const fpsCounter = document.getElementById('fps-counter');
 
   // Parse Deep-Link URL Search Parameters
   const urlParams = new URLSearchParams(window.location.search);
@@ -67,9 +83,26 @@ document.addEventListener('DOMContentLoaded', () => {
     engine.updateParams(initialParams);
   }
 
+  let lowFpsCount = 0;
   engine.onFpsUpdate = (fps) => {
     if (fpsCounter) {
       fpsCounter.textContent = `${fps} FPS`;
+    }
+    
+    // Dynamic Quality Scaling
+    if (fps < 40) {
+      lowFpsCount++;
+      if (lowFpsCount > 3) {
+        const currentRatio = engine.renderer.getPixelRatio();
+        if (currentRatio > 0.5) {
+          const newRatio = Math.max(0.5, currentRatio - 0.25);
+          engine.renderer.setPixelRatio(newRatio);
+          if (fpsCounter) fpsCounter.textContent = `Scaling Quality...`;
+        }
+        lowFpsCount = 0; // Reset counter after scaling
+      }
+    } else {
+      lowFpsCount = 0; // Reset if performance is good
     }
   };
 

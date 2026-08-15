@@ -82,10 +82,14 @@
     </div>
 
     <!-- Controls Panel Drawer -->
-    <aside class="glass-panel controls-drawer">
-      <h2>Simulation Parameters</h2>
+    <aside class="glass-panel controls-drawer" id="controls-drawer">
+      <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 10px; margin-bottom: 10px;">
+        <h2 style="border-bottom: none; padding-bottom: 0; margin: 0;">Simulation Parameters</h2>
+        <button id="drawer-toggle" class="mobile-only-btn" style="background: none; border: none; color: var(--accent-cyan); font-size: 1.5rem; cursor: pointer; padding: 0; line-height: 1;">&#9776;</button>
+      </div>
+      <div class="drawer-content" id="drawer-content" style="display: flex; flex-direction: column; gap: 12px;">
 
-      <div class="control-group">
+        <div class="control-group">
         <label for="mode-select">Celestial Object</label>
         <select id="mode-select" class="glass-select" style="background: rgba(15, 23, 42, 0.8); color: var(--accent-cyan); border: 1px solid var(--panel-border); padding: 8px 12px; border-radius: 8px; font-family: var(--font-body); font-weight: 600; cursor: pointer; outline: none;">
           <option value="blackhole">Black Hole (Kerr/Schwarzschild)</option>
@@ -104,14 +108,14 @@
 
       <div class="control-group">
         <label for="spin-slider">
-          Accretion Spin Speed (<span id="spin-val">1.0</span>x)
+          <span>Accretion Spin Speed</span> <span>()</span>
         </label>
         <input type="range" id="spin-slider" min="0.0" max="3.0" step="0.1" value="1.0" />
       </div>
 
       <div class="control-group">
         <label for="lensing-slider">
-          Gravitational Lensing Strength (<span id="lensing-val">1.0</span>)
+          <span>Gravitational Lensing Strength</span> <span>()</span>
         </label>
         <input type="range" id="lensing-slider" min="0.0" max="2.5" step="0.1" value="1.0" />
       </div>
@@ -150,7 +154,8 @@
         <button id="btn-photon" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #ef4444);">🔥 Photon</button>
         <button id="btn-record" class="btn btn-primary" style="flex: 1; background: linear-gradient(135deg, #ec4899, #8b5cf6);">🎬 Record 5s</button>
       </div>
-      <p style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0; text-align: center;">💡 Tip: Click & drag anywhere on canvas to fire laser!</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted); margin: 6px 0 0 0; text-align: center;">🚀 Tip: Click & drag anywhere on canvas to fire laser!</p>
+      </div>
     </aside>
 
     <!-- Information Card -->
@@ -180,5 +185,6 @@
   <script type="module" src="./main.js"></script>
 </body>
 </html>
+
 
 
